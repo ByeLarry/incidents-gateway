@@ -15,6 +15,13 @@ export class AppLoggerService {
           zippedArchive: true,
           maxSize: '20m',
           maxFiles: '14d',
+          level: 'info',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(({ timestamp, level, message }) => {
+              return `[${timestamp}] ${level}: ${message}`;
+            }),
+          ),
         }),
       ],
     });
@@ -25,7 +32,7 @@ export class AppLoggerService {
   }
 
   error(message: string, trace: string) {
-    this.logger.error(message, trace);
+    this.logger.error(message, { trace });
   }
 
   warn(message: string) {
