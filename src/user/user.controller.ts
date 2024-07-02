@@ -9,6 +9,13 @@ import {
   Get,
   Req,
 } from '@nestjs/common';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBody,
+  ApiCookieAuth,
+} from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
@@ -16,18 +23,36 @@ import { firstValueFrom } from 'rxjs';
 import { Request, Response } from 'express';
 import { UserRecvDto } from './dto/user-recv.dto';
 
+@ApiTags('Auth')
 @Controller('api/auth')
 export class UserController {
   constructor(@Inject('AUTH_SERVICE') private client: ClientProxy) {}
 
+  @ApiOperation({ summary: 'Sign up' })
+  @ApiBody({ type: SignUpDto })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+    type: UserRecvDto,
+  })
+  @ApiResponse({ status: 409, description: 'User already exists' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   @Post('signup')
   async signup(
     @Body() data: SignUpDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result: UserRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: 'signup' }, data),
-    );
+    let result: UserRecvDto | string;
+    try {
+      result = await firstValueFrom(
+        this.client.send({ cmd: 'signup' }, { data }),
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     switch (result) {
       case '409':
         throw new HttpException('User already exists', HttpStatus.CONFLICT);
@@ -48,14 +73,32 @@ export class UserController {
     }
   }
 
+  @ApiOperation({ summary: 'Sign in' })
+  @ApiBody({ type: SignInDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User signed in successfully',
+    type: UserRecvDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Wrong password' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   @Post('signin')
   async signin(
     @Body() data: SignInDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result: UserRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: 'signin' }, data),
-    );
+    let result: UserRecvDto | string;
+    try {
+      result = await firstValueFrom(
+        this.client.send({ cmd: 'signin' }, { data }),
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     switch (result) {
       case '404':
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -78,15 +121,34 @@ export class UserController {
     }
   }
 
+  @ApiOperation({ summary: 'Get user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User retrieved successfully',
+    type: UserRecvDto,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 419, description: 'Session expired' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiCookieAuth()
   @Get('me')
   async me(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const session_id_from_cookie = req.cookies['incidents_session_id'];
     if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', 401);
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
-    const result: UserRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: 'me' }, { session_id_from_cookie }),
-    );
+    let result: UserRecvDto | string;
+    try {
+      result = await firstValueFrom(
+        this.client.send({ cmd: 'me' }, { session_id_from_cookie }),
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     switch (result) {
       case '404':
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
