@@ -23,6 +23,7 @@ import { firstValueFrom } from 'rxjs';
 import { Request, Response } from 'express';
 import { UserRecvDto } from './dto/user-recv.dto';
 import { LogoutDto } from './dto/logout.dto';
+import { LogoutRecvDto } from './dto/logout-recv.dto';
 
 @ApiTags('Auth')
 @Controller('api/auth')
@@ -125,7 +126,7 @@ export class UserController {
     type: UserRecvDto,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'User or session not found' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 419, description: 'Session expired' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiCookieAuth()
@@ -154,6 +155,8 @@ export class UserController {
         );
       case '419':
         throw new HttpException('Session expired', 419);
+      case '401':
+        throw new HttpException('Unauthorized', 401);
       case '500':
         throw new HttpException(
           'Internal server error',
@@ -175,12 +178,13 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'User signed out successfully',
-    type: String,
+    type: LogoutRecvDto,
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiResponse({ status: 419, description: 'Session expired' })
-  @ApiResponse({ status: 404, description: 'User or session not found' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 401, description: 'Session ID is missing' })
   @ApiBody({ type: LogoutDto })
   @ApiCookieAuth()
   @Post('logout')
@@ -218,6 +222,8 @@ export class UserController {
         throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
       case '419':
         throw new HttpException('Session expired', 419);
+      case '401':
+        throw new HttpException('Session ID is missing', 401);
       case '500':
         throw new HttpException(
           'Internal server error',
@@ -230,7 +236,7 @@ export class UserController {
           sameSite: 'strict',
           expires: new Date(0),
         });
-        return 'User signed out successfully';
+        return { message: 'User signed out successfully' };
     }
   }
 }
