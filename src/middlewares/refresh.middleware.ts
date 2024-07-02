@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
@@ -7,11 +7,11 @@ import { RefreshRecvDto } from 'src/user/dto/refresh-recv.dto';
 @Injectable()
 export class RefreshMiddleware {
   constructor(@Inject('AUTH_SERVICE') private client: ClientProxy) {}
-  async use(req: Request, res: Response, next: () => void) {
-    const csrf_token = req.body.csrf_token;
-    if (!csrf_token) {
-      return res.status(403).json({ message: 'CSRF token is missing' });
-    }
+  async use(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    next: () => void,
+  ) {
     const session_id_from_cookie = req.cookies['incidents_session_id'];
     if (!session_id_from_cookie) {
       return res.status(401).json({ message: 'Session ID is missing' });
@@ -19,16 +19,13 @@ export class RefreshMiddleware {
 
     try {
       const result: RefreshRecvDto | string = await firstValueFrom(
-        this.client.send(
-          { cmd: 'refresh' },
-          { csrf_token, session_id_from_cookie },
-        ),
+        this.client.send({ cmd: 'refresh' }, { session_id_from_cookie }),
       );
       switch (result) {
         case '404':
-          return res.status(404).json({ message: 'User or session not found' });
-        case '403':
-          return res.status(403).json({ message: 'Forbidden' });
+          return res.status(404).json({ message: 'User not found' });
+        case '401':
+          return res.status(401).json({ message: 'Unauthorized' });
         case '419':
           return res.status(419).json({ message: 'Session expired' });
         case '500':

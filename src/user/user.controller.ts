@@ -4,7 +4,6 @@ import {
   Body,
   Inject,
   HttpException,
-  HttpStatus,
   Res,
   Get,
   Req,
@@ -48,19 +47,13 @@ export class UserController {
     try {
       result = await firstValueFrom(this.client.send({ cmd: 'signup' }, data));
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('Internal server error', 500);
     }
     switch (result) {
       case '409':
-        throw new HttpException('User already exists', HttpStatus.CONFLICT);
+        throw new HttpException('User already exists', 409);
       case '500':
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException('Internal server error', 500);
       default:
         const { session_id, ...rest } = result as UserRecvDto;
         res.cookie('incidents_session_id', session_id, {
@@ -92,21 +85,15 @@ export class UserController {
     try {
       result = await firstValueFrom(this.client.send({ cmd: 'signin' }, data));
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('Internal server error', 500);
     }
     switch (result) {
       case '404':
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', 404);
       case '401':
-        throw new HttpException('Wrong password', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('Wrong password', 401);
       case '500':
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException('Internal server error', 500);
       default:
         const { session_id, ...rest } = result as UserRecvDto;
         res.cookie('incidents_session_id', session_id, {
@@ -131,10 +118,10 @@ export class UserController {
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiCookieAuth()
   @Get('me')
-  async me(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async me(@Req() req: Request) {
     const session_id_from_cookie = req.cookies['incidents_session_id'];
     if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Unauthorized', 401);
     }
     let result: UserRecvDto | string;
     try {
@@ -142,34 +129,20 @@ export class UserController {
         this.client.send({ cmd: 'me' }, { session_id_from_cookie }),
       );
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('Internal server error', 500);
     }
     switch (result) {
       case '404':
-        throw new HttpException(
-          'User or session not found',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new HttpException('User or session not found', 404);
       case '419':
         throw new HttpException('Session expired', 419);
       case '401':
         throw new HttpException('Unauthorized', 401);
       case '500':
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException('Internal server error', 500);
       default:
-        const { session_id, ...rest } = result as UserRecvDto;
-        res.cookie('incidents_session_id', session_id, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          expires: new Date(Date.now() + 60 * 60 * 1000),
-        });
+        const rest = result as UserRecvDto;
+        delete rest.session_id;
         return rest;
     }
   }
@@ -195,7 +168,7 @@ export class UserController {
   ) {
     const session_id_from_cookie = req.cookies['incidents_session_id'];
     if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Unauthorized', 401);
     }
     let result: string;
     try {
@@ -206,29 +179,19 @@ export class UserController {
         ),
       );
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('Internal server error', 500);
     }
-
     switch (result) {
       case '404':
-        throw new HttpException(
-          'User or session not found',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new HttpException('User or session not found', 404);
       case '403':
-        throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+        throw new HttpException('Forbidden', 403);
       case '419':
         throw new HttpException('Session expired', 419);
       case '401':
         throw new HttpException('Session ID is missing', 401);
       case '500':
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException('Internal server error', 500);
       case '200':
         res.cookie('incidents_session_id', '', {
           httpOnly: true,

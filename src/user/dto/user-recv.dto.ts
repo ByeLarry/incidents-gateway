@@ -20,5 +20,5 @@ export class UserRecvDto {
   csrf_token: string;
 
   @ApiProperty({ description: 'Session ID for the user' })
-  session_id: string;
+  session_id?: string;
 }

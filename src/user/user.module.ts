@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { UserController } from './user.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Transport, ClientProxyFactory } from '@nestjs/microservices';
 import { AppLoggerService } from 'src/utils/logger';
+import { RefreshMiddleware } from 'src/middlewares/refresh.middleware';
 
 @Module({
   imports: [ConfigModule.forRoot()],
@@ -23,4 +29,10 @@ import { AppLoggerService } from 'src/utils/logger';
     },
   ],
 })
-export class UserModule {}
+export class UserModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RefreshMiddleware)
+      .forRoutes({ path: 'api/auth/me', method: RequestMethod.ALL });
+  }
+}
