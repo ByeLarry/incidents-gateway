@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { RefreshRecvDto } from 'src/user/dto/refresh-recv.dto';
+import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
 
 @Injectable()
 export class RefreshMiddleware {
@@ -19,7 +20,10 @@ export class RefreshMiddleware {
 
     try {
       const result: RefreshRecvDto | string = await firstValueFrom(
-        this.client.send({ cmd: 'refresh' }, { session_id_from_cookie }),
+        this.client.send(
+          { cmd: MsgAuthEnum.REFRESH },
+          { session_id_from_cookie },
+        ),
       );
       switch (result) {
         case '404':

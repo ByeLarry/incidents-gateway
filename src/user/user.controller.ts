@@ -23,6 +23,7 @@ import { Request, Response } from 'express';
 import { UserRecvDto } from './dto/user-recv.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutRecvDto } from './dto/logout-recv.dto';
+import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
 
 @ApiTags('Auth')
 @Controller('api/auth')
@@ -45,7 +46,9 @@ export class UserController {
   ) {
     let result: UserRecvDto | string;
     try {
-      result = await firstValueFrom(this.client.send({ cmd: 'signup' }, data));
+      result = await firstValueFrom(
+        this.client.send({ cmd: MsgAuthEnum.SIGNUP }, data),
+      );
     } catch (error) {
       throw new HttpException('Internal server error', 500);
     }
@@ -83,7 +86,9 @@ export class UserController {
   ) {
     let result: UserRecvDto | string;
     try {
-      result = await firstValueFrom(this.client.send({ cmd: 'signin' }, data));
+      result = await firstValueFrom(
+        this.client.send({ cmd: MsgAuthEnum.SIGNIN }, data),
+      );
     } catch (error) {
       throw new HttpException('Internal server error', 500);
     }
@@ -126,7 +131,7 @@ export class UserController {
     let result: UserRecvDto | string;
     try {
       result = await firstValueFrom(
-        this.client.send({ cmd: 'me' }, { session_id_from_cookie }),
+        this.client.send({ cmd: MsgAuthEnum.ME }, { session_id_from_cookie }),
       );
     } catch (error) {
       throw new HttpException('Internal server error', 500);
@@ -174,7 +179,7 @@ export class UserController {
     try {
       result = await firstValueFrom(
         this.client.send(
-          { cmd: 'logout' },
+          { cmd: MsgAuthEnum.LOGOUT },
           { csrf_token: data.csrf_token, session_id_from_cookie },
         ),
       );
