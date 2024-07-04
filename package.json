@@ -26,12 +26,16 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^10.3.9",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.3.10",
     "@nestjs/swagger": "^7.4.0",
+    "@nestjs/websockets": "^10.3.10",
     "cookie-parser": "^1.4.6",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "socket.io-client": "^4.7.5",
     "winston": "^3.13.0",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -42,6 +46,7 @@
     "@types/jest": "^29.5.2",
     "@types/node": "^20.3.1",
     "@types/supertest": "^6.0.0",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",
