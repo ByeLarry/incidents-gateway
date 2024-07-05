@@ -181,6 +181,26 @@
           }
         ]
       }
+    },
+    "/api/mark/{id}": {
+      "get": {
+        "operationId": "MarkController_getMark",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {

@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MarksGateway } from './marks.gateway';
-import { SocketSerivice } from 'src/services/socket.service';
+import { SocketService } from 'src/services/socket.service';
+import { MarkController } from './marks.controller';
 
 @Module({
-  providers: [MarksGateway, SocketSerivice],
+  controllers: [MarkController],
+  providers: [MarksGateway, SocketService],
 })
 export class MarksModule {}

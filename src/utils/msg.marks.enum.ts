@@ -7,4 +7,6 @@ export enum MsgMarksEnum {
   MAP_INIT_RECV_CLIENT = 'map-init-recv',
   MAP_INIT_RECV = 'map-init-marks-recv',
   MAP_INIT_SEND = 'map-init-marks-send',
+  MARK_GET_SEND = 'mark-get-send',
+  MARK_GET_RECV = 'mark-get-recv',
 }

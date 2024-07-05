@@ -6,18 +6,12 @@ import { AuthServiceProvide } from './utils/auth.service.provide';
 import { UserModule } from './user/user.module';
 import { LoggingMiddleware } from './utils/logger.middleware';
 import { AppLoggerService } from './utils/logger';
-import { MarksServiceProvide } from './utils/marks.service.provide';
 import { MarksModule } from './marks/marks.module';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), UserModule, MarksModule],
   controllers: [AppController],
-  providers: [
-    AppService,
-    AuthServiceProvide,
-    AppLoggerService,
-    MarksServiceProvide,
-  ],
+  providers: [AppService, AuthServiceProvide, AppLoggerService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
