@@ -1,17 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/hello": {
-      "get": {
-        "operationId": "AppController_getHelloByName",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/auth/signup": {
       "post": {
         "operationId": "UserController_signup",
@@ -185,45 +174,235 @@
     "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
-        "parameters": [],
+        "summary": "Get one mark",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "markId",
+            "required": true,
+            "in": "query",
+            "description": "Mark ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "User ID",
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Mark ID",
+            "name": "markId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Mark",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkRecvDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Mark not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
-        }
+        },
+        "tags": [
+          "Marks"
+        ]
       }
     },
     "/api/marks": {
       "get": {
         "operationId": "MarkController_getMarks",
-        "parameters": [],
+        "summary": "Get nearest marks",
+        "parameters": [
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "description": "User latitude",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "description": "User longitude",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "description": "User latitude",
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "description": "User longitude",
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Marks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarkRecvDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
           }
-        }
+        },
+        "tags": [
+          "Marks"
+        ]
       }
     },
     "/api/marks/verify/true": {
       "post": {
         "operationId": "MarkController_verifyTrue",
+        "summary": "Verify mark true",
         "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyMarkDto"
+              }
+            }
           }
-        }
+        },
+        "responses": {
+          "200": {
+            "description": "Mark verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifiedRecvDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "CSRF token is missing"
+          },
+          "404": {
+            "description": "Mark not found"
+          },
+          "419": {
+            "description": "Session expired"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "Marks"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
       }
     },
     "/api/marks/verify/false": {
       "post": {
         "operationId": "MarkController_verifyFalse",
+        "summary": "Verify mark false",
         "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyMarkDto"
+              }
+            }
           }
-        }
+        },
+        "responses": {
+          "200": {
+            "description": "Mark verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifiedRecvDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "CSRF token is missing"
+          },
+          "404": {
+            "description": "Mark not found"
+          },
+          "419": {
+            "description": "Session expired"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "Marks"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
       }
     }
   },
@@ -353,6 +532,129 @@
         },
         "required": [
           "message"
+        ]
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Category ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Category name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "MarkRecvDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Mark ID"
+          },
+          "lat": {
+            "type": "number",
+            "description": "Mark latitude"
+          },
+          "lng": {
+            "type": "number",
+            "description": "Mark longitude"
+          },
+          "title": {
+            "type": "string",
+            "description": "Mark title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Mark description"
+          },
+          "category": {
+            "description": "Mark category",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoryDto"
+              }
+            ]
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "Mark category ID"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Mark created at"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Mark user ID"
+          },
+          "distance": {
+            "type": "number",
+            "description": "Mark distance from user"
+          },
+          "verified": {
+            "type": "number",
+            "description": "Mark verified"
+          },
+          "isMyVerify": {
+            "type": "boolean",
+            "description": "Mark is my verify"
+          }
+        },
+        "required": [
+          "id",
+          "lat",
+          "lng",
+          "title",
+          "description",
+          "category",
+          "categoryId",
+          "createdAt",
+          "userId",
+          "distance",
+          "verified",
+          "isMyVerify"
+        ]
+      },
+      "VerifyMarkDto": {
+        "type": "object",
+        "properties": {
+          "markId": {
+            "type": "number",
+            "description": "Mark ID"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "csrf_token": {
+            "type": "string",
+            "description": "CSRF Token"
+          }
+        },
+        "required": [
+          "markId",
+          "userId",
+          "csrf_token"
+        ]
+      },
+      "VerifiedRecvDto": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "number",
+            "description": "Number of verifies"
+          }
+        },
+        "required": [
+          "verified"
         ]
       }
     }
