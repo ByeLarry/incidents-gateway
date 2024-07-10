@@ -24,6 +24,7 @@ import { UserRecvDto } from './dto/user-recv.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutRecvDto } from './dto/logout-recv.dto';
 import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
+import { errorSwitch } from 'src/utils/errors';
 
 @ApiTags('Auth')
 @Controller('api/auth')
@@ -52,21 +53,15 @@ export class UserController {
     } catch (error) {
       throw new HttpException('Internal server error', 500);
     }
-    switch (result) {
-      case '409':
-        throw new HttpException('User already exists', 409);
-      case '500':
-        throw new HttpException('Internal server error', 500);
-      default:
-        const { session_id, ...rest } = result as UserRecvDto;
-        res.cookie('incidents_session_id', session_id, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          expires: new Date(Date.now() + 60 * 60 * 1000),
-        });
-        return rest;
-    }
+    errorSwitch(result as string);
+    const { session_id, ...rest } = result as UserRecvDto;
+    res.cookie('incidents_session_id', session_id, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + 60 * 60 * 1000),
+    });
+    return rest;
   }
 
   @ApiOperation({ summary: 'Sign in' })
@@ -92,23 +87,15 @@ export class UserController {
     } catch (error) {
       throw new HttpException('Internal server error', 500);
     }
-    switch (result) {
-      case '404':
-        throw new HttpException('User not found', 404);
-      case '401':
-        throw new HttpException('Wrong password', 401);
-      case '500':
-        throw new HttpException('Internal server error', 500);
-      default:
-        const { session_id, ...rest } = result as UserRecvDto;
-        res.cookie('incidents_session_id', session_id, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          expires: new Date(Date.now() + 60 * 60 * 1000),
-        });
-        return rest;
-    }
+    errorSwitch(result as string);
+    const { session_id, ...rest } = result as UserRecvDto;
+    res.cookie('incidents_session_id', session_id, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + 60 * 60 * 1000),
+    });
+    return rest;
   }
 
   @ApiOperation({ summary: 'Get user' })
@@ -136,20 +123,10 @@ export class UserController {
     } catch (error) {
       throw new HttpException('Internal server error', 500);
     }
-    switch (result) {
-      case '404':
-        throw new HttpException('User or session not found', 404);
-      case '419':
-        throw new HttpException('Session expired', 419);
-      case '401':
-        throw new HttpException('Unauthorized', 401);
-      case '500':
-        throw new HttpException('Internal server error', 500);
-      default:
-        const rest = result as UserRecvDto;
-        delete rest.session_id;
-        return rest;
-    }
+    errorSwitch(result as string);
+    const rest = result as UserRecvDto;
+    delete rest.session_id;
+    return rest;
   }
 
   @ApiOperation({ summary: 'Logout' })
@@ -186,25 +163,13 @@ export class UserController {
     } catch (error) {
       throw new HttpException('Internal server error', 500);
     }
-    switch (result) {
-      case '404':
-        throw new HttpException('User or session not found', 404);
-      case '403':
-        throw new HttpException('Forbidden', 403);
-      case '419':
-        throw new HttpException('Session expired', 419);
-      case '401':
-        throw new HttpException('Session ID is missing', 401);
-      case '500':
-        throw new HttpException('Internal server error', 500);
-      case '200':
-        res.cookie('incidents_session_id', '', {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          expires: new Date(0),
-        });
-        return { message: 'User signed out successfully' };
-    }
+    errorSwitch(result);
+    res.cookie('incidents_session_id', '', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(0),
+    });
+    return { message: 'User signed out successfully' };
   }
 }

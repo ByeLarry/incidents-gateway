@@ -12,6 +12,7 @@ export function transformToFeatureDto(data: MarkRecvDto[]): FeatureDto[] {
     properties: {
       title: mark.title,
       description: mark.description,
+      category: mark.category,
       categoryId: mark.categoryId,
       createdAt: mark.createdAt,
       userId: mark.userId,

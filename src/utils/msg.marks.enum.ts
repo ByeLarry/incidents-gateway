@@ -9,4 +9,10 @@ export enum MsgMarksEnum {
   MAP_INIT_SEND = 'map-init-marks-send',
   MARK_GET_SEND = 'mark-get-send',
   MARK_GET_RECV = 'mark-get-recv',
+  MARK_VERIFY_TRUE_SEND = 'mark-verify-true-send',
+  MARK_VERIFY_TRUE_RECV = 'mark-verify-true-recv',
+  MARK_VERIFY_FALSE_SEND = 'mark-verify-false-send',
+  MARK_VERIFY_FALSE_RECV = 'mark-verify-false-recv',
+  GET_VERIFY_SEND = 'get-verify-send',
+  GET_VERIFY_RECV = 'get-verify-recv',
 }

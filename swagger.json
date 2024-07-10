@@ -182,21 +182,45 @@
         ]
       }
     },
-    "/api/mark/{id}": {
+    "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/marks": {
+      "get": {
+        "operationId": "MarkController_getMarks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/marks/verify/true": {
+      "post": {
+        "operationId": "MarkController_verifyTrue",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/marks/verify/false": {
+      "post": {
+        "operationId": "MarkController_verifyFalse",
+        "parameters": [],
+        "responses": {
+          "201": {
             "description": ""
           }
         }
