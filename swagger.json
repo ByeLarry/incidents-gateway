@@ -286,7 +286,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MarkRecvDto"
+                    "$ref": "#/components/schemas/FeatureDto"
                   }
                 }
               }
@@ -374,7 +374,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VerifiedRecvDto"
+                  "$ref": "#/components/schemas/FeatureDto"
                 }
               }
             }
@@ -387,6 +387,89 @@
           },
           "404": {
             "description": "Mark not found"
+          },
+          "419": {
+            "description": "Session expired"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "Marks"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/api/marks/categories": {
+      "get": {
+        "operationId": "MarkController_getCategories",
+        "summary": "Get all categories",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Marks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categories not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "Marks"
+        ]
+      }
+    },
+    "/api/marks/create": {
+      "post": {
+        "operationId": "MarkController_createMark",
+        "summary": "Verify mark false",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyMarkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mark verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "CSRF token is missing"
+          },
+          "404": {
+            "description": "User not found"
           },
           "419": {
             "description": "Session expired"
@@ -621,6 +704,108 @@
           "distance",
           "verified",
           "isMyVerify"
+        ]
+      },
+      "GeometryDto": {
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "description": "Mark coordinates",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "Mark type"
+          }
+        },
+        "required": [
+          "coordinates",
+          "type"
+        ]
+      },
+      "PropertiesDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Mark title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Mark description"
+          },
+          "category": {
+            "description": "Mark category",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoryDto"
+              }
+            ]
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "Mark category ID"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Mark created at"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Mark user ID"
+          },
+          "distance": {
+            "type": "number",
+            "description": "Mark distance from user"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "category",
+          "categoryId",
+          "createdAt",
+          "userId",
+          "distance"
+        ]
+      },
+      "FeatureDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Mark ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "Mark type"
+          },
+          "geometry": {
+            "description": "Mark coordinates",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GeometryDto"
+              }
+            ]
+          },
+          "properties": {
+            "description": "Mark properties",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PropertiesDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "geometry",
+          "properties"
         ]
       },
       "VerifyMarkDto": {

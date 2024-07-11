@@ -28,11 +28,13 @@ export class MarksModule implements NestModule {
       .forRoutes(
         { path: 'api/marks/verify/true', method: RequestMethod.POST },
         { path: 'api/marks/verify/false', method: RequestMethod.POST },
+        { path: 'api/marks/create', method: RequestMethod.POST },
       )
       .apply(AuthMiddleware)
       .forRoutes(
         { path: 'api/marks/verify/true', method: RequestMethod.POST },
         { path: 'api/marks/verify/false', method: RequestMethod.POST },
+        { path: 'api/marks/create', method: RequestMethod.POST },
       );
   }
 }

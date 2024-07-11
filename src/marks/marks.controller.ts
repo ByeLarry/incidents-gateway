@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  Inject,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { MsgMarksEnum } from 'src/utils/msg.marks.enum';
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
@@ -25,6 +17,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { VerifiedRecvDto } from './dto/verified-recv.dto';
+import { CategoryDto } from './dto/category.dto';
+import { CreateMarkDto } from './dto/create-mark.dto';
+import { FeatureDto } from './dto/feature.dto';
 
 @ApiTags('Marks')
 @Controller('api/marks')
@@ -42,15 +37,11 @@ export class MarkController {
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get('one')
   async getMark(@Query() data: MarkDto) {
-    try {
-      const res: MarkRecvDto | string = await firstValueFrom(
-        this.client.send({ cmd: MsgMarksEnum.MARK_GET_SEND }, data),
-      );
-      errorSwitch(res as string);
-      return res;
-    } catch (e) {
-      throw new HttpException('Internal server error', 500);
-    }
+    const res: MarkRecvDto | string = await firstValueFrom(
+      this.client.send({ cmd: MsgMarksEnum.MARK_GET_SEND }, data),
+    );
+    errorSwitch(res as string);
+    return res;
   }
 
   @ApiOperation({ summary: 'Get nearest marks' })
@@ -58,20 +49,16 @@ export class MarkController {
   @ApiResponse({
     status: 200,
     description: 'Marks',
-    type: [MarkRecvDto],
+    type: [FeatureDto],
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
   async getMarks(@Query() data: CoordsDto) {
-    try {
-      const res: MarkRecvDto[] | string = await firstValueFrom(
-        this.client.send({ cmd: MsgMarksEnum.MAP_INIT_SEND }, data),
-      );
-      errorSwitch(res as string);
-      return transformToFeatureDto(res as MarkRecvDto[]);
-    } catch (e) {
-      throw new HttpException('Internal server error', 500);
-    }
+    const res: MarkRecvDto[] | string = await firstValueFrom(
+      this.client.send({ cmd: MsgMarksEnum.MAP_INIT_SEND }, data),
+    );
+    errorSwitch(res as string);
+    return transformToFeatureDto(res as MarkRecvDto[]);
   }
 
   @ApiOperation({ summary: 'Verify mark true' })
@@ -89,15 +76,11 @@ export class MarkController {
   @ApiCookieAuth()
   @Post('verify/true')
   async verifyTrue(@Body() data: VerifyMarkDto) {
-    try {
-      const res: VerifiedRecvDto | string = await firstValueFrom(
-        this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_TRUE_SEND }, data),
-      );
-      errorSwitch(res as string);
-      return res;
-    } catch (e) {
-      throw new HttpException('Internal server error', 500);
-    }
+    const res: VerifiedRecvDto | string = await firstValueFrom(
+      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_TRUE_SEND }, data),
+    );
+    errorSwitch(res as string);
+    return res;
   }
 
   @ApiOperation({ summary: 'Verify mark false' })
@@ -105,7 +88,7 @@ export class MarkController {
   @ApiResponse({
     status: 200,
     description: 'Mark verified',
-    type: VerifiedRecvDto,
+    type: FeatureDto,
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiResponse({ status: 404, description: 'Mark not found' })
@@ -115,14 +98,49 @@ export class MarkController {
   @ApiCookieAuth()
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
-    try {
-      const res: VerifiedRecvDto | string = await firstValueFrom(
-        this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_FALSE_SEND }, data),
-      );
-      errorSwitch(res as string);
-      return res;
-    } catch (e) {
-      throw new HttpException('Internal server error', 500);
-    }
+    const res: VerifiedRecvDto | string = await firstValueFrom(
+      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_FALSE_SEND }, data),
+    );
+    errorSwitch(res as string);
+    return res;
+  }
+
+  @ApiOperation({ summary: 'Get all categories' })
+  @ApiResponse({
+    status: 200,
+    description: 'Marks',
+    type: [CategoryDto],
+  })
+  @ApiResponse({ status: 404, description: 'Categories not found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @Get('categories')
+  async getCategories() {
+    const res: CategoryDto[] | string = await firstValueFrom(
+      this.client.send({ cmd: MsgMarksEnum.CATEGORIES_SEND }, {}),
+    );
+    errorSwitch(res as string);
+    return res;
+  }
+
+  @ApiOperation({ summary: 'Verify mark false' })
+  @ApiBody({ type: VerifyMarkDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Mark verified',
+    type: FeatureDto,
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'CSRF token is missing' })
+  @ApiResponse({ status: 419, description: 'Session expired' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiCookieAuth()
+  @Post('create')
+  async createMark(@Body() data: CreateMarkDto) {
+    const res: MarkRecvDto | string = await firstValueFrom(
+      this.client.send({ cmd: MsgMarksEnum.CREATE_MARK_SEND }, data),
+    );
+    errorSwitch(res as string);
+    return transformToFeatureDto(res as MarkRecvDto);
   }
 }

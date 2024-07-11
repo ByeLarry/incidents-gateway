@@ -1,9 +1,12 @@
 import { HttpException } from '@nestjs/common';
 
 export function errorSwitch(message: string) {
+  console.log(message);
   switch (message) {
     case '404':
       throw new HttpException('Not found', 404);
+    case '409':
+      throw new HttpException('Conflict', 409);
     case '403':
       throw new HttpException('Forbidden', 403);
     case '419':

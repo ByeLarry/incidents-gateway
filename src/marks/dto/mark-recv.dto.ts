@@ -12,29 +12,29 @@ export class MarkRecvDto {
   lng: number;
 
   @ApiProperty({ description: 'Mark title' })
-  title: string;
+  title?: string;
 
   @ApiProperty({ description: 'Mark description' })
-  description: string;
+  description?: string;
 
   @ApiProperty({ type: CategoryDto, description: 'Mark category' })
-  category: CategoryDto;
+  category?: CategoryDto;
 
   @ApiProperty({ description: 'Mark category ID' })
-  categoryId: number;
+  categoryId?: number;
 
   @ApiProperty({ description: 'Mark created at' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @ApiProperty({ description: 'Mark user ID' })
-  userId: string;
+  userId?: string;
 
   @ApiProperty({ description: 'Mark distance from user' })
-  distance: number;
+  distance?: number;
 
   @ApiProperty({ description: 'Mark verified' })
-  verified: number;
+  verified?: number;
 
   @ApiProperty({ description: 'Mark is my verify' })
-  isMyVerify: boolean;
+  isMyVerify?: boolean;
 }
