@@ -4,7 +4,6 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { SocketService } from 'src/services/socket.service';
 import { MarkController } from './marks.controller';
 import { MarksServiceProvide } from 'src/utils/marks.service.provide';
 import { MarksGateway } from './marks.gateway';
@@ -14,12 +13,7 @@ import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 
 @Module({
   controllers: [MarkController],
-  providers: [
-    SocketService,
-    MarksServiceProvide,
-    MarksGateway,
-    AuthServiceProvide,
-  ],
+  providers: [MarksServiceProvide, MarksGateway, AuthServiceProvide],
 })
 export class MarksModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

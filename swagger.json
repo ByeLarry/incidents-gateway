@@ -195,6 +195,24 @@
             }
           },
           {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "description": "Mark latitude",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "description": "Mark longitude",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
             "description": "User ID",
             "name": "userId",
             "in": "query",
@@ -210,6 +228,24 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Mark latitude",
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "description": "Mark longitude",
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
             }
           }
         ],

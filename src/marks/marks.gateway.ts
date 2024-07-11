@@ -1,27 +1,46 @@
+import { Injectable } from '@nestjs/common';
 import {
+  OnGatewayConnection,
   WebSocketGateway,
-  SubscribeMessage,
-  ConnectedSocket,
-  MessageBody,
+  WebSocketServer,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Socket } from 'net';
-import { SocketService } from 'src/services/socket.service';
-import { MsgMarksEnum } from 'src/utils/msg.marks.enum';
+import { Server, Socket } from 'socket.io';
 
+@Injectable()
 @WebSocketGateway({ cors: { origin: 'http://localhost' } })
-export class MarksGateway {
-  constructor(private readonly socketService: SocketService) {}
+export class MarksGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  @WebSocketServer() server: Server;
 
-  @SubscribeMessage(MsgMarksEnum.TEST_SEND_CLIENT)
-  test(@ConnectedSocket() client: Socket, @MessageBody() data: string) {
-    try {
-      this.socketService.sendMessage(MsgMarksEnum.TEST_SEND, data);
-      this.socketService.on(MsgMarksEnum.TEST_RECV, (data) => {
-        console.log(data);
-        return client.emit(MsgMarksEnum.TEST_RECV_CLIENT, data);
-      });
-    } catch (e) {
-      console.log(e);
+  private clients: Map<string, Socket> = new Map();
+
+  handleConnection(client: Socket) {
+    this.clients.set(client.id, client);
+  }
+
+  handleDisconnect(client: Socket) {
+    this.clients.delete(client.id);
+  }
+
+  sendMessageToAll(message: any) {
+    this.server.emit('message', message);
+  }
+
+  sendMessageToUser(clientId: string, message: any) {
+    const client = this.clients.get(clientId);
+    if (client) {
+      client.emit('message', message);
     }
+  }
+
+  emitMessageToUser(clientId: string, tag: string, message: any) {
+    const client = this.clients.get(clientId);
+    if (client) {
+      client.emit(tag, message);
+    }
+  }
+
+  emitMessageToAll(tag: string, message: any) {
+    this.server.emit(tag, message);
   }
 }

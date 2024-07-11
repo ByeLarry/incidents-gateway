@@ -20,12 +20,15 @@ import { VerifiedRecvDto } from './dto/verified-recv.dto';
 import { CategoryDto } from './dto/category.dto';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { FeatureDto } from './dto/feature.dto';
+import { MarksGateway } from './marks.gateway';
 
 @ApiTags('Marks')
 @Controller('api/marks')
 export class MarkController {
-  constructor(@Inject('MARKS_SERVICE') private client: ClientProxy) {}
-
+  constructor(
+    @Inject('MARKS_SERVICE') private client: ClientProxy,
+    private readonly marksGateway: MarksGateway,
+  ) {}
   @ApiOperation({ summary: 'Get one mark' })
   @ApiQuery({ type: MarkDto })
   @ApiResponse({
@@ -141,6 +144,10 @@ export class MarkController {
       this.client.send({ cmd: MsgMarksEnum.CREATE_MARK_SEND }, data),
     );
     errorSwitch(res as string);
+    this.marksGateway.emitMessageToAll(
+      'new-mark',
+      transformToFeatureDto(res as MarkRecvDto),
+    );
     return transformToFeatureDto(res as MarkRecvDto);
   }
 }

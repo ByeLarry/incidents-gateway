@@ -6,4 +6,10 @@ export class MarkDto {
 
   @ApiProperty({ description: 'Mark ID' })
   markId: string;
+
+  @ApiProperty({ description: 'Mark latitude' })
+  lat: number;
+
+  @ApiProperty({ description: 'Mark longitude' })
+  lng: number;
 }
