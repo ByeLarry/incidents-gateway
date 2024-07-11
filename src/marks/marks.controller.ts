@@ -122,7 +122,7 @@ export class MarkController {
     return res;
   }
 
-  @ApiOperation({ summary: 'Verify mark false' })
+  @ApiOperation({ summary: 'Create mark' })
   @ApiBody({ type: VerifyMarkDto })
   @ApiResponse({
     status: 201,

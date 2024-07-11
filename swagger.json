@@ -439,7 +439,7 @@
     "/api/marks/create": {
       "post": {
         "operationId": "MarkController_createMark",
-        "summary": "Verify mark false",
+        "summary": "Create mark",
         "parameters": [],
         "requestBody": {
           "required": true,
