@@ -1,7 +1,6 @@
 import { HttpException } from '@nestjs/common';
 
 export function errorSwitch(message: string) {
-  console.log(message);
   switch (message) {
     case '404':
       throw new HttpException('Not found', 404);
