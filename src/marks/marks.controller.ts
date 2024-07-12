@@ -12,7 +12,6 @@ import {
   ApiBody,
   ApiCookieAuth,
   ApiOperation,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -30,7 +29,6 @@ export class MarkController {
     private readonly marksGateway: MarksGateway,
   ) {}
   @ApiOperation({ summary: 'Get one mark' })
-  @ApiQuery({ type: MarkDto })
   @ApiResponse({
     status: 200,
     description: 'Mark',
@@ -48,7 +46,6 @@ export class MarkController {
   }
 
   @ApiOperation({ summary: 'Get nearest marks' })
-  @ApiQuery({ type: CoordsDto })
   @ApiResponse({
     status: 200,
     description: 'Marks',
@@ -129,7 +126,7 @@ export class MarkController {
   @ApiBody({ type: VerifyMarkDto })
   @ApiResponse({
     status: 201,
-    description: 'Mark verified',
+    description: 'Mark created',
     type: FeatureDto,
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })

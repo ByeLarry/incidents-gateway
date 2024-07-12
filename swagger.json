@@ -211,42 +211,6 @@
             "schema": {
               "type": "number"
             }
-          },
-          {
-            "description": "User ID",
-            "name": "userId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Mark ID",
-            "name": "markId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Mark latitude",
-            "name": "lat",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "description": "Mark longitude",
-            "name": "lng",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "number"
-            }
           }
         ],
         "responses": {
@@ -291,24 +255,6 @@
             "required": true,
             "in": "query",
             "description": "User longitude",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "description": "User latitude",
-            "name": "lat",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "description": "User longitude",
-            "name": "lng",
-            "in": "query",
-            "required": true,
             "schema": {
               "type": "number"
             }
@@ -489,7 +435,7 @@
         },
         "responses": {
           "201": {
-            "description": "Mark verified",
+            "description": "Mark created",
             "content": {
               "application/json": {
                 "schema": {
@@ -653,23 +599,6 @@
           "message"
         ]
       },
-      "CategoryDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "description": "Category ID"
-          },
-          "name": {
-            "type": "string",
-            "description": "Category name"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
       "MarkRecvDto": {
         "type": "object",
         "properties": {
@@ -692,14 +621,6 @@
           "description": {
             "type": "string",
             "description": "Mark description"
-          },
-          "category": {
-            "description": "Mark category",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CategoryDto"
-              }
-            ]
           },
           "categoryId": {
             "type": "number",
@@ -733,7 +654,6 @@
           "lng",
           "title",
           "description",
-          "category",
           "categoryId",
           "createdAt",
           "userId",
@@ -773,14 +693,6 @@
             "type": "string",
             "description": "Mark description"
           },
-          "category": {
-            "description": "Mark category",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CategoryDto"
-              }
-            ]
-          },
           "categoryId": {
             "type": "number",
             "description": "Mark category ID"
@@ -802,7 +714,6 @@
         "required": [
           "title",
           "description",
-          "category",
           "categoryId",
           "createdAt",
           "userId",
@@ -876,6 +787,23 @@
         },
         "required": [
           "verified"
+        ]
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Category ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Category name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
         ]
       }
     }
