@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(cookieParser());
   const config = new DocumentBuilder()
     .setTitle('Incidents')
-    .setDescription('The incidents API description')
+    .setDescription('The incidents API Gateway documentation')
     .setVersion('1.0')
     .addCookieAuth('incidents_session_id')
     .build();
