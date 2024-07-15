@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { MsgMarksEnum } from 'src/utils/msg.marks.enum';
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
@@ -20,6 +28,7 @@ import { CategoryDto } from './dto/category.dto';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
+import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 
 @ApiTags('Marks')
 @Controller('api/marks')
@@ -114,6 +123,8 @@ export class MarkController {
   @ApiResponse({ status: 404, description: 'Categories not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get('categories')
+  @CacheKey('categories')
+  @UseInterceptors(CacheInterceptor)
   async getCategories() {
     const res: CategoryDto[] | string = await firstValueFrom(
       this.client.send({ cmd: MsgMarksEnum.CATEGORIES_SEND }, {}),
