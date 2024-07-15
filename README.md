@@ -26,8 +26,9 @@ _Диаграммы можно сохранять и редактировать 
   ![Логика авторизации](https://github.com/ByeLarry/incidents-getaway/assets/120035099/a7467b8d-0d3c-4563-a24b-e962d6c93431)
 
 - ### Логика входа в аккаунт
-  ![Логика входа в аккаунт](https://github.com/ByeLarry/incidents-getaway/assets/120035099/15b28dbf-acbd-415d-a43a-a91d675ba757)
+  ![Отношение сущностей (точки)](https://github.com/user-attachments/assets/f81acef5-7118-4570-a3b9-71e3936d6fd9)
 
 ## Документация API
-![image](https://github.com/user-attachments/assets/503fd4c1-31bb-4e09-82b2-678a1a21c205)
+![image](https://github.com/user-attachments/assets/9c59f42f-6cbd-43de-8435-78274efe1bd2)
+
 
