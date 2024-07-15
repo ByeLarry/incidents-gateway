@@ -646,6 +646,10 @@
           "isMyVerify": {
             "type": "boolean",
             "description": "Mark is my verify"
+          },
+          "color": {
+            "type": "string",
+            "description": "Mark color"
           }
         },
         "required": [
@@ -659,7 +663,8 @@
           "userId",
           "distance",
           "verified",
-          "isMyVerify"
+          "isMyVerify",
+          "color"
         ]
       },
       "GeometryDto": {
@@ -709,6 +714,10 @@
           "distance": {
             "type": "number",
             "description": "Mark distance from user"
+          },
+          "color": {
+            "type": "string",
+            "description": "Mark color"
           }
         },
         "required": [
@@ -717,7 +726,8 @@
           "categoryId",
           "createdAt",
           "userId",
-          "distance"
+          "distance",
+          "color"
         ]
       },
       "FeatureDto": {
@@ -799,11 +809,16 @@
           "name": {
             "type": "string",
             "description": "Category name"
+          },
+          "color": {
+            "type": "string",
+            "description": "Category color"
           }
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "color"
         ]
       }
     }

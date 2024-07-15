@@ -33,4 +33,7 @@ export class MarkRecvDto {
 
   @ApiProperty({ description: 'Mark is my verify' })
   isMyVerify?: boolean;
+
+  @ApiProperty({ description: 'Mark color' })
+  color?: string;
 }

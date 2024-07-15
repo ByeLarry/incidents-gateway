@@ -18,4 +18,7 @@ export class PropertiesDto {
 
   @ApiProperty({ description: 'Mark distance from user' })
   distance: number;
+
+  @ApiProperty({ description: 'Mark color' })
+  color?: string;
 }

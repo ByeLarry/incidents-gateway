@@ -20,6 +20,7 @@ function transformMarkToFeature(mark: MarkRecvDto): FeatureDto {
       type: 'Point',
     },
     properties: {
+      color: mark.color,
       title: mark.title,
       description: mark.description,
       categoryId: mark.categoryId,

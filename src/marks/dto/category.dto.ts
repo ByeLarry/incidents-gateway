@@ -6,4 +6,7 @@ export class CategoryDto {
 
   @ApiProperty({ description: 'Category name' })
   name: string;
+
+  @ApiProperty({ description: 'Category color' })
+  color: string;
 }
