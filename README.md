@@ -14,6 +14,9 @@ npm install
 
 # Запуск в dev режиме
 npm run start:dev
+
+# Запуск Redis
+docker-compose up -d
 ```
 
 ## Проектирование
