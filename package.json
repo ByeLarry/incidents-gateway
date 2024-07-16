@@ -1,8 +1,8 @@
 {
-  "name": "api-getaway",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "name": "api-gateway",
+  "version": "0.1.0",
+  "description": "API-gateway for the Incidents project",
+  "author": "Solovey Roman",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
