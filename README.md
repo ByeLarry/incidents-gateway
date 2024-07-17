@@ -41,4 +41,10 @@ _Диаграммы можно сохранять и редактировать 
 ## Документация API
 ![image](https://github.com/user-attachments/assets/9c59f42f-6cbd-43de-8435-78274efe1bd2)
 
+## Ссылки
+
+- #### Клиентская часть:  *https://github.com/ByeLarry/incidents-frontend*
+- #### Сервис авторизации:  *https://github.com/ByeLarry/incidents-auth-service*
+- #### Сервис марок (инцидентов): *https://github.com/ByeLarry/indcidents-marks-service*
+
 
