@@ -1,7 +1,26 @@
 version: '3.8'
 
 services:
-  redis: 
+  getaway:
+    container_name: incidents-gateway
+    build: .
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./logs:/usr/src/app/logs
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - HOST=localhost
+      - PORT=4000
+      - AUTH_HOST=host.docker.internal
+      - AUTH_PORT=5555
+      - MARKS_HOST=host.docker.internal
+      - MARKS_PORT=4444
+    depends_on:
+      - redis
+  redis:
     container_name: incidents-redis
     image: "redis:latest"
     ports:
@@ -9,5 +28,4 @@ services:
     volumes:
       - ./redis-data:/data
 
-volumes:
-  redis-data:
+
