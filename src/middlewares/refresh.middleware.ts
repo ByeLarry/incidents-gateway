@@ -3,49 +3,113 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { RefreshRecvDto } from 'src/user/dto/refresh-recv.dto';
+import { AUTH_SERVICE_TAG } from 'src/utils/auth.service.provide';
+import { DateEnum } from 'src/utils/date.enum';
+import { HttpStatusExtends } from 'src/utils/extendsHttpStatus.enum';
 import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
 
 @Injectable()
 export class RefreshMiddleware {
-  constructor(@Inject('AUTH_SERVICE') private client: ClientProxy) {}
+  constructor(@Inject(AUTH_SERVICE_TAG) private client: ClientProxy) {}
   async use(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     next: () => void,
-  ) {
-    const session_id_from_cookie = req.cookies['incidents_session_id'];
-    if (!session_id_from_cookie) {
-      return res.status(401).json({ message: 'Session ID is missing' });
-    }
+  ): Promise<void> {
+    const session_id_from_cookie = this.getSessionId(req, res);
 
-    try {
-      const result: RefreshRecvDto | string = await firstValueFrom(
-        this.client.send(
-          { cmd: MsgAuthEnum.REFRESH },
-          { session_id_from_cookie },
-        ),
-      );
-      switch (result) {
-        case '404':
-          return res.status(404).json({ message: 'User not found' });
-        case '401':
-          return res.status(401).json({ message: 'Unauthorized' });
-        case '419':
-          return res.status(419).json({ message: 'Session expired' });
-        case '500':
-          return res.status(500).json({ message: 'Internal server error' });
-        default:
-          const { session_id } = result as RefreshRecvDto;
-          res.cookie('incidents_session_id', session_id, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-          });
-          next();
-      }
-    } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
+    if (typeof session_id_from_cookie === 'string')
+      await this.refresh(session_id_from_cookie, res, next);
+  }
+
+  private getSessionId(req: Request, res: Response): string | Response {
+    const session_id_from_cookie = this.getSessionIdFromCookie(req);
+    if (!session_id_from_cookie) {
+      return this.sessionIdErrorResponse(res);
     }
+    return session_id_from_cookie;
+  }
+
+  private getSessionIdFromCookie(req: Request): string | undefined {
+    return req.cookies['incidents_session_id'];
+  }
+
+  private sessionIdErrorResponse(res: Response): Response {
+    return res
+      .status(HttpStatusExtends.UNAUTHORIZED)
+      .json({ message: 'Session ID is missing' });
+  }
+
+  private async refresh(
+    session_id_from_cookie: string,
+    res: Response,
+    next: () => void,
+  ): Promise<void | Response> {
+    try {
+      const result: RefreshRecvDto | string = await this.sendRefreshData(
+        session_id_from_cookie,
+      );
+
+      if (typeof result === 'string') this.mappingError(result, res);
+      else if (result instanceof RefreshRecvDto)
+        this.setCookie(res, this.getSessionIdFromRefreshRecv(result));
+      next();
+    } catch (error) {
+      return this.internalServerError(res);
+    }
+  }
+
+  private async sendRefreshData(
+    session_id_from_cookie: string,
+  ): Promise<RefreshRecvDto | string> {
+    return await firstValueFrom(
+      this.client.send<undefined | string>(
+        { cmd: MsgAuthEnum.REFRESH },
+        { session_id_from_cookie },
+      ),
+    );
+  }
+
+  private mappingError(error: string, res: Response): Response | undefined {
+    switch (error) {
+      case HttpStatusExtends.NOT_FOUND.toString():
+        return res
+          .status(HttpStatusExtends.NOT_FOUND)
+          .json({ message: 'User not found' });
+      case HttpStatusExtends.UNAUTHORIZED.toString():
+        return res
+          .status(HttpStatusExtends.UNAUTHORIZED)
+          .json({ message: 'Unauthorized' });
+      case HttpStatusExtends.SESSION_EXPIRED.toString():
+        return res
+          .status(HttpStatusExtends.SESSION_EXPIRED)
+          .json({ message: 'Session expired' });
+      case HttpStatusExtends.INTERNAL_SERVER_ERROR.toString():
+        return res
+          .status(HttpStatusExtends.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Internal server error' });
+      default:
+        return;
+    }
+  }
+
+  private setCookie(res: Response, session_id: string): void {
+    res.cookie('incidents_session_id', session_id, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + DateEnum.THREE_DAYS),
+    });
+  }
+
+  private getSessionIdFromRefreshRecv(result: RefreshRecvDto): string {
+    const { session_id } = result as RefreshRecvDto;
+    return session_id;
+  }
+
+  private internalServerError(res: Response): Response {
+    return res
+      .status(HttpStatusExtends.INTERNAL_SERVER_ERROR)
+      .json({ message: 'Internal server error' });
   }
 }

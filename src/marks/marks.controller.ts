@@ -11,7 +11,6 @@ import { MsgMarksEnum } from 'src/utils/msg.marks.enum';
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
 import { firstValueFrom } from 'rxjs';
-import { transformToFeatureDto } from 'src/utils/transform-to-feature';
 import { VerifyMarkDto } from './dto/verify-mark.dto';
 import { errorSwitch } from 'src/utils/errors';
 import { MarkDto } from './dto/mark.dto';
@@ -29,26 +28,35 @@ import { CreateMarkDto } from './dto/create-mark.dto';
 import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
+import { HttpStatusExtends } from 'src/utils/extendsHttpStatus.enum';
+import { MARKS_SERVICE_TAG } from 'src/utils/marks.service.provide';
+import { FeatureTransformer } from 'src/utils/transform-to-feature';
 
 @ApiTags('Marks')
 @Controller('api/marks')
 export class MarkController {
   constructor(
-    @Inject('MARKS_SERVICE') private client: ClientProxy,
+    @Inject(MARKS_SERVICE_TAG) private client: ClientProxy,
     private readonly marksGateway: MarksGateway,
   ) {}
   @ApiOperation({ summary: 'Get one mark' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'Mark',
     type: MarkRecvDto,
   })
-  @ApiResponse({ status: 404, description: 'Mark not found' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'Mark not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   @Get('one')
   async getMark(@Query() data: MarkDto) {
     const res: MarkRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MARK_GET_SEND }, data),
+      this.client.send({ cmd: MsgMarksEnum.MARK_GET }, data),
     );
     errorSwitch(res as string);
     return res;
@@ -56,37 +64,55 @@ export class MarkController {
 
   @ApiOperation({ summary: 'Get nearest marks' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'Marks',
     type: [FeatureDto],
   })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   @Get()
   async getMarks(@Query() data: CoordsDto) {
     const res: MarkRecvDto[] | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MAP_INIT_SEND }, data),
+      this.client.send({ cmd: MsgMarksEnum.MAP_INIT }, data),
     );
     errorSwitch(res as string);
-    return transformToFeatureDto(res as MarkRecvDto[]);
+    return FeatureTransformer.transformToFeatureDto(res as MarkRecvDto[]);
   }
 
   @ApiOperation({ summary: 'Verify mark true' })
   @ApiBody({ type: VerifyMarkDto })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'Mark verified',
     type: VerifiedRecvDto,
   })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
-  @ApiResponse({ status: 404, description: 'Mark not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'CSRF token is missing' })
-  @ApiResponse({ status: 419, description: 'Session expired' })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'Mark not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.FORBIDDEN,
+    description: 'CSRF token is missing',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.SESSION_EXPIRED,
+    description: 'Session expired',
+  })
   @ApiCookieAuth()
   @Post('verify/true')
   async verifyTrue(@Body() data: VerifyMarkDto) {
     const res: VerifiedRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_TRUE_SEND }, data),
+      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_TRUE }, data),
     );
     errorSwitch(res as string);
     return res;
@@ -95,20 +121,35 @@ export class MarkController {
   @ApiOperation({ summary: 'Verify mark false' })
   @ApiBody({ type: VerifyMarkDto })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'Mark verified',
     type: FeatureDto,
   })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
-  @ApiResponse({ status: 404, description: 'Mark not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'CSRF token is missing' })
-  @ApiResponse({ status: 419, description: 'Session expired' })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'Mark not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.FORBIDDEN,
+    description: 'CSRF token is missing',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.SESSION_EXPIRED,
+    description: 'Session expired',
+  })
   @ApiCookieAuth()
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
     const res: VerifiedRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_FALSE_SEND }, data),
+      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_FALSE }, data),
     );
     errorSwitch(res as string);
     return res;
@@ -116,18 +157,24 @@ export class MarkController {
 
   @ApiOperation({ summary: 'Get all categories' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'Marks',
     type: [CategoryDto],
   })
-  @ApiResponse({ status: 404, description: 'Categories not found' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'Categories not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   @Get('categories')
   @CacheKey('categories')
   @UseInterceptors(CacheInterceptor)
   async getCategories() {
     const res: CategoryDto[] | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.CATEGORIES_SEND }, {}),
+      this.client.send({ cmd: MsgMarksEnum.CATEGORIES }, {}),
     );
     errorSwitch(res as string);
     return res;
@@ -136,26 +183,41 @@ export class MarkController {
   @ApiOperation({ summary: 'Create mark' })
   @ApiBody({ type: VerifyMarkDto })
   @ApiResponse({
-    status: 201,
+    status: HttpStatusExtends.CREATED,
     description: 'Mark created',
     type: FeatureDto,
   })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 403, description: 'CSRF token is missing' })
-  @ApiResponse({ status: 419, description: 'Session expired' })
-  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.FORBIDDEN,
+    description: 'CSRF token is missing',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.SESSION_EXPIRED,
+    description: 'Session expired',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'User not found',
+  })
   @ApiCookieAuth()
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
     const res: MarkRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.CREATE_MARK_SEND }, data),
+      this.client.send({ cmd: MsgMarksEnum.CREATE_MARK }, data),
     );
     errorSwitch(res as string);
     this.marksGateway.emitMessageToAll(
       'new-mark',
-      transformToFeatureDto(res as MarkRecvDto),
+      FeatureTransformer.transformToFeatureDto(res as MarkRecvDto),
     );
-    return transformToFeatureDto(res as MarkRecvDto);
+    return FeatureTransformer.transformToFeatureDto(res as MarkRecvDto);
   }
 }

@@ -25,21 +25,30 @@ import { LogoutDto } from './dto/logout.dto';
 import { LogoutRecvDto } from './dto/logout-recv.dto';
 import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
 import { errorSwitch } from 'src/utils/errors';
+import { HttpStatusExtends } from 'src/utils/extendsHttpStatus.enum';
+import { DateEnum } from 'src/utils/date.enum';
+import { AUTH_SERVICE_TAG } from 'src/utils/auth.service.provide';
 
 @ApiTags('Auth')
 @Controller('api/auth')
 export class UserController {
-  constructor(@Inject('AUTH_SERVICE') private client: ClientProxy) {}
+  constructor(@Inject(AUTH_SERVICE_TAG) private client: ClientProxy) {}
 
   @ApiOperation({ summary: 'Sign up' })
   @ApiBody({ type: SignUpDto })
   @ApiResponse({
-    status: 201,
+    status: HttpStatusExtends.CREATED,
     description: 'User created successfully',
     type: UserRecvDto,
   })
-  @ApiResponse({ status: 409, description: 'User already exists' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({
+    status: HttpStatusExtends.CONFLICT,
+    description: 'User already exists',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   @Post('signup')
   async signup(
     @Body() data: SignUpDto,
@@ -51,7 +60,10 @@ export class UserController {
         this.client.send({ cmd: MsgAuthEnum.SIGNUP }, data),
       );
     } catch (error) {
-      throw new HttpException('Internal server error', 500);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+      );
     }
     errorSwitch(result as string);
     const { session_id, ...rest } = result as UserRecvDto;
@@ -59,7 +71,7 @@ export class UserController {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + DateEnum.THREE_DAYS),
     });
     return rest;
   }
@@ -67,13 +79,22 @@ export class UserController {
   @ApiOperation({ summary: 'Sign in' })
   @ApiBody({ type: SignInDto })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'User signed in successfully',
     type: UserRecvDto,
   })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 401, description: 'Wrong password' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.UNAUTHORIZED,
+    description: 'Wrong password',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   @Post('signin')
   async signin(
     @Body() data: SignInDto,
@@ -85,7 +106,10 @@ export class UserController {
         this.client.send({ cmd: MsgAuthEnum.SIGNIN }, data),
       );
     } catch (error) {
-      throw new HttpException('Internal server error', 500);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+      );
     }
     errorSwitch(result as string);
     const { session_id, ...rest } = result as UserRecvDto;
@@ -93,27 +117,39 @@ export class UserController {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + DateEnum.THREE_DAYS),
     });
     return rest;
   }
 
   @ApiOperation({ summary: 'Get user' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'User retrieved successfully',
     type: UserRecvDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 419, description: 'Session expired' })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({
+    status: HttpStatusExtends.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.SESSION_EXPIRED,
+    description: 'Session expired',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   @ApiCookieAuth()
   @Get('me')
   async me(@Req() req: Request) {
     const session_id_from_cookie = req.cookies['incidents_session_id'];
     if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', 401);
+      throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
     }
     let result: UserRecvDto | string;
     try {
@@ -121,7 +157,10 @@ export class UserController {
         this.client.send({ cmd: MsgAuthEnum.ME }, { session_id_from_cookie }),
       );
     } catch (error) {
-      throw new HttpException('Internal server error', 500);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+      );
     }
     errorSwitch(result as string);
     const rest = result as UserRecvDto;
@@ -131,15 +170,30 @@ export class UserController {
 
   @ApiOperation({ summary: 'Logout' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatusExtends.OK,
     description: 'User signed out successfully',
     type: LogoutRecvDto,
   })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
-  @ApiResponse({ status: 419, description: 'Session expired' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  @ApiResponse({ status: 401, description: 'Session ID is missing' })
+  @ApiResponse({
+    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.SESSION_EXPIRED,
+    description: 'Session expired',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.NOT_FOUND,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: HttpStatusExtends.UNAUTHORIZED,
+    description: 'Session ID is missing',
+  })
   @ApiBody({ type: LogoutDto })
   @ApiCookieAuth()
   @Post('logout')
@@ -150,7 +204,7 @@ export class UserController {
   ) {
     const session_id_from_cookie = req.cookies['incidents_session_id'];
     if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', 401);
+      throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
     }
     let result: string;
     try {
@@ -161,14 +215,17 @@ export class UserController {
         ),
       );
     } catch (error) {
-      throw new HttpException('Internal server error', 500);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+      );
     }
     errorSwitch(result);
     res.cookie('incidents_session_id', '', {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      expires: new Date(0),
+      expires: new Date(),
     });
     return { message: 'User signed out successfully' };
   }

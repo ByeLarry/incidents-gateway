@@ -1,8 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 
+export const AUTH_SERVICE_TAG = 'AUTH_SERVICE';
+
 export const AuthServiceProvide = {
-  provide: 'AUTH_SERVICE',
+  provide: AUTH_SERVICE_TAG,
   inject: [ConfigService],
   useFactory: (configService: ConfigService) =>
     ClientProxyFactory.create({
