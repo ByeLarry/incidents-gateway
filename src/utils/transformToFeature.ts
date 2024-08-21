@@ -13,6 +13,9 @@ export class FeatureTransformer {
   }
 
   static transformMarkToFeature(mark: MarkRecvDto): FeatureDto {
+    if (!mark || !mark.id) {
+      throw new Error('Invalid mark data');
+    }
     return {
       id: mark.id.toString(),
       type: 'Feature',

@@ -245,7 +245,7 @@
             "name": "lat",
             "required": true,
             "in": "query",
-            "description": "User latitude",
+            "description": "Latitude",
             "schema": {
               "type": "number"
             }
@@ -254,7 +254,7 @@
             "name": "lng",
             "required": true,
             "in": "query",
-            "description": "User longitude",
+            "description": "Longitude",
             "schema": {
               "type": "number"
             }

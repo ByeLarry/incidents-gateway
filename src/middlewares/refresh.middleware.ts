@@ -2,11 +2,11 @@ import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { RefreshRecvDto } from 'src/user/dto/refresh-recv.dto';
-import { AUTH_SERVICE_TAG } from 'src/utils/auth.service.provide';
-import { DateEnum } from 'src/utils/date.enum';
-import { HttpStatusExtends } from 'src/utils/extendsHttpStatus.enum';
-import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
+import { RefreshRecvDto } from '../user/dto/refresh-recv.dto';
+import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { DateEnum } from '../utils/date.enum';
+import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
+import { MsgAuthEnum } from '../utils/msg.auth.enum';
 
 @Injectable()
 export class RefreshMiddleware {
@@ -19,7 +19,9 @@ export class RefreshMiddleware {
     const session_id_from_cookie = this.getSessionId(req, res);
 
     if (typeof session_id_from_cookie === 'string')
-      await this.refresh(session_id_from_cookie, res, next);
+      await this.refresh(session_id_from_cookie, res);
+
+    next();
   }
 
   private getSessionId(req: Request, res: Response): string | Response {
@@ -43,7 +45,6 @@ export class RefreshMiddleware {
   private async refresh(
     session_id_from_cookie: string,
     res: Response,
-    next: () => void,
   ): Promise<void | Response> {
     try {
       const result: RefreshRecvDto | string = await this.sendRefreshData(
@@ -51,9 +52,7 @@ export class RefreshMiddleware {
       );
 
       if (typeof result === 'string') this.mappingError(result, res);
-      else if (result instanceof RefreshRecvDto)
-        this.setCookie(res, this.getSessionIdFromRefreshRecv(result));
-      next();
+      else this.setCookie(res, this.getSessionIdFromRefreshRecv(result));
     } catch (error) {
       return this.internalServerError(res);
     }
@@ -93,8 +92,8 @@ export class RefreshMiddleware {
     }
   }
 
-  private setCookie(res: Response, session_id: string): void {
-    res.cookie('incidents_session_id', session_id, {
+  private setCookie(res: Response, session_id: string): Response {
+    return res.cookie('incidents_session_id', session_id, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',

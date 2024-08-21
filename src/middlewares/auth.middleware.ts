@@ -2,9 +2,9 @@ import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE_TAG } from 'src/utils/auth.service.provide';
-import { HttpStatusExtends } from 'src/utils/extendsHttpStatus.enum';
-import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
+import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
+import { MsgAuthEnum } from '../utils/msg.auth.enum';
 
 @Injectable()
 export class AuthMiddleware {
@@ -22,7 +22,9 @@ export class AuthMiddleware {
       typeof session_id_from_cookie === 'string' &&
       typeof csrf_token === 'string'
     )
-      await this.auth(session_id_from_cookie, csrf_token, res, next);
+      await this.auth(session_id_from_cookie, csrf_token, res);
+
+    next();
   }
 
   private getSessionId(req: Request, res: Response): string | Response {
@@ -65,14 +67,13 @@ export class AuthMiddleware {
     session_id_from_cookie: string,
     csrf_token: string,
     res: Response,
-    next: () => void,
   ) {
     try {
       const result = await this.sendAuthData(
         session_id_from_cookie,
         csrf_token,
       );
-      if (!this.mappingError(result, res)) return next();
+      this.mappingError(result, res);
     } catch (error) {
       return this.internalServerError(res);
     }

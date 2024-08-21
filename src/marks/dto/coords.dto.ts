@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CoordsDto {
-  @ApiProperty({ description: 'User latitude' })
+  @ApiProperty({ description: 'Latitude' })
   lat: number;
 
-  @ApiProperty({ description: 'User longitude' })
+  @ApiProperty({ description: 'Longitude' })
   lng: number;
 }
