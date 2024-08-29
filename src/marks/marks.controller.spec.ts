@@ -3,30 +3,43 @@ import { MarkController } from './marks.controller';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MARKS_SERVICE_TAG } from '../utils/marks.service.provide';
 import { of } from 'rxjs';
-import { VerifiedRecvDto } from './dto/verified-recv.dto';
+import { VerifiedRecvDto } from './dto/verifiedRecv.dto';
 import { MarksGateway } from './marks.gateway';
 import { MsgMarksEnum } from '../utils/msg.marks.enum';
-import { MarkRecvDto } from './dto/mark-recv.dto';
+import { MarkRecvDto } from './dto/markRecv.dto';
 import { CategoryDto } from './dto/category.dto';
-import { CreateMarkDto } from './dto/create-mark.dto';
+import { CreateMarkDto } from './dto/createMark.dto';
 import { MarkDto } from './dto/mark.dto';
 import { FeatureTransformer } from '../utils/transformToFeature';
-import { VerifyMarkDto } from './dto/verify-mark.dto';
+import { VerifyMarkDto } from './dto/verifyMark.dto';
 import { BadRequestException } from '@nestjs/common';
 import { CoordsDto } from './dto/coords.dto';
+import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { AuthGuard } from '../guards/auth.guard';
+import { validate } from 'class-validator';
 
 describe('MarksController', () => {
   let controller: MarkController;
-  let mockClientProxy: any;
+  let mockMarkClientProxy: any;
+  let mockAuthClientProxy: any;
   let marksGateway: any;
+  let mockAuthGuard: any;
 
   beforeEach(async () => {
-    mockClientProxy = {
+    mockMarkClientProxy = {
+      send: jest.fn().mockImplementation(() => of('mock response')),
+    };
+
+    mockAuthClientProxy = {
       send: jest.fn().mockImplementation(() => of('mock response')),
     };
 
     marksGateway = {
       emitMessageToAll: jest.fn(),
+    };
+
+    mockAuthGuard = {
+      canActivate: jest.fn().mockImplementation(() => true),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -35,11 +48,21 @@ describe('MarksController', () => {
       providers: [
         {
           provide: MARKS_SERVICE_TAG,
-          useValue: mockClientProxy,
+          useValue: mockMarkClientProxy,
         },
         {
           provide: MarksGateway,
           useValue: marksGateway,
+        },
+        {
+          provide: AUTH_SERVICE_TAG,
+          useValue: mockAuthClientProxy,
+        },
+        {
+          provide: AuthGuard,
+          useValue: {
+            canActivate: mockAuthGuard.canActivate,
+          },
         },
       ],
     }).compile();
@@ -69,11 +92,11 @@ describe('MarksController', () => {
       color: 'blue',
     };
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.getMark(mockRequestBody);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.MARK_GET },
       mockRequestBody,
     );
@@ -88,7 +111,7 @@ describe('MarksController', () => {
       lng: 20,
     };
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of('404'));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of('404'));
 
     await expect(controller.getMark(mockRequestBody)).rejects.toThrow(
       'Not found',
@@ -102,20 +125,34 @@ describe('MarksController', () => {
       lng: 20,
     };
 
-    await expect(
-      controller.getMark(mockRequestBody as MarkDto),
-    ).rejects.toThrow(BadRequestException);
+    const errors = await validate(
+      Object.assign(new MarkDto(), mockRequestBody),
+    );
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('[getMark] should throw BadRequestException if userId is missing', async () => {
+    const mockRequestBody = {
+      markId: '1',
+      lat: 10,
+      lng: 20,
+    };
+
+    const errors = await validate(
+      Object.assign(new MarkDto(), mockRequestBody),
+    );
+    expect(errors.length).toBeGreaterThan(0);
   });
 
   it('[getMarks] should return an empty array if no marks are found', async () => {
     const mockRequestBody: CoordsDto = { lat: 1, lng: 1 };
     const mockResponse: MarkRecvDto[] = [];
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.getMarks(mockRequestBody);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.MAP_INIT },
       mockRequestBody,
     );
@@ -125,7 +162,7 @@ describe('MarksController', () => {
   it('[getMarks] should throw an error if the client proxy fails', async () => {
     const mockRequestBody = { lat: 1, lng: 2 };
 
-    jest.spyOn(mockClientProxy, 'send').mockImplementation(() => {
+    jest.spyOn(mockMarkClientProxy, 'send').mockImplementation(() => {
       throw new Error('Internal Server Error');
     });
 
@@ -149,11 +186,11 @@ describe('MarksController', () => {
       },
     ];
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.getMarks(mockRequestBody);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.MAP_INIT },
       mockRequestBody,
     );
@@ -168,11 +205,11 @@ describe('MarksController', () => {
     const mockRequestBody = { lat: 1, lng: 2 };
     const mockResponse: MarkRecvDto[] = [];
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.getMarks(mockRequestBody);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.MAP_INIT },
       mockRequestBody,
     );
@@ -197,7 +234,7 @@ describe('MarksController', () => {
 
   it('[verifyTrue] should return VerifiedRecvDto', async () => {
     const mockResponse: VerifiedRecvDto = { verified: 1 };
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const mockRequestBody = {
       markId: 1,
@@ -207,22 +244,11 @@ describe('MarksController', () => {
 
     const result = await controller.verifyTrue(mockRequestBody);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.MARK_VERIFY_TRUE },
       mockRequestBody,
     );
     expect(result).toEqual(mockResponse);
-  });
-
-  it('[verifyTrue] should throw an error if markId is missing', async () => {
-    const mockRequestBody = {
-      userId: '1',
-      csrf_token: 'token',
-    };
-
-    await expect(
-      controller.verifyTrue(mockRequestBody as VerifyMarkDto),
-    ).rejects.toThrow();
   });
 
   it('[verifyTrue] should throw BadRequestException if markId is missing', async () => {
@@ -231,9 +257,10 @@ describe('MarksController', () => {
       csrf_token: 'token',
     };
 
-    await expect(
-      controller.verifyTrue(mockRequestBody as VerifyMarkDto),
-    ).rejects.toThrow(BadRequestException);
+    const errors = await validate(
+      Object.assign(new VerifyMarkDto(), mockRequestBody),
+    );
+    expect(errors.length).toBeGreaterThan(0);
   });
 
   it('[verifyTrue] should throw BadRequestException if userId is missing', async () => {
@@ -242,14 +269,15 @@ describe('MarksController', () => {
       csrf_token: 'token',
     };
 
-    await expect(
-      controller.verifyTrue(mockRequestBody as VerifyMarkDto),
-    ).rejects.toThrow(BadRequestException);
+    const errors = await validate(
+      Object.assign(new VerifyMarkDto(), mockRequestBody),
+    );
+    expect(errors.length).toBeGreaterThan(0);
   });
 
   it('[verifyFalse] should return VerifiedRecvDto', async () => {
     const mockResponse: VerifiedRecvDto = { verified: 0 };
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const mockRequestBody = {
       markId: 1,
@@ -259,22 +287,11 @@ describe('MarksController', () => {
 
     const result = await controller.verifyFalse(mockRequestBody);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.MARK_VERIFY_FALSE },
       mockRequestBody,
     );
     expect(result).toEqual(mockResponse);
-  });
-
-  it('[verifyFalse] should throw an error if markId is missing', async () => {
-    const mockRequestBody = {
-      userId: '1',
-      csrf_token: 'token',
-    };
-
-    await expect(
-      controller.verifyFalse(mockRequestBody as VerifyMarkDto),
-    ).rejects.toThrow();
   });
 
   it('[verifyFalse] should throw BadRequestException if markId is missing', async () => {
@@ -283,9 +300,10 @@ describe('MarksController', () => {
       csrf_token: 'token',
     };
 
-    await expect(
-      controller.verifyFalse(mockRequestBody as VerifyMarkDto),
-    ).rejects.toThrow(BadRequestException);
+    const errors = await validate(
+      Object.assign(new VerifyMarkDto(), mockRequestBody),
+    );
+    expect(errors.length).toBeGreaterThan(0);
   });
 
   it('[verifyFalse] should throw BadRequestException if userId is missing', async () => {
@@ -294,9 +312,10 @@ describe('MarksController', () => {
       csrf_token: 'token',
     };
 
-    await expect(
-      controller.verifyFalse(mockRequestBody as VerifyMarkDto),
-    ).rejects.toThrow(BadRequestException);
+    const errors = await validate(
+      Object.assign(new VerifyMarkDto(), mockRequestBody),
+    );
+    expect(errors.length).toBeGreaterThan(0);
   });
 
   it('[getCategories] should return an array of categories', async () => {
@@ -308,11 +327,11 @@ describe('MarksController', () => {
       },
     ];
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.getCategories();
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.CATEGORIES },
       {},
     );
@@ -322,11 +341,11 @@ describe('MarksController', () => {
   it('[getCategories] should return an empty array if no categories are found', async () => {
     const mockResponse: CategoryDto[] = [];
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.getCategories();
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.CATEGORIES },
       {},
     );
@@ -355,14 +374,14 @@ describe('MarksController', () => {
       color: 'green',
     };
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.createMark(mockRequestBody);
 
     const transformedResponse =
       FeatureTransformer.transformToFeatureDto(mockResponse);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.CREATE_MARK },
       mockRequestBody,
     );
@@ -409,14 +428,14 @@ describe('MarksController', () => {
       color: 'green',
     };
 
-    jest.spyOn(mockClientProxy, 'send').mockReturnValue(of(mockResponse));
+    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of(mockResponse));
 
     const result = await controller.createMark(mockRequestBody);
 
     const transformedResponse =
       FeatureTransformer.transformToFeatureDto(mockResponse);
 
-    expect(mockClientProxy.send).toHaveBeenCalledWith(
+    expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
       { cmd: MsgMarksEnum.CREATE_MARK },
       mockRequestBody,
     );

@@ -191,7 +191,7 @@
             "in": "query",
             "description": "Mark ID",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {

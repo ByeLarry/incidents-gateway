@@ -1,5 +1,6 @@
-import { FeatureDto } from 'src/marks/dto/feature.dto';
-import { MarkRecvDto } from 'src/marks/dto/mark-recv.dto';
+import { BadRequestException } from '@nestjs/common';
+import { FeatureDto } from '../marks/dto/feature.dto';
+import { MarkRecvDto } from '../marks/dto/markRecv.dto';
 
 export class FeatureTransformer {
   static transformToFeatureDto(
@@ -14,7 +15,7 @@ export class FeatureTransformer {
 
   static transformMarkToFeature(mark: MarkRecvDto): FeatureDto {
     if (!mark || !mark.id) {
-      throw new Error('Invalid mark data');
+      throw new BadRequestException('Invalid mark data');
     }
     return {
       id: mark.id.toString(),

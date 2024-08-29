@@ -23,14 +23,14 @@ import { Request, Response } from 'express';
 import { UserRecvDto } from './dto/user-recv.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutRecvDto } from './dto/logout-recv.dto';
-import { MsgAuthEnum } from 'src/utils/msg.auth.enum';
-import { errorSwitch } from 'src/utils/errors';
-import { HttpStatusExtends } from 'src/utils/extendsHttpStatus.enum';
-import { DateEnum } from 'src/utils/date.enum';
-import { AUTH_SERVICE_TAG } from 'src/utils/auth.service.provide';
+import { MsgAuthEnum } from '../utils/msg.auth.enum';
+import { errorSwitch } from '../utils/errors';
+import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
+import { DateEnum } from '../utils/date.enum';
+import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
 
 @ApiTags('Auth')
-@Controller('api/auth')
+@Controller('auth')
 export class UserController {
   constructor(@Inject(AUTH_SERVICE_TAG) private client: ClientProxy) {}
 

@@ -1,20 +1,20 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   Inject,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
 import { firstValueFrom } from 'rxjs';
-import { VerifyMarkDto } from './dto/verify-mark.dto';
+import { VerifyMarkDto } from './dto/verifyMark.dto';
 import { errorSwitch } from '../utils/errors';
 import { MarkDto } from './dto/mark.dto';
-import { MarkRecvDto } from './dto/mark-recv.dto';
+import { MarkRecvDto } from './dto/markRecv.dto';
 import {
   ApiBody,
   ApiCookieAuth,
@@ -22,19 +22,20 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { VerifiedRecvDto } from './dto/verified-recv.dto';
+import { VerifiedRecvDto } from './dto/verifiedRecv.dto';
 import { MsgMarksEnum } from '../utils/msg.marks.enum';
 import { CategoryDto } from './dto/category.dto';
-import { CreateMarkDto } from './dto/create-mark.dto';
+import { CreateMarkDto } from './dto/createMark.dto';
 import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { MARKS_SERVICE_TAG } from '../utils/marks.service.provide';
 import { FeatureTransformer } from '../utils/transformToFeature';
+import { AuthGuard } from '../guards/auth.guard';
 
 @ApiTags('Marks')
-@Controller('api/marks')
+@Controller('marks')
 export class MarkController {
   constructor(
     @Inject(MARKS_SERVICE_TAG) private client: ClientProxy,
@@ -56,10 +57,6 @@ export class MarkController {
   })
   @Get('one')
   async getMark(@Query() data: MarkDto) {
-    if (!data.markId || !data.lat || !data.lng || !data.userId)
-      throw new BadRequestException(
-        'Mark ID, latitude, longitude or user ID are required',
-      );
     const res: MarkRecvDto | string = await firstValueFrom(
       this.client.send({ cmd: MsgMarksEnum.MARK_GET }, data),
     );
@@ -79,9 +76,6 @@ export class MarkController {
   })
   @Get()
   async getMarks(@Query() data: CoordsDto) {
-    if (!data.lat || !data.lng)
-      throw new BadRequestException('Latitude and longitude are required');
-
     const res: MarkRecvDto[] | string = await firstValueFrom(
       this.client.send({ cmd: MsgMarksEnum.MAP_INIT }, data),
     );
@@ -118,10 +112,8 @@ export class MarkController {
   })
   @ApiCookieAuth()
   @Post('verify/true')
+  @UseGuards(AuthGuard)
   async verifyTrue(@Body() data: VerifyMarkDto) {
-    if (!data.csrf_token || !data.userId || !data.markId)
-      throw new BadRequestException('Bad request');
-
     const res: VerifiedRecvDto | string = await firstValueFrom(
       this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_TRUE }, data),
     );
@@ -157,11 +149,9 @@ export class MarkController {
     description: 'Session expired',
   })
   @ApiCookieAuth()
+  @UseGuards(AuthGuard)
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
-    if (!data.csrf_token || !data.userId || !data.markId)
-      throw new BadRequestException('Bad request');
-
     const res: VerifiedRecvDto | string = await firstValueFrom(
       this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_FALSE }, data),
     );
@@ -222,17 +212,9 @@ export class MarkController {
     description: 'User not found',
   })
   @ApiCookieAuth()
+  @UseGuards(AuthGuard)
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
-    if (
-      !data.csrf_token ||
-      !data.userId ||
-      !data.lat ||
-      !data.lng ||
-      !data.title ||
-      !data.categoryId
-    )
-      throw new BadRequestException('Bad request');
     const res: MarkRecvDto | string = await firstValueFrom(
       this.client.send({ cmd: MsgMarksEnum.CREATE_MARK }, data),
     );

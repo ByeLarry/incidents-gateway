@@ -5,9 +5,9 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { UserController } from './user.controller';
-import { AppLoggerService } from 'src/utils/logger';
-import { RefreshMiddleware } from 'src/middlewares/refresh.middleware';
-import { AuthServiceProvide } from 'src/utils/auth.service.provide';
+import { AppLoggerService } from '../utils/logger';
+import { RefreshMiddleware } from '../middlewares/refresh.middleware';
+import { AuthServiceProvide } from '../utils/auth.service.provide';
 
 @Module({
   controllers: [UserController],

@@ -1,11 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AppLoggerService } from './utils/logger';
 import { MarksModule } from './marks/marks.module';
-import { LoggingMiddleware } from './middlewares/logger.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './interceptors/logger.interceptor';
 
 @Module({
   imports: [
@@ -19,10 +20,12 @@ import * as redisStore from 'cache-manager-redis-store';
       port: Number(process.env.REDIS_PORT),
     }),
   ],
-  providers: [AppLoggerService],
+  providers: [
+    AppLoggerService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggingMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
