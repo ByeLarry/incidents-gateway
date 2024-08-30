@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  getaway:
+  gateway:
     container_name: incidents-gateway
     build: .
     ports:
