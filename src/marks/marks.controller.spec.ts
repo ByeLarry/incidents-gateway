@@ -77,7 +77,7 @@ describe('MarksController', () => {
   it('[getMark] should return one mark', async () => {
     const mockRequestBody: MarkDto = {
       userId: '1',
-      markId: '1',
+      markId: 1,
       lat: 10,
       lng: 20,
     };
@@ -106,7 +106,7 @@ describe('MarksController', () => {
   it('[getMark] should throw an error if the mark is not found', async () => {
     const mockRequestBody: MarkDto = {
       userId: '1',
-      markId: '9999',
+      markId: 9999,
       lat: 10,
       lng: 20,
     };
