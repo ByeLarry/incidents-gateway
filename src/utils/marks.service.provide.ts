@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { MARKS_RMQ_QUEUE } from './consts';
 
 export const MARKS_SERVICE_TAG = 'MARKS_SERVICE';
 
@@ -8,10 +9,13 @@ export const MarksServiceProvide = {
   inject: [ConfigService],
   useFactory: (configService: ConfigService) =>
     ClientProxyFactory.create({
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: configService.get('MARKS_HOST'),
-        port: configService.get('MARKS_PORT'),
+        urls: [`${configService.get('MARKS_SERVICE_CONNECTION_STRING')}`],
+        queue: MARKS_RMQ_QUEUE,
+        queueOptions: {
+          durable: false,
+        },
       },
     }),
 };

@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { AUTH_RMQ_QUEUE } from './consts';
 
 export const AUTH_SERVICE_TAG = 'AUTH_SERVICE';
 
@@ -8,10 +9,13 @@ export const AuthServiceProvide = {
   inject: [ConfigService],
   useFactory: (configService: ConfigService) =>
     ClientProxyFactory.create({
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: configService.get('AUTH_HOST'),
-        port: configService.get('AUTH_PORT'),
+        urls: [`${configService.get('RMQ_HOST')}`],
+        queue: AUTH_RMQ_QUEUE,
+        queueOptions: {
+          durable: false,
+        },
       },
     }),
 };
