@@ -58,7 +58,7 @@ export class MarkController {
   @Get('one')
   async getMark(@Query() data: MarkDto) {
     const res: MarkRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MARK_GET }, data),
+      this.client.send(MsgMarksEnum.MARK_GET, data),
     );
     errorSwitch(res as string);
     return res;
@@ -77,7 +77,7 @@ export class MarkController {
   @Get()
   async getMarks(@Query() data: CoordsDto) {
     const res: MarkRecvDto[] | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MAP_INIT }, data),
+      this.client.send(MsgMarksEnum.MAP_INIT, data),
     );
     errorSwitch(res as string);
     return FeatureTransformer.transformToFeatureDto(res as MarkRecvDto[]);
@@ -115,7 +115,7 @@ export class MarkController {
   @UseGuards(AuthGuard)
   async verifyTrue(@Body() data: VerifyMarkDto) {
     const res: VerifiedRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_TRUE }, data),
+      this.client.send(MsgMarksEnum.MARK_VERIFY_TRUE, data),
     );
     errorSwitch(res as string);
     return res;
@@ -153,7 +153,7 @@ export class MarkController {
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
     const res: VerifiedRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.MARK_VERIFY_FALSE }, data),
+      this.client.send(MsgMarksEnum.MARK_VERIFY_FALSE, data),
     );
     errorSwitch(res as string);
     return res;
@@ -178,7 +178,7 @@ export class MarkController {
   @UseInterceptors(CacheInterceptor)
   async getCategories() {
     const res: CategoryDto[] | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.CATEGORIES }, {}),
+      this.client.send(MsgMarksEnum.CATEGORIES, {}),
     );
     errorSwitch(res as string);
     return res;
@@ -216,7 +216,7 @@ export class MarkController {
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
     const res: MarkRecvDto | string = await firstValueFrom(
-      this.client.send({ cmd: MsgMarksEnum.CREATE_MARK }, data),
+      this.client.send(MsgMarksEnum.CREATE_MARK, data),
     );
     errorSwitch(res as string);
     this.marksGateway.emitMessageToAll(

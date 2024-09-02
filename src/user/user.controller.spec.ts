@@ -69,7 +69,7 @@ describe('UserController', () => {
       const result = await controller.signup(mockSignUpDto, res);
 
       expect(client.send).toHaveBeenCalledWith(
-        { cmd: MsgAuthEnum.SIGNUP },
+        MsgAuthEnum.SIGNUP,
         mockSignUpDto,
       );
 
@@ -122,7 +122,7 @@ describe('UserController', () => {
       const { session_id, ...expectedResult } = mockUserRecvDto;
 
       expect(client.send).toHaveBeenCalledWith(
-        { cmd: MsgAuthEnum.SIGNIN },
+        MsgAuthEnum.SIGNIN,
         mockSignInDto,
       );
       expect(result).toEqual(expectedResult);
@@ -170,10 +170,9 @@ describe('UserController', () => {
 
       const { session_id, ...expectedResult } = mockUserRecvDto;
 
-      expect(client.send).toHaveBeenCalledWith(
-        { cmd: MsgAuthEnum.ME },
-        { session_id_from_cookie: 'sessionId' },
-      );
+      expect(client.send).toHaveBeenCalledWith(MsgAuthEnum.ME, {
+        session_id_from_cookie: 'sessionId',
+      });
       expect(result).toEqual(expectedResult);
     });
 
@@ -204,10 +203,10 @@ describe('UserController', () => {
         mockLogoutDto,
       );
 
-      expect(client.send).toHaveBeenCalledWith(
-        { cmd: MsgAuthEnum.LOGOUT },
-        { csrf_token: 'token', session_id_from_cookie: 'sessionId' },
-      );
+      expect(client.send).toHaveBeenCalledWith(MsgAuthEnum.LOGOUT, {
+        csrf_token: 'token',
+        session_id_from_cookie: 'sessionId',
+      });
       expect(result).toEqual({ message: 'User signed out successfully' });
       expect(res.cookie).toHaveBeenCalledWith('incidents_session_id', '', {
         httpOnly: true,

@@ -18,6 +18,7 @@ import { LoggingInterceptor } from './interceptors/logger.interceptor';
       store: redisStore,
       host: process.env.REDIS_HOST,
       port: Number(process.env.REDIS_PORT),
+      ttl: 3600,
     }),
   ],
   providers: [

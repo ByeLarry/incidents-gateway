@@ -62,10 +62,9 @@ export class RefreshMiddleware {
     session_id_from_cookie: string,
   ): Promise<RefreshRecvDto | string> {
     return await firstValueFrom(
-      this.client.send<undefined | string>(
-        { cmd: MsgAuthEnum.REFRESH },
-        { session_id_from_cookie },
-      ),
+      this.client.send<undefined | string>(MsgAuthEnum.REFRESH, {
+        session_id_from_cookie,
+      }),
     );
   }
 

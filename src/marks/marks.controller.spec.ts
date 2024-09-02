@@ -97,7 +97,7 @@ describe('MarksController', () => {
     const result = await controller.getMark(mockRequestBody);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.MARK_GET },
+      MsgMarksEnum.MARK_GET,
       mockRequestBody,
     );
     expect(result).toEqual(mockResponse);
@@ -153,7 +153,7 @@ describe('MarksController', () => {
     const result = await controller.getMarks(mockRequestBody);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.MAP_INIT },
+      MsgMarksEnum.MAP_INIT,
       mockRequestBody,
     );
     expect(result).toEqual([]);
@@ -191,7 +191,7 @@ describe('MarksController', () => {
     const result = await controller.getMarks(mockRequestBody);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.MAP_INIT },
+      MsgMarksEnum.MAP_INIT,
       mockRequestBody,
     );
 
@@ -210,7 +210,7 @@ describe('MarksController', () => {
     const result = await controller.getMarks(mockRequestBody);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.MAP_INIT },
+      MsgMarksEnum.MAP_INIT,
       mockRequestBody,
     );
     expect(result).toEqual([]);
@@ -245,7 +245,7 @@ describe('MarksController', () => {
     const result = await controller.verifyTrue(mockRequestBody);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.MARK_VERIFY_TRUE },
+      MsgMarksEnum.MARK_VERIFY_TRUE,
       mockRequestBody,
     );
     expect(result).toEqual(mockResponse);
@@ -288,7 +288,7 @@ describe('MarksController', () => {
     const result = await controller.verifyFalse(mockRequestBody);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.MARK_VERIFY_FALSE },
+      MsgMarksEnum.MARK_VERIFY_FALSE,
       mockRequestBody,
     );
     expect(result).toEqual(mockResponse);
@@ -332,7 +332,7 @@ describe('MarksController', () => {
     const result = await controller.getCategories();
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.CATEGORIES },
+      MsgMarksEnum.CATEGORIES,
       {},
     );
     expect(result).toEqual(mockResponse);
@@ -346,7 +346,7 @@ describe('MarksController', () => {
     const result = await controller.getCategories();
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.CATEGORIES },
+      MsgMarksEnum.CATEGORIES,
       {},
     );
     expect(result).toEqual([]);
@@ -382,7 +382,7 @@ describe('MarksController', () => {
       FeatureTransformer.transformToFeatureDto(mockResponse);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.CREATE_MARK },
+      MsgMarksEnum.CREATE_MARK,
       mockRequestBody,
     );
     expect(marksGateway.emitMessageToAll).toHaveBeenCalledWith(
@@ -436,7 +436,7 @@ describe('MarksController', () => {
       FeatureTransformer.transformToFeatureDto(mockResponse);
 
     expect(mockMarkClientProxy.send).toHaveBeenCalledWith(
-      { cmd: MsgMarksEnum.CREATE_MARK },
+      MsgMarksEnum.CREATE_MARK,
       mockRequestBody,
     );
     expect(marksGateway.emitMessageToAll).toHaveBeenCalledWith(

@@ -14,11 +14,7 @@ services:
       - REDIS_PORT=6379
       - HOST=localhost
       - PORT=4000
-      - AUTH_HOST=host.docker.internal
-      - AUTH_PORT=5555
-      - MARKS_HOST=host.docker.internal
-      - MARKS_PORT=4444
-      - RMQ_HOST=amqp://localhost:5672
+      - RMQ_HOST=amqp://admin:admin@host.docker.internal:5672
     depends_on:
       - redis
 

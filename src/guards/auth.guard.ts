@@ -91,10 +91,10 @@ export class AuthGuard implements CanActivate {
     csrf_token: string,
   ): Promise<undefined | string> {
     return await firstValueFrom(
-      this.client.send<undefined | string>(
-        { cmd: MsgAuthEnum.AUTH },
-        { session_id_from_cookie, csrf_token },
-      ),
+      this.client.send<undefined | string>(MsgAuthEnum.AUTH, {
+        session_id_from_cookie,
+        csrf_token,
+      }),
     );
   }
 

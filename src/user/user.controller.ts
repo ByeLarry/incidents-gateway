@@ -56,9 +56,7 @@ export class UserController {
   ) {
     let result: UserRecvDto | string;
     try {
-      result = await firstValueFrom(
-        this.client.send({ cmd: MsgAuthEnum.SIGNUP }, data),
-      );
+      result = await firstValueFrom(this.client.send(MsgAuthEnum.SIGNUP, data));
     } catch (error) {
       throw new HttpException(
         'Internal server error',
@@ -102,9 +100,7 @@ export class UserController {
   ) {
     let result: UserRecvDto | string;
     try {
-      result = await firstValueFrom(
-        this.client.send({ cmd: MsgAuthEnum.SIGNIN }, data),
-      );
+      result = await firstValueFrom(this.client.send(MsgAuthEnum.SIGNIN, data));
     } catch (error) {
       throw new HttpException(
         'Internal server error',
@@ -154,7 +150,7 @@ export class UserController {
     let result: UserRecvDto | string;
     try {
       result = await firstValueFrom(
-        this.client.send({ cmd: MsgAuthEnum.ME }, { session_id_from_cookie }),
+        this.client.send(MsgAuthEnum.ME, { session_id_from_cookie }),
       );
     } catch (error) {
       throw new HttpException(
@@ -209,10 +205,10 @@ export class UserController {
     let result: string;
     try {
       result = await firstValueFrom(
-        this.client.send(
-          { cmd: MsgAuthEnum.LOGOUT },
-          { csrf_token: data.csrf_token, session_id_from_cookie },
-        ),
+        this.client.send(MsgAuthEnum.LOGOUT, {
+          csrf_token: data.csrf_token,
+          session_id_from_cookie,
+        }),
       );
     } catch (error) {
       throw new HttpException(

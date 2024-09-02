@@ -11,7 +11,7 @@ export const MarksServiceProvide = {
     ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: [`${configService.get('MARKS_SERVICE_CONNECTION_STRING')}`],
+        urls: [`${configService.get('RMQ_HOST')}`],
         queue: MARKS_RMQ_QUEUE,
         queueOptions: {
           durable: false,
