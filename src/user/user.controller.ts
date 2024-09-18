@@ -24,10 +24,10 @@ import { UserRecvDto } from './dto/user-recv.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutRecvDto } from './dto/logout-recv.dto';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
-import { errorSwitch } from '../utils/errors';
+import { errorSwitch } from '../utils/errors.util';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { DateEnum } from '../utils/date.enum';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -217,7 +217,6 @@ export class UserController {
       );
     }
     errorSwitch(result);
-    res.clearCookie('incidents_session_id');
     res.cookie('incidents_session_id', '', {
       httpOnly: true,
       secure: true,

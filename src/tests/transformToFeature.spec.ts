@@ -1,6 +1,6 @@
-import { FeatureTransformer } from './transformToFeature';
 import { MarkRecvDto } from '../marks/dto/markRecv.dto';
 import { FeatureDto } from '../marks/dto/feature.dto';
+import { FeatureTransformer } from '../utils/transformToFeature.util';
 
 describe('FeatureTransformer', () => {
   describe('transformToFeatureDto', () => {

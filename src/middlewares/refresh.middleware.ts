@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { RefreshRecvDto } from '../user/dto/refresh-recv.dto';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { DateEnum } from '../utils/date.enum';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
@@ -70,10 +70,6 @@ export class RefreshMiddleware {
 
   private mappingError(error: string, res: Response): Response | undefined {
     switch (error) {
-      case HttpStatusExtends.NOT_FOUND.toString():
-        return res
-          .status(HttpStatusExtends.NOT_FOUND)
-          .json({ message: 'User not found' });
       case HttpStatusExtends.UNAUTHORIZED.toString():
         return res
           .status(HttpStatusExtends.UNAUTHORIZED)

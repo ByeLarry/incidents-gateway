@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
-import { errorSwitch } from './errors';
-import { HttpStatusExtends } from './extendsHttpStatus.enum';
+import { errorSwitch } from '../utils/errors.util';
+import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 
 describe('errorSwitch', () => {
   it('should throw HttpException with "Not found" message and NOT_FOUND status', () => {

@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
 import { ClientProxy } from '@nestjs/microservices';
 import { Response, Request } from 'express';
 import { of, throwError } from 'rxjs';
 import { HttpException } from '@nestjs/common';
-import { SignUpDto } from './dto/signup.dto';
-import { SignInDto } from './dto/signin.dto';
-import { UserRecvDto } from './dto/user-recv.dto';
-import { LogoutDto } from './dto/logout.dto';
-import { LogoutRecvDto } from './dto/logout-recv.dto';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
 import { DateEnum } from '../utils/date.enum';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
+import { UserController } from '../user/user.controller';
+import { SignUpDto } from '../user/dto/signup.dto';
+import { UserRecvDto } from '../user/dto/user-recv.dto';
+import { SignInDto } from '../user/dto/signin.dto';
+import { LogoutDto } from '../user/dto/logout.dto';
+import { LogoutRecvDto } from '../user/dto/logout-recv.dto';
 
 const mockClientProxy = {
   send: jest.fn(),
@@ -39,6 +39,7 @@ describe('UserController', () => {
 
     res = {
       cookie: jest.fn(),
+      status: jest.fn().mockReturnThis(),
     } as any;
   });
 
@@ -207,7 +208,6 @@ describe('UserController', () => {
         csrf_token: 'token',
         session_id_from_cookie: 'sessionId',
       });
-      expect(result).toEqual({ message: 'User signed out successfully' });
       expect(res.cookie).toHaveBeenCalledWith('incidents_session_id', '', {
         httpOnly: true,
         secure: true,

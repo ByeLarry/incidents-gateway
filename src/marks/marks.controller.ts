@@ -12,7 +12,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
 import { firstValueFrom } from 'rxjs';
 import { VerifyMarkDto } from './dto/verifyMark.dto';
-import { errorSwitch } from '../utils/errors';
+import { errorSwitch } from '../utils/errors.util';
 import { MarkDto } from './dto/mark.dto';
 import { MarkRecvDto } from './dto/markRecv.dto';
 import {
@@ -30,8 +30,8 @@ import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MARKS_SERVICE_TAG } from '../utils/marks.service.provide';
-import { FeatureTransformer } from '../utils/transformToFeature';
+import { MARKS_SERVICE_TAG } from '../utils/marksServiceProvide.util';
+import { FeatureTransformer } from '../utils/transformToFeature.util';
 import { AuthGuard } from '../guards/auth.guard';
 
 @ApiTags('Marks')

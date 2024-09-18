@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RefreshMiddleware } from './refresh.middleware';
 import { Request, Response, NextFunction } from 'express';
 import { of, throwError } from 'rxjs';
+import { RefreshMiddleware } from '../middlewares/refresh.middleware';
+import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { RefreshRecvDto } from '../user/dto/refresh-recv.dto';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 
 describe('RefreshMiddleware', () => {
@@ -96,6 +96,16 @@ describe('RefreshMiddleware', () => {
 
   it('should handle exceptions during refresh', async () => {
     setupRequestAndClient('valid-session-id', new Error('Error'));
+    await middleware.use(req as Request, res as Response, next);
+    expect(res.status).toHaveBeenCalledWith(
+      HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    );
+    expect(res.json).toHaveBeenCalledWith({ message: 'Internal server error' });
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should return internal server error request', async () => {
+    setupRequestAndClient('valid-session-id', new Error('Internal error'));
     await middleware.use(req as Request, res as Response, next);
     expect(res.status).toHaveBeenCalledWith(
       HttpStatusExtends.INTERNAL_SERVER_ERROR,

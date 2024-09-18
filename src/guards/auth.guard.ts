@@ -7,7 +7,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
 

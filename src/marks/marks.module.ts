@@ -5,10 +5,10 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { MarkController } from './marks.controller';
-import { MarksServiceProvide } from '../utils/marks.service.provide';
+import { MarksServiceProvide } from '../utils/marksServiceProvide.util';
 import { MarksGateway } from './marks.gateway';
 import { RefreshMiddleware } from '../middlewares/refresh.middleware';
-import { AuthServiceProvide } from '../utils/auth.service.provide';
+import { AuthServiceProvide } from '../utils/authServiceProvide.util';
 
 @Module({
   controllers: [MarkController],

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { clientCors } from './utils/client.cors';
+import { clientCors } from './utils/clientCors.util';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { writeFileSync } from 'fs';
