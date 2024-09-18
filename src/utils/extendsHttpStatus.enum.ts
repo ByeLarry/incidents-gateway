@@ -13,4 +13,5 @@ export enum HttpStatusExtends {
   TOO_MANY_REQUESTS = HttpStatus.TOO_MANY_REQUESTS,
   CREATED = HttpStatus.CREATED,
   UNPROCESSABLE_ENTITY = HttpStatus.UNPROCESSABLE_ENTITY,
+  NO_CONTENT = HttpStatus.NO_CONTENT,
 }

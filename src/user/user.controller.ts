@@ -166,7 +166,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Logout' })
   @ApiResponse({
-    status: HttpStatusExtends.OK,
+    status: HttpStatusExtends.NO_CONTENT,
     description: 'User signed out successfully',
     type: LogoutRecvDto,
   })
@@ -217,12 +217,13 @@ export class UserController {
       );
     }
     errorSwitch(result);
+    res.clearCookie('incidents_session_id');
     res.cookie('incidents_session_id', '', {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
       expires: new Date(),
     });
-    return { message: 'User signed out successfully' };
+    res.status(HttpStatusExtends.NO_CONTENT);
   }
 }

@@ -135,7 +135,7 @@
           }
         },
         "responses": {
-          "200": {
+          "204": {
             "description": "User signed out successfully",
             "content": {
               "application/json": {
