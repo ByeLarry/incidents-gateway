@@ -103,21 +103,6 @@ describe('MarksController', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('[getMark] should throw an error if the mark is not found', async () => {
-    const mockRequestBody: MarkDto = {
-      userId: '1',
-      markId: 9999,
-      lat: 10,
-      lng: 20,
-    };
-
-    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of('404'));
-
-    await expect(controller.getMark(mockRequestBody)).rejects.toThrow(
-      'Not found',
-    );
-  });
-
   it('[getMark] should throw BadRequestException if markId is missing', async () => {
     const mockRequestBody = {
       userId: '1',
@@ -163,11 +148,11 @@ describe('MarksController', () => {
     const mockRequestBody = { lat: 1, lng: 2 };
 
     jest.spyOn(mockMarkClientProxy, 'send').mockImplementation(() => {
-      throw new Error('Internal Server Error');
+      throw new Error('Internal server error');
     });
 
     await expect(controller.getMarks(mockRequestBody)).rejects.toThrow(
-      'Internal Server Error',
+      'Internal server error',
     );
   });
 

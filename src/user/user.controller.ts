@@ -20,26 +20,43 @@ import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { firstValueFrom } from 'rxjs';
 import { Request, Response } from 'express';
-import { UserRecvDto } from './dto/user-recv.dto';
+import { UserDto } from './dto/user.dto';
 import { LogoutDto } from './dto/logout.dto';
-import { LogoutRecvDto } from './dto/logout-recv.dto';
+import { LogoutRecvDto } from './dto/logoutRecv.dto';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
 import { errorSwitch } from '../utils/errors.util';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { DateEnum } from '../utils/date.enum';
 import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
+import { MicroserviceResponseStatus } from '../dto/microserviceResponseStatus.dto';
+
+type AsyncFunction<T> = () => Promise<T>;
 
 @ApiTags('Auth')
 @Controller('auth')
 export class UserController {
   constructor(@Inject(AUTH_SERVICE_TAG) private client: ClientProxy) {}
 
+  private async handleAsyncOperation<T>(
+    operation: AsyncFunction<T>,
+  ): Promise<T | MicroserviceResponseStatus> {
+    try {
+      return await operation();
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Sign up' })
   @ApiBody({ type: SignUpDto })
   @ApiResponse({
     status: HttpStatusExtends.CREATED,
     description: 'User created successfully',
-    type: UserRecvDto,
+    type: UserDto,
   })
   @ApiResponse({
     status: HttpStatusExtends.CONFLICT,
@@ -54,17 +71,14 @@ export class UserController {
     @Body() data: SignUpDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    let result: UserRecvDto | string;
-    try {
-      result = await firstValueFrom(this.client.send(MsgAuthEnum.SIGNUP, data));
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatusExtends.INTERNAL_SERVER_ERROR,
-      );
-    }
-    errorSwitch(result as string);
-    const { session_id, ...rest } = result as UserRecvDto;
+    const result: UserDto | MicroserviceResponseStatus =
+      await this.handleAsyncOperation(async () => {
+        return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
+          this.client.send(MsgAuthEnum.SIGNUP, data),
+        );
+      });
+    errorSwitch(result as MicroserviceResponseStatus);
+    const { session_id, ...rest } = result as UserDto;
     res.cookie('incidents_session_id', session_id, {
       httpOnly: true,
       secure: true,
@@ -79,7 +93,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatusExtends.OK,
     description: 'User signed in successfully',
-    type: UserRecvDto,
+    type: UserDto,
   })
   @ApiResponse({
     status: HttpStatusExtends.NOT_FOUND,
@@ -98,17 +112,13 @@ export class UserController {
     @Body() data: SignInDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    let result: UserRecvDto | string;
-    try {
-      result = await firstValueFrom(this.client.send(MsgAuthEnum.SIGNIN, data));
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
+        this.client.send(MsgAuthEnum.SIGNIN, data),
       );
-    }
-    errorSwitch(result as string);
-    const { session_id, ...rest } = result as UserRecvDto;
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    const { session_id, ...rest } = result as UserDto;
     res.cookie('incidents_session_id', session_id, {
       httpOnly: true,
       secure: true,
@@ -122,7 +132,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatusExtends.OK,
     description: 'User retrieved successfully',
-    type: UserRecvDto,
+    type: UserDto,
   })
   @ApiResponse({
     status: HttpStatusExtends.UNAUTHORIZED,
@@ -147,19 +157,13 @@ export class UserController {
     if (!session_id_from_cookie) {
       throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
     }
-    let result: UserRecvDto | string;
-    try {
-      result = await firstValueFrom(
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
         this.client.send(MsgAuthEnum.ME, { session_id_from_cookie }),
       );
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatusExtends.INTERNAL_SERVER_ERROR,
-      );
-    }
-    errorSwitch(result as string);
-    const rest = result as UserRecvDto;
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    const rest = result as UserDto;
     delete rest.session_id;
     return rest;
   }
@@ -202,21 +206,15 @@ export class UserController {
     if (!session_id_from_cookie) {
       throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
     }
-    let result: string;
-    try {
-      result = await firstValueFrom(
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<LogoutRecvDto | MicroserviceResponseStatus>(
         this.client.send(MsgAuthEnum.LOGOUT, {
           csrf_token: data.csrf_token,
           session_id_from_cookie,
         }),
       );
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatusExtends.INTERNAL_SERVER_ERROR,
-      );
-    }
-    errorSwitch(result);
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
     res.cookie('incidents_session_id', '', {
       httpOnly: true,
       secure: true,

@@ -22,7 +22,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserRecvDto"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -60,7 +60,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserRecvDto"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -91,7 +91,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserRecvDto"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -515,7 +515,7 @@
           "surname"
         ]
       },
-      "UserRecvDto": {
+      "UserDto": {
         "type": "object",
         "properties": {
           "name": {

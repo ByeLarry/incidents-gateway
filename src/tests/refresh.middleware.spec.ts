@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { of, throwError } from 'rxjs';
 import { RefreshMiddleware } from '../middlewares/refresh.middleware';
 import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { RefreshRecvDto } from '../user/dto/refresh-recv.dto';
+import { RefreshRecvDto } from '../user/dto/refreshRecv.dto';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 
 describe('RefreshMiddleware', () => {
@@ -111,6 +111,50 @@ describe('RefreshMiddleware', () => {
       HttpStatusExtends.INTERNAL_SERVER_ERROR,
     );
     expect(res.json).toHaveBeenCalledWith({ message: 'Internal server error' });
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should continue without error if session ID is invalid', async () => {
+    setupRequestAndClient('invalid-session-id', 'mock response');
+    await middleware.use(req as Request, res as Response, next);
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+  });
+
+  it('should handle refresh with a different valid session ID', async () => {
+    setupRequestAndClient('valid-session-id-2', {
+      session_id: 'new-session-id-2',
+    });
+    await middleware.use(req as Request, res as Response, next);
+    expect(res.cookie).toHaveBeenCalledWith(
+      'incidents_session_id',
+      'new-session-id-2',
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        expires: expect.any(Date),
+      },
+    );
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should return unauthorized if session ID is empty', async () => {
+    setupRequestAndClient('', 'mock response');
+    await middleware.use(req as Request, res as Response, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatusExtends.UNAUTHORIZED);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Session ID is missing' });
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should map unauthorized error correctly', async () => {
+    setupRequestAndClient(
+      'valid-session-id',
+      HttpStatusExtends.UNAUTHORIZED.toString(),
+    );
+    await middleware.use(req as Request, res as Response, next);
+    expect(res.status).toHaveBeenCalledWith(HttpStatusExtends.UNAUTHORIZED);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Unauthorized' });
     expect(next).toHaveBeenCalled();
   });
 });

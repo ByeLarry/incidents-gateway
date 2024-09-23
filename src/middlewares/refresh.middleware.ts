@@ -2,7 +2,7 @@ import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { RefreshRecvDto } from '../user/dto/refresh-recv.dto';
+import { RefreshRecvDto } from '../user/dto/refreshRecv.dto';
 import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { DateEnum } from '../utils/date.enum';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
