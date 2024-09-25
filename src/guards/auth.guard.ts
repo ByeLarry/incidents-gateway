@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
+import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -41,7 +42,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private getSessionIdFromCookie(req: Request): string | undefined {
-    return req.cookies['incidents_session_id'];
+    return req.cookies[SESSION_ID_COOKIE_NAME];
   }
 
   private sessionIdErrorResponse(res: Response): void {

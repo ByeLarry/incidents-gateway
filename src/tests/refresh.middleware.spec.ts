@@ -5,6 +5,7 @@ import { RefreshMiddleware } from '../middlewares/refresh.middleware';
 import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { RefreshRecvDto } from '../user/dto/refreshRecv.dto';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
+import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
 
 describe('RefreshMiddleware', () => {
   let middleware: RefreshMiddleware;
@@ -82,7 +83,7 @@ describe('RefreshMiddleware', () => {
     setupRequestAndClient('valid-session-id', { session_id: 'new-session-id' });
     await middleware.use(req as Request, res as Response, next);
     expect(res.cookie).toHaveBeenCalledWith(
-      'incidents_session_id',
+      SESSION_ID_COOKIE_NAME,
       'new-session-id',
       {
         httpOnly: true,
@@ -127,7 +128,7 @@ describe('RefreshMiddleware', () => {
     });
     await middleware.use(req as Request, res as Response, next);
     expect(res.cookie).toHaveBeenCalledWith(
-      'incidents_session_id',
+      SESSION_ID_COOKIE_NAME,
       'new-session-id-2',
       {
         httpOnly: true,

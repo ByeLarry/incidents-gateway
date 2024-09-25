@@ -29,6 +29,7 @@ import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { DateEnum } from '../utils/date.enum';
 import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { MicroserviceResponseStatus } from '../dto/microserviceResponseStatus.dto';
+import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
 
 type AsyncFunction<T> = () => Promise<T>;
 
@@ -79,7 +80,7 @@ export class UserController {
       });
     errorSwitch(result as MicroserviceResponseStatus);
     const { session_id, ...rest } = result as UserDto;
-    res.cookie('incidents_session_id', session_id, {
+    res.cookie(SESSION_ID_COOKIE_NAME, session_id, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
@@ -119,7 +120,7 @@ export class UserController {
     });
     errorSwitch(result as MicroserviceResponseStatus);
     const { session_id, ...rest } = result as UserDto;
-    res.cookie('incidents_session_id', session_id, {
+    res.cookie(SESSION_ID_COOKIE_NAME, session_id, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
@@ -153,7 +154,7 @@ export class UserController {
   @ApiCookieAuth()
   @Get('me')
   async me(@Req() req: Request) {
-    const session_id_from_cookie = req.cookies['incidents_session_id'];
+    const session_id_from_cookie = req.cookies[SESSION_ID_COOKIE_NAME];
     if (!session_id_from_cookie) {
       throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
     }
@@ -202,7 +203,7 @@ export class UserController {
     @Res({ passthrough: true }) res: Response,
     @Body() data: LogoutDto,
   ) {
-    const session_id_from_cookie = req.cookies['incidents_session_id'];
+    const session_id_from_cookie = req.cookies[SESSION_ID_COOKIE_NAME];
     if (!session_id_from_cookie) {
       throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
     }
@@ -215,7 +216,7 @@ export class UserController {
       );
     });
     errorSwitch(result as MicroserviceResponseStatus);
-    res.cookie('incidents_session_id', '', {
+    res.cookie(SESSION_ID_COOKIE_NAME, '', {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',

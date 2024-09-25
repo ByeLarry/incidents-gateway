@@ -7,6 +7,7 @@ import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
 import { DateEnum } from '../utils/date.enum';
 import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
 import { MsgAuthEnum } from '../utils/msg.auth.enum';
+import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
 
 @Injectable()
 export class RefreshMiddleware {
@@ -33,7 +34,7 @@ export class RefreshMiddleware {
   }
 
   private getSessionIdFromCookie(req: Request): string | undefined {
-    return req.cookies['incidents_session_id'];
+    return req.cookies[SESSION_ID_COOKIE_NAME];
   }
 
   private sessionIdErrorResponse(res: Response): Response {
@@ -88,7 +89,7 @@ export class RefreshMiddleware {
   }
 
   private setCookie(res: Response, session_id: string): Response {
-    return res.cookie('incidents_session_id', session_id, {
+    return res.cookie(SESSION_ID_COOKIE_NAME, session_id, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',

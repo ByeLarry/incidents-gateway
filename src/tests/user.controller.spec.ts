@@ -13,6 +13,7 @@ import { SignInDto } from '../user/dto/signin.dto';
 import { LogoutDto } from '../user/dto/logout.dto';
 import { LogoutRecvDto } from '../user/dto/logoutRecv.dto';
 import { UserDto } from '../user/dto/user.dto';
+import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
 
 const mockClientProxy = {
   send: jest.fn(),
@@ -78,7 +79,7 @@ describe('UserController', () => {
       expect(result).toEqual(expectedResult);
 
       expect(res.cookie).toHaveBeenCalledWith(
-        'incidents_session_id',
+        SESSION_ID_COOKIE_NAME,
         'sessionId',
         expect.objectContaining({
           httpOnly: true,
@@ -128,7 +129,7 @@ describe('UserController', () => {
       );
       expect(result).toEqual(expectedResult);
       expect(res.cookie).toHaveBeenCalledWith(
-        'incidents_session_id',
+        SESSION_ID_COOKIE_NAME,
         'sessionId',
         {
           httpOnly: true,
@@ -208,7 +209,7 @@ describe('UserController', () => {
         csrf_token: 'token',
         session_id_from_cookie: 'sessionId',
       });
-      expect(res.cookie).toHaveBeenCalledWith('incidents_session_id', '', {
+      expect(res.cookie).toHaveBeenCalledWith(SESSION_ID_COOKIE_NAME, '', {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
