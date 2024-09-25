@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request, Response, NextFunction } from 'express';
 import { of, throwError } from 'rxjs';
-import { RefreshMiddleware } from '../middlewares/refresh.middleware';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { RefreshRecvDto } from '../user/dto/refreshRecv.dto';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
+import { RefreshMiddleware } from './refresh.middleware';
+import { AUTH_SERVICE_TAG, SESSION_ID_COOKIE_NAME } from '../libs/utils';
+import { RefreshRecvDto } from '../user/dto';
+import { HttpStatusExtends } from '../libs/enums';
 
 describe('RefreshMiddleware', () => {
   let middleware: RefreshMiddleware;

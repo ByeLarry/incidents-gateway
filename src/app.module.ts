@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { AppLoggerService } from './utils/logger.util';
+import { AppLoggerService } from './libs/helpers/logger';
 import { MarksModule } from './marks/marks.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';

@@ -1,22 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CacheModule } from '@nestjs/cache-manager';
-import { MARKS_SERVICE_TAG } from '../utils/marksServiceProvide.util';
 import { of } from 'rxjs';
-import { MsgMarksEnum } from '../utils/msg.marks.enum';
-import { FeatureTransformer } from '../utils/transformToFeature.util';
 import { BadRequestException } from '@nestjs/common';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { AuthGuard } from '../guards/auth.guard';
 import { validate } from 'class-validator';
-import { MarkController } from '../marks/marks.controller';
-import { MarksGateway } from '../marks/marks.gateway';
-import { MarkDto } from '../marks/dto/mark.dto';
-import { MarkRecvDto } from '../marks/dto/markRecv.dto';
-import { CoordsDto } from '../marks/dto/coords.dto';
-import { VerifiedRecvDto } from '../marks/dto/verifiedRecv.dto';
-import { VerifyMarkDto } from '../marks/dto/verifyMark.dto';
-import { CategoryDto } from '../marks/dto/category.dto';
-import { CreateMarkDto } from '../marks/dto/createMark.dto';
+import { MarkController } from './marks.controller';
+import { AUTH_SERVICE_TAG, MARKS_SERVICE_TAG } from '../libs/utils';
+import { MarksGateway } from './marks.gateway';
+import { AuthGuard } from '../guards';
+import {
+  CategoryDto,
+  CoordsDto,
+  CreateMarkDto,
+  MarkDto,
+  MarkRecvDto,
+  VerifiedRecvDto,
+  VerifyMarkDto,
+} from './dto';
+import { MsgMarksEnum } from '../libs/enums';
+import { FeatureTransformer } from '../libs/helpers';
 
 describe('MarksController', () => {
   let controller: MarkController;

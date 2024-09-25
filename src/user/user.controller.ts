@@ -22,14 +22,14 @@ import { firstValueFrom } from 'rxjs';
 import { Request, Response } from 'express';
 import { UserDto } from './dto/user.dto';
 import { LogoutDto } from './dto/logout.dto';
-import { LogoutRecvDto } from './dto/logoutRecv.dto';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
-import { errorSwitch } from '../utils/errors.util';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { DateEnum } from '../utils/date.enum';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { MicroserviceResponseStatus } from '../dto/microserviceResponseStatus.dto';
-import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
+import { LogoutRecvDto } from './dto/logout-recv.dto';
+import {
+  AUTH_SERVICE_TAG,
+  errorSwitch,
+  SESSION_ID_COOKIE_NAME,
+} from '../libs/utils';
+import { MicroserviceResponseStatus } from '../libs/dto';
+import { DateEnum, HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
 
 type AsyncFunction<T> = () => Promise<T>;
 

@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { MARKS_RMQ_QUEUE } from './consts.util';
+import { MARKS_RMQ_QUEUE } from '.';
 
 export const MARKS_SERVICE_TAG = 'MARKS_SERVICE';
 

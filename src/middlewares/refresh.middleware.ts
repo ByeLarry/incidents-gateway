@@ -2,12 +2,9 @@ import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { RefreshRecvDto } from '../user/dto/refreshRecv.dto';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { DateEnum } from '../utils/date.enum';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
-import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
+import { AUTH_SERVICE_TAG, SESSION_ID_COOKIE_NAME } from '../libs/utils';
+import { DateEnum, HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
+import { RefreshRecvDto } from '../user/dto';
 
 @Injectable()
 export class RefreshMiddleware {

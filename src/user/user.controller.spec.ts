@@ -4,16 +4,15 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Response, Request } from 'express';
 import { of, throwError } from 'rxjs';
 import { HttpException } from '@nestjs/common';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
-import { DateEnum } from '../utils/date.enum';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { UserController } from '../user/user.controller';
-import { SignUpDto } from '../user/dto/signup.dto';
-import { SignInDto } from '../user/dto/signin.dto';
-import { LogoutDto } from '../user/dto/logout.dto';
-import { LogoutRecvDto } from '../user/dto/logoutRecv.dto';
-import { UserDto } from '../user/dto/user.dto';
-import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
+import { MsgAuthEnum } from '../libs/enums/msg.auth.enum';
+import { UserController } from './user.controller';
+import { SignUpDto } from './dto/signup.dto';
+import { SignInDto } from './dto/signin.dto';
+import { LogoutDto } from './dto/logout.dto';
+import { LogoutRecvDto } from './dto/logout-recv.dto';
+import { UserDto } from './dto/user.dto';
+import { SESSION_ID_COOKIE_NAME } from '../libs/utils/consts.util';
+import { AUTH_SERVICE_TAG } from '../libs/utils';
 
 const mockClientProxy = {
   send: jest.fn(),

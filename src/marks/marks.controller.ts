@@ -12,10 +12,9 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
 import { firstValueFrom } from 'rxjs';
-import { VerifyMarkDto } from './dto/verifyMark.dto';
-import { errorSwitch } from '../utils/errors.util';
+import { VerifyMarkDto } from './dto/verify-mark.dto';
 import { MarkDto } from './dto/mark.dto';
-import { MarkRecvDto } from './dto/markRecv.dto';
+import { MarkRecvDto } from './dto/mark-recv.dto';
 import {
   ApiBody,
   ApiCookieAuth,
@@ -23,18 +22,17 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { VerifiedRecvDto } from './dto/verifiedRecv.dto';
-import { MsgMarksEnum } from '../utils/msg.marks.enum';
+import { VerifiedRecvDto } from './dto/verified-recv.dto';
 import { CategoryDto } from './dto/category.dto';
-import { CreateMarkDto } from './dto/createMark.dto';
+import { CreateMarkDto } from './dto/create-mark.dto';
 import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MARKS_SERVICE_TAG } from '../utils/marksServiceProvide.util';
-import { FeatureTransformer } from '../utils/transformToFeature.util';
-import { AuthGuard } from '../guards/auth.guard';
-import { MicroserviceResponseStatus } from '../dto/microserviceResponseStatus.dto';
+import { errorSwitch, MARKS_SERVICE_TAG } from '../libs/utils';
+import { MicroserviceResponseStatus } from '../libs/dto';
+import { HttpStatusExtends, MsgMarksEnum } from '../libs/enums';
+import { FeatureTransformer } from '../libs/helpers';
+import { AuthGuard } from '../guards';
 
 type AsyncFunction<T> = () => Promise<T>;
 

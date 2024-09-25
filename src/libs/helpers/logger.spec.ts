@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createLogger, Logger } from 'winston';
-import { AppLoggerService } from '../utils/logger.util';
+import { AppLoggerService } from './logger';
 
 jest.mock('winston', () => ({
   createLogger: jest.fn(),

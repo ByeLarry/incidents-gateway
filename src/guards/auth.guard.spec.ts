@@ -2,9 +2,9 @@ import { ExecutionContext } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 import { ClientProxy } from '@nestjs/microservices';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from './auth.guard';
+import { AUTH_SERVICE_TAG } from '../libs/utils';
+import { HttpStatusExtends } from '../libs/enums';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;

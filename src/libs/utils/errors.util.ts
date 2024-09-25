@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
-import { HttpStatusExtends } from './extendsHttpStatus.enum';
-import { MicroserviceResponseStatus } from '../dto/microserviceResponseStatus.dto';
+import { MicroserviceResponseStatus } from '../dto/microservice-response-status.dto';
+import { HttpStatusExtends } from '../enums';
 
 export function errorSwitch(message: MicroserviceResponseStatus) {
   switch (message.status as HttpStatusExtends) {

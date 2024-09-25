@@ -7,10 +7,8 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE_TAG } from '../utils/authServiceProvide.util';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
-import { SESSION_ID_COOKIE_NAME } from '../utils/consts.util';
+import { AUTH_SERVICE_TAG, SESSION_ID_COOKIE_NAME } from '../libs/utils';
+import { HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
