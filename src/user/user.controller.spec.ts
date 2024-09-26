@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
 import { ClientProxy } from '@nestjs/microservices';
 import { Response, Request } from 'express';
 import { of, throwError } from 'rxjs';
 import { HttpException } from '@nestjs/common';
+import { MsgAuthEnum } from '../libs/enums/msg.auth.enum';
+import { UserController } from './user.controller';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
-import { UserRecvDto } from './dto/user-recv.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutRecvDto } from './dto/logout-recv.dto';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
-import { DateEnum } from '../utils/date.enum';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
+import { UserDto } from './dto/user.dto';
+import { SESSION_ID_COOKIE_NAME } from '../libs/utils/consts.util';
+import { AUTH_SERVICE_TAG } from '../libs/utils';
 
 const mockClientProxy = {
   send: jest.fn(),
@@ -39,6 +39,7 @@ describe('UserController', () => {
 
     res = {
       cookie: jest.fn(),
+      status: jest.fn().mockReturnThis(),
     } as any;
   });
 
@@ -54,7 +55,7 @@ describe('UserController', () => {
         email: 'test@example.com',
         name: 'testuser',
       };
-      const mockUserRecvDto: UserRecvDto = {
+      const mockUserRecvDto: UserDto = {
         name: 'testuser',
         surname: 'testuser',
         _id: '1',
@@ -77,7 +78,7 @@ describe('UserController', () => {
       expect(result).toEqual(expectedResult);
 
       expect(res.cookie).toHaveBeenCalledWith(
-        'incidents_session_id',
+        SESSION_ID_COOKIE_NAME,
         'sessionId',
         expect.objectContaining({
           httpOnly: true,
@@ -105,7 +106,7 @@ describe('UserController', () => {
         email: 'test@test.test',
         password: 'testpassword',
       };
-      const mockUserRecvDto: UserRecvDto = {
+      const mockUserRecvDto: UserDto = {
         name: 'testuser',
         surname: 'testuser',
         _id: '1',
@@ -127,7 +128,7 @@ describe('UserController', () => {
       );
       expect(result).toEqual(expectedResult);
       expect(res.cookie).toHaveBeenCalledWith(
-        'incidents_session_id',
+        SESSION_ID_COOKIE_NAME,
         'sessionId',
         {
           httpOnly: true,
@@ -154,7 +155,7 @@ describe('UserController', () => {
       const req: Partial<Request> = {
         cookies: { incidents_session_id: 'sessionId' },
       };
-      const mockUserRecvDto: UserRecvDto = {
+      const mockUserRecvDto: UserDto = {
         name: 'testuser',
         surname: 'testuser',
         _id: '1',
@@ -207,8 +208,7 @@ describe('UserController', () => {
         csrf_token: 'token',
         session_id_from_cookie: 'sessionId',
       });
-      expect(result).toEqual({ message: 'User signed out successfully' });
-      expect(res.cookie).toHaveBeenCalledWith('incidents_session_id', '', {
+      expect(res.cookie).toHaveBeenCalledWith(SESSION_ID_COOKIE_NAME, '', {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',

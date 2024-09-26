@@ -7,9 +7,8 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
+import { AUTH_SERVICE_TAG, SESSION_ID_COOKIE_NAME } from '../libs/utils';
+import { HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -41,7 +40,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private getSessionIdFromCookie(req: Request): string | undefined {
-    return req.cookies['incidents_session_id'];
+    return req.cookies[SESSION_ID_COOKIE_NAME];
   }
 
   private sessionIdErrorResponse(res: Response): void {

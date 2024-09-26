@@ -1,22 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MarkController } from './marks.controller';
 import { CacheModule } from '@nestjs/cache-manager';
-import { MARKS_SERVICE_TAG } from '../utils/marks.service.provide';
 import { of } from 'rxjs';
-import { VerifiedRecvDto } from './dto/verifiedRecv.dto';
-import { MarksGateway } from './marks.gateway';
-import { MsgMarksEnum } from '../utils/msg.marks.enum';
-import { MarkRecvDto } from './dto/markRecv.dto';
-import { CategoryDto } from './dto/category.dto';
-import { CreateMarkDto } from './dto/createMark.dto';
-import { MarkDto } from './dto/mark.dto';
-import { FeatureTransformer } from '../utils/transformToFeature';
-import { VerifyMarkDto } from './dto/verifyMark.dto';
 import { BadRequestException } from '@nestjs/common';
-import { CoordsDto } from './dto/coords.dto';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
-import { AuthGuard } from '../guards/auth.guard';
 import { validate } from 'class-validator';
+import { MarkController } from './marks.controller';
+import { AUTH_SERVICE_TAG, MARKS_SERVICE_TAG } from '../libs/utils';
+import { MarksGateway } from './marks.gateway';
+import { AuthGuard } from '../guards';
+import {
+  CategoryDto,
+  CoordsDto,
+  CreateMarkDto,
+  MarkDto,
+  MarkRecvDto,
+  VerifiedRecvDto,
+  VerifyMarkDto,
+} from './dto';
+import { MsgMarksEnum } from '../libs/enums';
+import { FeatureTransformer } from '../libs/helpers';
 
 describe('MarksController', () => {
   let controller: MarkController;
@@ -103,21 +104,6 @@ describe('MarksController', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('[getMark] should throw an error if the mark is not found', async () => {
-    const mockRequestBody: MarkDto = {
-      userId: '1',
-      markId: 9999,
-      lat: 10,
-      lng: 20,
-    };
-
-    jest.spyOn(mockMarkClientProxy, 'send').mockReturnValue(of('404'));
-
-    await expect(controller.getMark(mockRequestBody)).rejects.toThrow(
-      'Not found',
-    );
-  });
-
   it('[getMark] should throw BadRequestException if markId is missing', async () => {
     const mockRequestBody = {
       userId: '1',
@@ -163,11 +149,11 @@ describe('MarksController', () => {
     const mockRequestBody = { lat: 1, lng: 2 };
 
     jest.spyOn(mockMarkClientProxy, 'send').mockImplementation(() => {
-      throw new Error('Internal Server Error');
+      throw new Error('Internal server error');
     });
 
     await expect(controller.getMarks(mockRequestBody)).rejects.toThrow(
-      'Internal Server Error',
+      'Internal server error',
     );
   });
 

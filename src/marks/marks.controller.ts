@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   Inject,
   Post,
   Query,
@@ -11,10 +12,9 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
 import { firstValueFrom } from 'rxjs';
-import { VerifyMarkDto } from './dto/verifyMark.dto';
-import { errorSwitch } from '../utils/errors';
+import { VerifyMarkDto } from './dto/verify-mark.dto';
 import { MarkDto } from './dto/mark.dto';
-import { MarkRecvDto } from './dto/markRecv.dto';
+import { MarkRecvDto } from './dto/mark-recv.dto';
 import {
   ApiBody,
   ApiCookieAuth,
@@ -22,17 +22,19 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { VerifiedRecvDto } from './dto/verifiedRecv.dto';
-import { MsgMarksEnum } from '../utils/msg.marks.enum';
+import { VerifiedRecvDto } from './dto/verified-recv.dto';
 import { CategoryDto } from './dto/category.dto';
-import { CreateMarkDto } from './dto/createMark.dto';
+import { CreateMarkDto } from './dto/create-mark.dto';
 import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MARKS_SERVICE_TAG } from '../utils/marks.service.provide';
-import { FeatureTransformer } from '../utils/transformToFeature';
-import { AuthGuard } from '../guards/auth.guard';
+import { errorSwitch, MARKS_SERVICE_TAG } from '../libs/utils';
+import { MicroserviceResponseStatus } from '../libs/dto';
+import { HttpStatusExtends, MsgMarksEnum } from '../libs/enums';
+import { FeatureTransformer } from '../libs/helpers';
+import { AuthGuard } from '../guards';
+
+type AsyncFunction<T> = () => Promise<T>;
 
 @ApiTags('Marks')
 @Controller('marks')
@@ -41,6 +43,21 @@ export class MarkController {
     @Inject(MARKS_SERVICE_TAG) private client: ClientProxy,
     private readonly marksGateway: MarksGateway,
   ) {}
+
+  private async handleAsyncOperation<T>(
+    operation: AsyncFunction<T>,
+  ): Promise<T | MicroserviceResponseStatus> {
+    try {
+      return await operation();
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Get one mark' })
   @ApiResponse({
     status: HttpStatusExtends.OK,
@@ -57,11 +74,13 @@ export class MarkController {
   })
   @Get('one')
   async getMark(@Query() data: MarkDto) {
-    const res: MarkRecvDto | string = await firstValueFrom(
-      this.client.send(MsgMarksEnum.MARK_GET, data),
-    );
-    errorSwitch(res as string);
-    return res;
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<MicroserviceResponseStatus | MarkRecvDto>(
+        this.client.send(MsgMarksEnum.MARK_GET, data),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    return result;
   }
 
   @ApiOperation({ summary: 'Get nearest marks' })
@@ -76,11 +95,13 @@ export class MarkController {
   })
   @Get()
   async getMarks(@Query() data: CoordsDto) {
-    const res: MarkRecvDto[] | string = await firstValueFrom(
-      this.client.send(MsgMarksEnum.MAP_INIT, data),
-    );
-    errorSwitch(res as string);
-    return FeatureTransformer.transformToFeatureDto(res as MarkRecvDto[]);
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<MicroserviceResponseStatus | MarkRecvDto[]>(
+        this.client.send(MsgMarksEnum.MAP_INIT, data),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
   @ApiOperation({ summary: 'Verify mark true' })
@@ -114,11 +135,13 @@ export class MarkController {
   @Post('verify/true')
   @UseGuards(AuthGuard)
   async verifyTrue(@Body() data: VerifyMarkDto) {
-    const res: VerifiedRecvDto | string = await firstValueFrom(
-      this.client.send(MsgMarksEnum.MARK_VERIFY_TRUE, data),
-    );
-    errorSwitch(res as string);
-    return res;
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<MicroserviceResponseStatus | VerifiedRecvDto>(
+        this.client.send(MsgMarksEnum.MARK_VERIFY_TRUE, data),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    return result;
   }
 
   @ApiOperation({ summary: 'Verify mark false' })
@@ -152,11 +175,13 @@ export class MarkController {
   @UseGuards(AuthGuard)
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
-    const res: VerifiedRecvDto | string = await firstValueFrom(
-      this.client.send(MsgMarksEnum.MARK_VERIFY_FALSE, data),
-    );
-    errorSwitch(res as string);
-    return res;
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<MicroserviceResponseStatus | VerifiedRecvDto>(
+        this.client.send(MsgMarksEnum.MARK_VERIFY_FALSE, data),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    return result;
   }
 
   @ApiOperation({ summary: 'Get all categories' })
@@ -177,11 +202,13 @@ export class MarkController {
   @CacheKey('categories')
   @UseInterceptors(CacheInterceptor)
   async getCategories() {
-    const res: CategoryDto[] | string = await firstValueFrom(
-      this.client.send(MsgMarksEnum.CATEGORIES, {}),
-    );
-    errorSwitch(res as string);
-    return res;
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<MicroserviceResponseStatus | CategoryDto[]>(
+        this.client.send(MsgMarksEnum.CATEGORIES, {}),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    return result;
   }
 
   @ApiOperation({ summary: 'Create mark' })
@@ -215,14 +242,16 @@ export class MarkController {
   @UseGuards(AuthGuard)
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
-    const res: MarkRecvDto | string = await firstValueFrom(
-      this.client.send(MsgMarksEnum.CREATE_MARK, data),
-    );
-    errorSwitch(res as string);
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom<MicroserviceResponseStatus | MarkRecvDto>(
+        this.client.send(MsgMarksEnum.CREATE_MARK, data),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
     this.marksGateway.emitMessageToAll(
       'new-mark',
-      FeatureTransformer.transformToFeatureDto(res as MarkRecvDto),
+      FeatureTransformer.transformToFeatureDto(result as MarkRecvDto),
     );
-    return FeatureTransformer.transformToFeatureDto(res as MarkRecvDto);
+    return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
 }

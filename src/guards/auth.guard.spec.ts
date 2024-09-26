@@ -1,10 +1,10 @@
 import { ExecutionContext } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
-import { AuthGuard } from './auth.guard';
 import { ClientProxy } from '@nestjs/microservices';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
+import { AuthGuard } from './auth.guard';
+import { AUTH_SERVICE_TAG } from '../libs/utils';
+import { HttpStatusExtends } from '../libs/enums';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
@@ -72,6 +72,27 @@ describe('AuthGuard', () => {
 
     const result = await guard.canActivate(mockContext);
     expect(result).toBe(true);
+  });
+
+  it('should handle invalid auth service responses correctly', async () => {
+    const invalidResponses = [
+      HttpStatusExtends.NOT_FOUND.toString(),
+      HttpStatusExtends.FORBIDDEN.toString(),
+      HttpStatusExtends.SESSION_EXPIRED.toString(),
+      HttpStatusExtends.INTERNAL_SERVER_ERROR.toString(),
+    ];
+
+    invalidResponses.forEach(async (response) => {
+      clientProxyMock.send = jest.fn().mockReturnValue(of(response));
+
+      const mockContext = createMockContext({
+        cookies: { incidents_session_id: 'session_id' },
+        body: { csrf_token: 'csrf_token' },
+      });
+
+      const result = await guard.canActivate(mockContext);
+      expect(result).toBe(false);
+    });
   });
 
   function createMockContext(mockReqRes: any): ExecutionContext {

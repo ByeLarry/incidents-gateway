@@ -2,11 +2,9 @@ import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { RefreshRecvDto } from '../user/dto/refresh-recv.dto';
-import { AUTH_SERVICE_TAG } from '../utils/auth.service.provide';
-import { DateEnum } from '../utils/date.enum';
-import { HttpStatusExtends } from '../utils/extendsHttpStatus.enum';
-import { MsgAuthEnum } from '../utils/msg.auth.enum';
+import { AUTH_SERVICE_TAG, SESSION_ID_COOKIE_NAME } from '../libs/utils';
+import { DateEnum, HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
+import { RefreshRecvDto } from '../user/dto';
 
 @Injectable()
 export class RefreshMiddleware {
@@ -33,7 +31,7 @@ export class RefreshMiddleware {
   }
 
   private getSessionIdFromCookie(req: Request): string | undefined {
-    return req.cookies['incidents_session_id'];
+    return req.cookies[SESSION_ID_COOKIE_NAME];
   }
 
   private sessionIdErrorResponse(res: Response): Response {
@@ -70,10 +68,6 @@ export class RefreshMiddleware {
 
   private mappingError(error: string, res: Response): Response | undefined {
     switch (error) {
-      case HttpStatusExtends.NOT_FOUND.toString():
-        return res
-          .status(HttpStatusExtends.NOT_FOUND)
-          .json({ message: 'User not found' });
       case HttpStatusExtends.UNAUTHORIZED.toString():
         return res
           .status(HttpStatusExtends.UNAUTHORIZED)
@@ -92,7 +86,7 @@ export class RefreshMiddleware {
   }
 
   private setCookie(res: Response, session_id: string): Response {
-    return res.cookie('incidents_session_id', session_id, {
+    return res.cookie(SESSION_ID_COOKIE_NAME, session_id, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',

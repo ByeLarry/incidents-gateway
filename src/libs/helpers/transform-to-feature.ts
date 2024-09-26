@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
-import { FeatureDto } from '../marks/dto/feature.dto';
-import { MarkRecvDto } from '../marks/dto/markRecv.dto';
+import { FeatureDto } from '../../marks/dto/feature.dto';
+import { MarkRecvDto } from '../../marks/dto/mark-recv.dto';
 
 export class FeatureTransformer {
   static transformToFeatureDto(

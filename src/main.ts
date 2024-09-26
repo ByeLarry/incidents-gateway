@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { clientCors } from './utils/client.cors';
+import { clientCors } from './libs/utils/client-cors.util';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { writeFileSync } from 'fs';
 import * as compression from 'compression';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import { SESSION_ID_COOKIE_NAME } from './libs/utils/consts.util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +20,7 @@ async function bootstrap() {
     .setTitle('Incidents')
     .setDescription('The incidents API Gateway documentation')
     .setVersion('1.0')
-    .addCookieAuth('incidents_session_id')
+    .addCookieAuth(SESSION_ID_COOKIE_NAME)
     .build();
   const document = SwaggerModule.createDocument(app, config);
   writeFileSync('./swagger.json', JSON.stringify(document, null, 2));
