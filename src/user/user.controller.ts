@@ -6,34 +6,31 @@ import {
   HttpException,
   Res,
   Get,
-  Req,
+  HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiBody,
-  ApiCookieAuth,
-} from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { firstValueFrom } from 'rxjs';
-import { Request, Response } from 'express';
-import { UserDto } from './dto/user.dto';
-import { LogoutDto } from './dto/logout.dto';
-import { LogoutRecvDto } from './dto/logout-recv.dto';
+import { Response } from 'express';
 import {
   AUTH_SERVICE_TAG,
   errorSwitch,
-  SESSION_ID_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_NAME,
 } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
-import { DateEnum, HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
+import { DateEnum, MsgAuthEnum } from '../libs/enums';
+import { Cookie, Public, UserAgent } from '../decorators';
+import {
+  AccessTokenDto,
+  RefreshTokenValueAndUserAgentDto,
+  UserAndTokensDto,
+  UserDto,
+} from './dto';
+import { ITokens } from '../interfaces';
 
 type AsyncFunction<T> = () => Promise<T>;
 
-@ApiTags('Auth')
 @Controller('auth')
 export class UserController {
   constructor(@Inject(AUTH_SERVICE_TAG) private client: ClientProxy) {}
@@ -47,181 +44,137 @@ export class UserController {
       console.log(error);
       throw new HttpException(
         'Internal server error',
-        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  @ApiOperation({ summary: 'Sign up' })
-  @ApiBody({ type: SignUpDto })
-  @ApiResponse({
-    status: HttpStatusExtends.CREATED,
-    description: 'User created successfully',
-    type: UserDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.CONFLICT,
-    description: 'User already exists',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
+  @Public()
   @Post('signup')
   async signup(
     @Body() data: SignUpDto,
     @Res({ passthrough: true }) res: Response,
+    @UserAgent() userAgent: string,
   ) {
-    const result: UserDto | MicroserviceResponseStatus =
+    const result: UserAndTokensDto | MicroserviceResponseStatus =
       await this.handleAsyncOperation(async () => {
-        return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
-          this.client.send(MsgAuthEnum.SIGNUP, data),
-        );
+        return await firstValueFrom<
+          UserAndTokensDto | MicroserviceResponseStatus
+        >(this.client.send(MsgAuthEnum.SIGNUP, { ...data, userAgent }));
       });
     errorSwitch(result as MicroserviceResponseStatus);
-    const { session_id, ...rest } = result as UserDto;
-    res.cookie(SESSION_ID_COOKIE_NAME, session_id, {
+    const { user, tokens } = result as UserAndTokensDto;
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      expires: new Date(Date.now() + DateEnum.THREE_DAYS),
+      expires: new Date(Date.now() + DateEnum.THIRTY_DAYS),
     });
-    return rest;
+    return { user, accessToken: tokens.accessToken };
   }
 
-  @ApiOperation({ summary: 'Sign in' })
-  @ApiBody({ type: SignInDto })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'User signed in successfully',
-    type: UserDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'User not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.UNAUTHORIZED,
-    description: 'Wrong password',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
+  @Public()
   @Post('signin')
   async signin(
     @Body() data: SignInDto,
     @Res({ passthrough: true }) res: Response,
+    @UserAgent() userAgent: string,
   ) {
     const result = await this.handleAsyncOperation(async () => {
-      return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.SIGNIN, data),
-      );
+      return await firstValueFrom<
+        UserAndTokensDto | MicroserviceResponseStatus
+      >(this.client.send(MsgAuthEnum.SIGNIN, { ...data, userAgent }));
     });
     errorSwitch(result as MicroserviceResponseStatus);
-    const { session_id, ...rest } = result as UserDto;
-    res.cookie(SESSION_ID_COOKIE_NAME, session_id, {
+    const { user, tokens } = result as UserAndTokensDto;
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      expires: new Date(Date.now() + DateEnum.THREE_DAYS),
+      expires: new Date(Date.now() + DateEnum.THIRTY_DAYS),
     });
-    return rest;
+    return { user, accessToken: tokens.accessToken };
   }
 
-  @ApiOperation({ summary: 'Get user' })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'User retrieved successfully',
-    type: UserDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.UNAUTHORIZED,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'User not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.SESSION_EXPIRED,
-    description: 'Session expired',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
-  @ApiCookieAuth()
   @Get('me')
-  async me(@Req() req: Request) {
-    const session_id_from_cookie = req.cookies[SESSION_ID_COOKIE_NAME];
-    if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
+  async me(
+    @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+    @UserAgent() userAgent: string,
+  ) {
+    if (!refreshToken || !userAgent) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
     const result = await this.handleAsyncOperation(async () => {
+      const data: RefreshTokenValueAndUserAgentDto = {
+        value: refreshToken,
+        userAgent,
+      };
       return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.ME, { session_id_from_cookie }),
+        this.client.send(MsgAuthEnum.ME, data),
       );
     });
     errorSwitch(result as MicroserviceResponseStatus);
-    const rest = result as UserDto;
-    delete rest.session_id;
-    return rest;
+    return result as UserDto;
   }
 
-  @ApiOperation({ summary: 'Logout' })
-  @ApiResponse({
-    status: HttpStatusExtends.NO_CONTENT,
-    description: 'User signed out successfully',
-    type: LogoutRecvDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.SESSION_EXPIRED,
-    description: 'Session expired',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'User not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.FORBIDDEN,
-    description: 'Forbidden',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.UNAUTHORIZED,
-    description: 'Session ID is missing',
-  })
-  @ApiBody({ type: LogoutDto })
-  @ApiCookieAuth()
+  @Public()
+  @Post('refresh')
+  async refreshTokens(
+    @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+    @UserAgent() userAgent: string,
+  ) {
+    if (!refreshToken || !userAgent) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    const result = await this.handleAsyncOperation(async () => {
+      const data: RefreshTokenValueAndUserAgentDto = {
+        value: refreshToken,
+        userAgent,
+      };
+      return await firstValueFrom<ITokens | MicroserviceResponseStatus>(
+        this.client.send(MsgAuthEnum.REFRESH, data),
+      );
+    });
+    errorSwitch(result as MicroserviceResponseStatus);
+    const { accessToken, refreshToken: newRefreshToken } = result as ITokens;
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken.value, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + DateEnum.THIRTY_DAYS),
+    });
+    const response: AccessTokenDto = { value: accessToken };
+    return response;
+  }
+
   @Post('logout')
   async logout(
-    @Req() req: Request,
+    @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
+    @UserAgent() userAgent: string,
     @Res({ passthrough: true }) res: Response,
-    @Body() data: LogoutDto,
   ) {
-    const session_id_from_cookie = req.cookies[SESSION_ID_COOKIE_NAME];
-    if (!session_id_from_cookie) {
-      throw new HttpException('Unauthorized', HttpStatusExtends.UNAUTHORIZED);
+    if (!refreshToken) {
+      res.sendStatus(HttpStatus.OK);
+      return;
     }
     const result = await this.handleAsyncOperation(async () => {
-      return await firstValueFrom<LogoutRecvDto | MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.LOGOUT, {
-          csrf_token: data.csrf_token,
-          session_id_from_cookie,
-        }),
+      const data: RefreshTokenValueAndUserAgentDto = {
+        value: refreshToken,
+        userAgent,
+      };
+      return await firstValueFrom<MicroserviceResponseStatus>(
+        this.client.send(MsgAuthEnum.LOGOUT, data),
       );
     });
     errorSwitch(result as MicroserviceResponseStatus);
-    res.cookie(SESSION_ID_COOKIE_NAME, '', {
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, '', {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
       expires: new Date(),
     });
-    res.status(HttpStatusExtends.NO_CONTENT);
+    res.status(HttpStatus.NO_CONTENT);
   }
 }

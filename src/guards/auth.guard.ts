@@ -3,81 +3,57 @@ import {
   ExecutionContext,
   Injectable,
   Inject,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE_TAG, SESSION_ID_COOKIE_NAME } from '../libs/utils';
-import { HttpStatusExtends, MsgAuthEnum } from '../libs/enums';
+import { AUTH_SERVICE_TAG } from '../libs/utils';
+import { MsgAuthEnum } from '../libs/enums';
+import { AccessTokenDto } from '../user/dto';
+import { Reflector } from '@nestjs/core';
+import { isPublic } from '../decorators';
+import { MicroserviceResponseStatus } from '../libs/dto';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(@Inject(AUTH_SERVICE_TAG) private client: ClientProxy) {}
+  constructor(
+    @Inject(AUTH_SERVICE_TAG) private client: ClientProxy,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const _isPublic = isPublic(context, this.reflector);
+    if (_isPublic) {
+      return true;
+    }
+
     const req = context.switchToHttp().getRequest<Request>();
     const res = context.switchToHttp().getResponse<Response>();
 
-    const session_id_from_cookie = this.getSessionId(req, res);
-    const csrf_token = this.getCsrfToken(req, res);
-
-    if (
-      typeof session_id_from_cookie !== 'string' ||
-      typeof csrf_token !== 'string'
-    ) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
       return false;
     }
-    return await this.auth(session_id_from_cookie, csrf_token, res);
-  }
 
-  private getSessionId(req: Request, res: Response): string | undefined {
-    const session_id_from_cookie = this.getSessionIdFromCookie(req);
-    if (!session_id_from_cookie) {
-      this.sessionIdErrorResponse(res);
-      return undefined;
+    const token = this.extractToken(authHeader);
+    if (!token) {
+      return false;
     }
-    return session_id_from_cookie;
+    return await this.auth(token, res);
   }
 
-  private getSessionIdFromCookie(req: Request): string | undefined {
-    return req.cookies[SESSION_ID_COOKIE_NAME];
-  }
-
-  private sessionIdErrorResponse(res: Response): void {
-    res
-      .status(HttpStatusExtends.UNAUTHORIZED)
-      .json({ message: 'Session ID is missing' });
-  }
-
-  private getCsrfToken(req: Request, res: Response): string | undefined {
-    const csrf_token = this.getCsrfTokenFromBody(req);
-    if (!csrf_token) {
-      this.csrfErrorResponse(res);
-      return undefined;
+  private extractToken(authHeader: string): string | null {
+    const parts = authHeader.split(' ');
+    if (parts.length === 2 && parts[0] === 'Bearer') {
+      return parts[1];
     }
-    return csrf_token;
+    return null;
   }
 
-  private getCsrfTokenFromBody(req: Request): string | undefined {
-    return req.body.csrf_token;
-  }
-
-  private csrfErrorResponse(res: Response): void {
-    res
-      .status(HttpStatusExtends.FORBIDDEN)
-      .json({ message: 'CSRF token is missing' });
-  }
-
-  private async auth(
-    session_id_from_cookie: string,
-    csrf_token: string,
-    res: Response,
-  ): Promise<boolean> {
+  private async auth(token: string, res: Response): Promise<boolean> {
     try {
-      const result = await this.sendAuthData(
-        session_id_from_cookie,
-        csrf_token,
-      );
+      const result = await this.sendAuthData(token);
       return this.mappingError(result, res);
     } catch (error) {
       this.internalServerError(res);
@@ -86,42 +62,34 @@ export class AuthGuard implements CanActivate {
   }
 
   private async sendAuthData(
-    session_id_from_cookie: string,
-    csrf_token: string,
-  ): Promise<undefined | string> {
-    return await firstValueFrom(
-      this.client.send<undefined | string>(MsgAuthEnum.AUTH, {
-        session_id_from_cookie,
-        csrf_token,
-      }),
+    token: string,
+  ): Promise<MicroserviceResponseStatus> {
+    const data: AccessTokenDto = {
+      value: token,
+    };
+    const val = await firstValueFrom(
+      this.client.send<MicroserviceResponseStatus>(MsgAuthEnum.AUTH, data),
     );
+    return val;
   }
 
-  private mappingError(error: string, res: Response): boolean {
-    switch (error) {
-      case HttpStatusExtends.NOT_FOUND.toString():
-        res
-          .status(HttpStatusExtends.NOT_FOUND)
-          .json({ message: 'User not found' });
+  private mappingError(
+    error: MicroserviceResponseStatus,
+    res: Response,
+  ): boolean {
+    switch (error.status) {
+      case HttpStatus.NOT_FOUND:
+        res.status(HttpStatus.NOT_FOUND).json({ message: 'User not found' });
         return false;
-      case HttpStatusExtends.FORBIDDEN.toString():
-        res
-          .status(HttpStatusExtends.FORBIDDEN)
-          .json({ message: 'CSRF token is missing' });
+      case HttpStatus.FORBIDDEN:
+        res.status(HttpStatus.FORBIDDEN).json({ message: 'Forbidden' });
         return false;
-      case HttpStatusExtends.UNAUTHORIZED.toString():
-        res
-          .status(HttpStatusExtends.UNAUTHORIZED)
-          .json({ message: 'Unauthorized' });
+      case HttpStatus.UNAUTHORIZED:
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });
         return false;
-      case HttpStatusExtends.SESSION_EXPIRED.toString():
+      case HttpStatus.INTERNAL_SERVER_ERROR:
         res
-          .status(HttpStatusExtends.SESSION_EXPIRED)
-          .json({ message: 'Session expired' });
-        return false;
-      case HttpStatusExtends.INTERNAL_SERVER_ERROR.toString():
-        res
-          .status(HttpStatusExtends.INTERNAL_SERVER_ERROR)
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
           .json({ message: 'Internal server error' });
         return false;
       default:
@@ -131,7 +99,7 @@ export class AuthGuard implements CanActivate {
 
   private internalServerError(res: Response): void {
     res
-      .status(HttpStatusExtends.INTERNAL_SERVER_ERROR)
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .json({ message: 'Internal server error' });
   }
 }

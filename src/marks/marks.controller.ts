@@ -3,10 +3,10 @@ import {
   Controller,
   Get,
   HttpException,
+  HttpStatus,
   Inject,
   Post,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -15,28 +15,19 @@ import { firstValueFrom } from 'rxjs';
 import { VerifyMarkDto } from './dto/verify-mark.dto';
 import { MarkDto } from './dto/mark.dto';
 import { MarkRecvDto } from './dto/mark-recv.dto';
-import {
-  ApiBody,
-  ApiCookieAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { VerifiedRecvDto } from './dto/verified-recv.dto';
 import { CategoryDto } from './dto/category.dto';
 import { CreateMarkDto } from './dto/create-mark.dto';
-import { FeatureDto } from './dto/feature.dto';
 import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { errorSwitch, MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
-import { HttpStatusExtends, MsgMarksEnum } from '../libs/enums';
+import {  MsgMarksEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
-import { AuthGuard } from '../guards';
+import { Public } from '../decorators';
 
 type AsyncFunction<T> = () => Promise<T>;
 
-@ApiTags('Marks')
 @Controller('marks')
 export class MarkController {
   constructor(
@@ -53,25 +44,13 @@ export class MarkController {
       console.log(error);
       throw new HttpException(
         'Internal server error',
-        HttpStatusExtends.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  @ApiOperation({ summary: 'Get one mark' })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'Mark',
-    type: MarkRecvDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'Mark not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
+  
+  @Public()
   @Get('one')
   async getMark(@Query() data: MarkDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -83,17 +62,9 @@ export class MarkController {
     return result;
   }
 
-  @ApiOperation({ summary: 'Get nearest marks' })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'Marks',
-    type: [FeatureDto],
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
+
   @Get()
+  @Public()
   async getMarks(@Query() data: CoordsDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom<MicroserviceResponseStatus | MarkRecvDto[]>(
@@ -104,36 +75,7 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
-  @ApiOperation({ summary: 'Verify mark true' })
-  @ApiBody({ type: VerifyMarkDto })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'Mark verified',
-    type: VerifiedRecvDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'Mark not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.UNAUTHORIZED,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.FORBIDDEN,
-    description: 'CSRF token is missing',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.SESSION_EXPIRED,
-    description: 'Session expired',
-  })
-  @ApiCookieAuth()
   @Post('verify/true')
-  @UseGuards(AuthGuard)
   async verifyTrue(@Body() data: VerifyMarkDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom<MicroserviceResponseStatus | VerifiedRecvDto>(
@@ -144,35 +86,7 @@ export class MarkController {
     return result;
   }
 
-  @ApiOperation({ summary: 'Verify mark false' })
-  @ApiBody({ type: VerifyMarkDto })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'Mark verified',
-    type: FeatureDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'Mark not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.UNAUTHORIZED,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.FORBIDDEN,
-    description: 'CSRF token is missing',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.SESSION_EXPIRED,
-    description: 'Session expired',
-  })
-  @ApiCookieAuth()
-  @UseGuards(AuthGuard)
+  
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -184,21 +98,9 @@ export class MarkController {
     return result;
   }
 
-  @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({
-    status: HttpStatusExtends.OK,
-    description: 'Marks',
-    type: [CategoryDto],
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'Categories not found',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
+
   @Get('categories')
+  @Public()
   @CacheKey('categories')
   @UseInterceptors(CacheInterceptor)
   async getCategories() {
@@ -211,35 +113,7 @@ export class MarkController {
     return result;
   }
 
-  @ApiOperation({ summary: 'Create mark' })
-  @ApiBody({ type: VerifyMarkDto })
-  @ApiResponse({
-    status: HttpStatusExtends.CREATED,
-    description: 'Mark created',
-    type: FeatureDto,
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.UNAUTHORIZED,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.FORBIDDEN,
-    description: 'CSRF token is missing',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.SESSION_EXPIRED,
-    description: 'Session expired',
-  })
-  @ApiResponse({
-    status: HttpStatusExtends.NOT_FOUND,
-    description: 'User not found',
-  })
-  @ApiCookieAuth()
-  @UseGuards(AuthGuard)
+  
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
     const result = await this.handleAsyncOperation(async () => {

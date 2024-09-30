@@ -11,9 +11,4 @@ export class VerifyMarkDto {
   @IsNotEmpty()
   @ApiProperty({ description: 'User ID' })
   userId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'CSRF Token' })
-  csrf_token: string;
 }

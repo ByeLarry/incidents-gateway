@@ -17,14 +17,12 @@ export class LoggingInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest<Request>();
     const res = context.switchToHttp().getResponse<Response>();
     const { method, originalUrl } = req;
-    const userAgent = req.get('user-agent') || '';
 
     return next.handle().pipe(
       tap(() => {
         const { statusCode } = res;
-        const contentLength = res.get('content-length');
 
-        const logMessage = `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent}`;
+        const logMessage = `${method} ${originalUrl} ${statusCode}`;
         this.logger.log(logMessage);
       }),
     );

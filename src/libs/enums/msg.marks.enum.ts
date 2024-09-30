@@ -1,6 +1,4 @@
 export enum MsgMarksEnum {
-  TEST_CLIENT = 'test-send',
-  TEST = 'test-marks-send',
   MAP_INIT_CLIENT = 'map-init-send',
   MAP_INIT = 'map-init-marks-send',
   MARK_GET = 'mark-get-send',

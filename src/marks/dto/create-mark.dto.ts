@@ -9,11 +9,6 @@ export class CreateMarkDto {
   @ApiProperty({ description: 'User ID' })
   userId: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'CSRF Token' })
-  csrf_token: string;
-
   @IsNumber()
   @IsNotEmpty()
   @Transform(({ value }) => Number(value), { toClassOnly: true })

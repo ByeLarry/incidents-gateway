@@ -1,9 +1,9 @@
+import { HttpStatus } from '@nestjs/common';
 import { MicroserviceResponseStatus } from '../dto';
-import { HttpStatusExtends } from '../enums';
 
 export class MicroserviceResponseStatusFabric {
   static create(
-    status: HttpStatusExtends,
+    status: HttpStatus,
     message?: string,
   ): MicroserviceResponseStatus {
     return {

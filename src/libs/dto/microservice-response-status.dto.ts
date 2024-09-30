@@ -1,6 +1,6 @@
-import { HttpStatusExtends } from '../enums';
+import { HttpStatus } from '@nestjs/common';
 
 export interface MicroserviceResponseStatus {
-  status: HttpStatusExtends;
+  status: HttpStatus;
   message?: string;
 }

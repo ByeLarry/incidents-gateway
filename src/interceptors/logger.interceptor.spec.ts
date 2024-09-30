@@ -61,7 +61,7 @@ describe('LoggingInterceptor', () => {
     loggingInterceptor.intercept(context, next).subscribe();
 
     expect(mockLogger.log).toHaveBeenCalledWith(
-      'GET /test-url 200 123 - Mozilla/5.0',
+      'GET /test-url 200',
     );
   });
 
@@ -72,7 +72,7 @@ describe('LoggingInterceptor', () => {
     loggingInterceptor.intercept(context, next).subscribe();
 
     expect(mockLogger.log).toHaveBeenCalledWith(
-      'POST /another-url 200 null - ',
+      'POST /another-url 200',
     );
   });
 });
