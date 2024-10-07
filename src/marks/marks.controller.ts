@@ -7,6 +7,7 @@ import {
   Inject,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -22,9 +23,10 @@ import { MarksGateway } from './marks.gateway';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { errorSwitch, MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
-import {  MsgMarksEnum } from '../libs/enums';
+import { MsgMarksEnum, RolesEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
-import { Public } from '../decorators';
+import { Public, Roles } from '../decorators';
+import { RolesGuard } from '../guards';
 
 type AsyncFunction<T> = () => Promise<T>;
 
@@ -49,7 +51,6 @@ export class MarkController {
     }
   }
 
-  
   @Public()
   @Get('one')
   async getMark(@Query() data: MarkDto) {
@@ -61,7 +62,6 @@ export class MarkController {
     errorSwitch(result as MicroserviceResponseStatus);
     return result;
   }
-
 
   @Get()
   @Public()
@@ -75,6 +75,8 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
   @Post('verify/true')
   async verifyTrue(@Body() data: VerifyMarkDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -86,7 +88,8 @@ export class MarkController {
     return result;
   }
 
-  
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -97,7 +100,6 @@ export class MarkController {
     errorSwitch(result as MicroserviceResponseStatus);
     return result;
   }
-
 
   @Get('categories')
   @Public()
@@ -113,7 +115,6 @@ export class MarkController {
     return result;
   }
 
-  
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
     const result = await this.handleAsyncOperation(async () => {

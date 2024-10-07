@@ -1,13 +1,26 @@
-import { ROLES_KEY } from '../decorators/roles.decorator';
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { ROLES_KEY } from '../decorators';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RolesEnum } from '../libs/enums';
+import { MsgAuthEnum, RolesEnum } from '../libs/enums';
+import { AUTH_SERVICE_TAG, errorSwitch } from '../libs/utils';
+import { ClientProxy } from '@nestjs/microservices';
+import { AccessTokenDto, UserDto } from '../user/dto';
+import { firstValueFrom } from 'rxjs';
+import { MicroserviceResponseStatus } from '../libs/dto';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    @Inject(AUTH_SERVICE_TAG) private client: ClientProxy,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<RolesEnum[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
@@ -15,7 +28,28 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    const accessTokenValue = context.switchToHttp().getRequest().headers[
+      'authorization'
+    ];
+
+    if (!accessTokenValue) {
+      return false;
+    }
+
+    const requestDto: AccessTokenDto = {
+      value: accessTokenValue.replace('Bearer ', ''),
+    };
+
+    const user = await firstValueFrom(
+      this.client.send<UserDto | MicroserviceResponseStatus>(
+        MsgAuthEnum.USER_ROLES,
+        requestDto,
+      ),
+    );
+    errorSwitch(user as MicroserviceResponseStatus);
+    if (!user) {
+      return false;
+    }
+    return requiredRoles.some((role) => (user as UserDto).roles.includes(role));
   }
 }

@@ -15,6 +15,9 @@ import { Reflector } from '@nestjs/core';
 import { isPublic } from '../decorators';
 import { MicroserviceResponseStatus } from '../libs/dto';
 
+/**
+ * @deprecated
+ */
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
