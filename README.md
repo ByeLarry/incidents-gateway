@@ -29,21 +29,6 @@ docker-compose up -d
 
 _Диаграммы можно сохранять и редактировать в ***[draw.io](https://app.diagrams.net/)***_
 
-- ### Логика авторизации
-  ![Логика авторизации](https://github.com/user-attachments/assets/481fe2e6-893c-4cdc-98e7-a3adb1b102b2)
-
-- ### Логика входа в аккаунт
-  ![Логика входа в аккаунт](https://github.com/user-attachments/assets/67e0861b-abd3-435f-96dc-a5744827eaae)
-
-- ### Гвард авторизации
-  ![Мидлвер авторизации](https://github.com/user-attachments/assets/d0fc7450-0ea2-473a-97a4-155a64b443da)
-
-- ### Рефреш мидлвер
-  ![Рефреш мидлвер](https://github.com/user-attachments/assets/11d0cbbd-29c0-482a-83f6-c3703a819758)
-
-
-## Документация API
-![image](https://github.com/user-attachments/assets/9c59f42f-6cbd-43de-8435-78274efe1bd2)
 
 ## Ссылки
 
