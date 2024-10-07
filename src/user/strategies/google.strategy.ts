@@ -3,8 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
 
+export const GOOGLE_STRATEGY_NAME = 'google';
+
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+export class GoogleStrategy extends PassportStrategy(Strategy, GOOGLE_STRATEGY_NAME) {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('GOOGLE_CLIENT_ID'),

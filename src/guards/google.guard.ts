@@ -2,9 +2,10 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { GOOGLE_STRATEGY_NAME } from '../user/strategies';
 
 @Injectable()
-export class GoogleGuard extends AuthGuard('google') {
+export class GoogleGuard extends AuthGuard(GOOGLE_STRATEGY_NAME) {
   constructor(private readonly configService: ConfigService) {
     super();
   }

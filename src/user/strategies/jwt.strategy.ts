@@ -16,6 +16,8 @@ import { JwtAuthDto, UserDto } from '../dto';
 import { firstValueFrom } from 'rxjs';
 import { MicroserviceResponseStatus } from '../../libs/dto';
 
+export const JWT_STRATEGY_NAME = 'jwt';
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);

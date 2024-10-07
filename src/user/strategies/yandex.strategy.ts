@@ -3,8 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-yandex';
 
+export const YANDEX_STRATEGY_NAME = 'yandex';
+
 @Injectable()
-export class YandexStrategy extends PassportStrategy(Strategy, 'yandex') {
+export class YandexStrategy extends PassportStrategy(Strategy, YANDEX_STRATEGY_NAME) {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('YANDEX_APP_CLIENT_ID'),
