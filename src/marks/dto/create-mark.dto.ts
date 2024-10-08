@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
+import { AddressDto } from './';
 
 export class CreateMarkDto {
   @IsString()
@@ -36,4 +37,7 @@ export class CreateMarkDto {
   @IsNotEmpty()
   @ApiProperty({ description: 'Category ID' })
   categoryId: number;
+
+  @Type(() => AddressDto)
+  address?: AddressDto;
 }

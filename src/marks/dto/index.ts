@@ -8,3 +8,4 @@ export * from './mark.dto';
 export * from './properties.dto';
 export * from './verified-recv.dto';
 export * from './verify-mark.dto';
+export * from './address.dto';
