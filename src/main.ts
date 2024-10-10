@@ -11,7 +11,12 @@ import { SESSION_ID_COOKIE_NAME } from './libs/utils/consts.util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors(clientCors(process.env.CLIENT_HOST || 'http://localhost'));
+  app.enableCors(
+    clientCors([
+      process.env.CLIENT_HOST || 'http://localhost',
+      process.env.ADMIN_HOST || 'http://localhost:4200',
+    ]),
+  );
   app.use(cookieParser());
   app.use(compression({ level: 6, threshold: 1024 }));
   app.use(helmet());

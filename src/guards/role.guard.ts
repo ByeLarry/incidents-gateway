@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { MsgAuthEnum, RolesEnum } from '../libs/enums';
-import { AUTH_SERVICE_TAG, errorSwitch } from '../libs/utils';
+import { AUTH_SERVICE_TAG, throwErrorIfExists } from '../libs/utils';
 import { ClientProxy } from '@nestjs/microservices';
 import { AccessTokenDto, UserDto } from '../user/dto';
 import { firstValueFrom } from 'rxjs';
@@ -46,7 +46,7 @@ export class RolesGuard implements CanActivate {
         requestDto,
       ),
     );
-    errorSwitch(user as MicroserviceResponseStatus);
+    throwErrorIfExists(user as MicroserviceResponseStatus);
     if (!user) {
       return false;
     }

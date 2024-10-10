@@ -9,12 +9,14 @@ import { LoggingInterceptor } from './interceptors/logger.interceptor';
 import { UserModule } from './user/user.module';
 import { JwtAuthGuard } from './guards';
 import { AuthServiceProvide } from './libs/utils';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     MarksModule,
+    CategoriesModule,
     CacheModule.register({
       isGlobal: true,
       store: redisStore,

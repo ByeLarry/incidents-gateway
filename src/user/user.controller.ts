@@ -20,8 +20,8 @@ import { firstValueFrom, mergeMap } from 'rxjs';
 import { Request, Response } from 'express';
 import {
   AUTH_SERVICE_TAG,
-  errorSwitch,
   REFRESH_TOKEN_COOKIE_NAME,
+  throwErrorIfExists,
 } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
 import { DateEnum, MsgAuthEnum } from '../libs/enums';
@@ -59,7 +59,7 @@ export class UserController {
     try {
       return await operation();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -80,7 +80,7 @@ export class UserController {
           UserAndTokensDto | MicroserviceResponseStatus
         >(this.client.send(MsgAuthEnum.SIGNUP, { ...data, userAgent }));
       });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
       httpOnly: true,
@@ -103,7 +103,7 @@ export class UserController {
         UserAndTokensDto | MicroserviceResponseStatus
       >(this.client.send(MsgAuthEnum.SIGNIN, { ...data, userAgent }));
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
       httpOnly: true,
@@ -137,7 +137,7 @@ export class UserController {
         this.client.send(MsgAuthEnum.ME, data),
       );
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     return result as UserDto;
   }
 
@@ -160,7 +160,7 @@ export class UserController {
         this.client.send(MsgAuthEnum.REFRESH, data),
       );
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     const { accessToken, refreshToken: newRefreshToken } = result as ITokens;
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken.value, {
       httpOnly: true,
@@ -191,7 +191,7 @@ export class UserController {
         this.client.send(MsgAuthEnum.LOGOUT, data),
       );
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, '', {
       httpOnly: true,
       secure: true,
@@ -219,7 +219,7 @@ export class UserController {
         this.client.send(MsgAuthEnum.DELETE, data),
       );
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, '', {
       httpOnly: true,
       secure: true,
@@ -277,7 +277,7 @@ export class UserController {
           ),
       );
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
       httpOnly: true,
@@ -336,7 +336,7 @@ export class UserController {
           ),
       );
     });
-    errorSwitch(result as MicroserviceResponseStatus);
+    throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
       httpOnly: true,

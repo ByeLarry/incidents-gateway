@@ -1,4 +1,3 @@
-export * from './category.dto';
 export * from './coords.dto';
 export * from './create-mark.dto';
 export * from './feature.dto';

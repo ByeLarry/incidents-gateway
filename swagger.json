@@ -332,17 +332,6 @@
         }
       }
     },
-    "/api/marks/categories": {
-      "get": {
-        "operationId": "MarkController_getCategories",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/marks/create": {
       "post": {
         "operationId": "MarkController_createMark",
@@ -359,6 +348,28 @@
         },
         "responses": {
           "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/categories/categories": {
+      "get": {
+        "operationId": "CategoriesController_getCategories",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/categories/stats": {
+      "get": {
+        "operationId": "CategoriesController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
             "description": ""
           }
         }

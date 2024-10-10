@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IJwtPayload } from '../../interfaces';
-import { AUTH_SERVICE_TAG, errorSwitch } from '../../libs/utils';
+import { AUTH_SERVICE_TAG, throwErrorIfExists } from '../../libs/utils';
 import { ClientProxy } from '@nestjs/microservices';
 import { MsgAuthEnum } from '../../libs/enums';
 import { JwtAuthDto, UserDto } from '../dto';
@@ -40,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ),
     );
     if (!user) throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    errorSwitch(user as MicroserviceResponseStatus);
+    throwErrorIfExists(user as MicroserviceResponseStatus);
     return user as UserDto;
   }
 }

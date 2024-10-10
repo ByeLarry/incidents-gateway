@@ -1,7 +1,9 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { MicroserviceResponseStatus } from '../dto/microservice-response-status.dto';
 
-export function errorSwitch(message: MicroserviceResponseStatus) {
+
+
+export function throwErrorIfExists(message: MicroserviceResponseStatus) {
   switch (message.status as HttpStatus) {
     case HttpStatus.NOT_FOUND:
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
