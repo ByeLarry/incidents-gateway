@@ -212,6 +212,27 @@
         }
       }
     },
+    "/api/auth/admin-login": {
+      "post": {
+        "operationId": "UserController_adminLogin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
@@ -436,6 +457,10 @@
           "email",
           "password"
         ]
+      },
+      "AdminLoginDto": {
+        "type": "object",
+        "properties": {}
       },
       "VerifyMarkDto": {
         "type": "object",

@@ -28,6 +28,7 @@ import { DateEnum, MsgAuthEnum } from '../libs/enums';
 import { Cookie, Public, UserAgent } from '../decorators';
 import {
   AccessTokenDto,
+  AdminLoginDto,
   AuthProvidersDto,
   DeleteUserDto,
   RefreshTokenValueAndUserAgentDto,
@@ -335,6 +336,33 @@ export class UserController {
             handleTimeoutAndErrors(),
           ),
       );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    const { user, tokens } = result as UserAndTokensDto;
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + DateEnum.THIRTY_DAYS),
+    });
+    return { user, accessToken: tokens.accessToken };
+  }
+
+  @Public()
+  @Post('admin-login')
+  async adminLogin(
+    @Body() data: AdminLoginDto,
+    @UserAgent() userAgent: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.handleAsyncOperation(async () => {
+      const adminData: AdminLoginDto = {
+        ...data,
+        userAgent,
+      };
+      return await firstValueFrom<
+        UserAndTokensDto | MicroserviceResponseStatus
+      >(this.client.send(MsgAuthEnum.ADMIN_LOGIN, adminData));
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;

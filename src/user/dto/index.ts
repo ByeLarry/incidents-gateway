@@ -9,3 +9,4 @@ export * from './user-id-and-access-token-value.dto';
 export * from './user-roles.dto';
 export * from './auth-providers.dto';
 export * from './jwt-auth.dto';
+export * from './admin-login.dto';
