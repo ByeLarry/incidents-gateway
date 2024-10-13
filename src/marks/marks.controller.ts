@@ -14,13 +14,14 @@ import { MarkDto } from './dto/mark.dto';
 import { MarkRecvDto } from './dto/mark-recv.dto';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { MarksGateway } from './marks.gateway';
-import {  MARKS_SERVICE_TAG } from '../libs/utils';
+import { MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
 import { MsgMarksEnum, RolesEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
 import { Public, Roles } from '../decorators';
 import { RolesGuard } from '../guards';
 import { MicroserviceSender } from '../libs/helpers/microservice-sender';
+import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 
 @Controller('marks')
 export class MarkController {
@@ -71,7 +72,11 @@ export class MarkController {
     const result = await MicroserviceSender.send<
       CreateMarkDto,
       MicroserviceResponseStatus | MarkRecvDto
-    >(this.client, MsgMarksEnum.MARK_GET, data);
+    >(this.client, MsgMarksEnum.CREATE_MARK, data);
+    this.marksGateway.emitMessageToAll(
+      WebSocketMessageEnum.NEW_MARK,
+      FeatureTransformer.transformToFeatureDto(result as MarkRecvDto),
+    );
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
 }

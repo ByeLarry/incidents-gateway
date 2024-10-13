@@ -6,3 +6,4 @@ export const NO_USER_AGENT = 'No-user-agent';
 export const PRODACTION_ENV = 'production';
 export const TEST_ENV = 'test';
 export const DEVELOPMENT_ENV = 'development';
+export const CACHE_CATEGORIES_KEY = 'categories';
