@@ -29,6 +29,11 @@ docker-compose up -d
 
 _Диаграммы можно сохранять и редактировать в ***[draw.io](https://app.diagrams.net/)***_
 
+- ### Схема алгоритма JWT авторизации
+  ![JWT](https://github.com/user-attachments/assets/fdb79e51-fa62-451b-95a0-95cd6aefc855)
+
+- ### Схема алгоритма OAuth авторизации
+  ![Authorization Code Grant](https://github.com/user-attachments/assets/ba56743c-4d7d-4a5d-9776-d20ff7e19235)
 
 ## Ссылки
 
