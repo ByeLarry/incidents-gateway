@@ -272,6 +272,92 @@
         ]
       }
     },
+    "/api/auth/users": {
+      "get": {
+        "operationId": "UserController_getUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/block": {
+      "patch": {
+        "operationId": "UserController_blockUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/unblock": {
+      "patch": {
+        "operationId": "UserController_unblockUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/admin": {
+      "patch": {
+        "operationId": "UserController_updateAdmin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
@@ -496,6 +582,14 @@
         "properties": {}
       },
       "AdminLoginDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserIdDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateAdminDto": {
         "type": "object",
         "properties": {}
       },

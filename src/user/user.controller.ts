@@ -12,6 +12,7 @@ import {
   Headers,
   UseGuards,
   Req,
+  Patch,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { SignUpDto } from './dto/signup.dto';
@@ -24,17 +25,19 @@ import {
   throwErrorIfExists,
 } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
-import { DateEnum, MsgAuthEnum } from '../libs/enums';
-import { Cookie, Public, UserAgent } from '../decorators';
+import { DateEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
+import { Cookie, Public, Roles, UserAgent } from '../decorators';
 import {
   AccessTokenDto,
   AdminLoginDto,
   AuthProvidersDto,
   DeleteUserDto,
   RefreshTokenValueAndUserAgentDto,
+  UpdateAdminDto,
   UserAndTokensDto,
   UserDto,
   UserIdAndAccessTokenValueDto,
+  UserIdDto,
 } from './dto';
 import { ITokens } from '../interfaces';
 import { GoogleGuard } from '../guards/google.guard';
@@ -365,6 +368,65 @@ export class UserController {
       return await firstValueFrom<
         UserAndTokensDto | MicroserviceResponseStatus
       >(this.client.send(MsgAuthEnum.ADMIN_LOGIN, adminData));
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    const { user, tokens } = result as UserAndTokensDto;
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken.value, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + DateEnum.THIRTY_DAYS),
+    });
+    return { user, accessToken: tokens.accessToken };
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Get('users')
+  async getUsers() {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.GET_ALL_USERS, {}),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Patch('block')
+  async blockUser(@Body() dto: UserIdDto) {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.BLOCK_USER, dto),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Patch('unblock')
+  async unblockUser(@Body() dto: UserIdDto) {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.UNBLOCK_USER, dto),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Patch('admin')
+  async updateAdmin(
+    @Body() dto: UpdateAdminDto,
+    @UserAgent() userAgent: string,
+    @Res({passthrough: true}) res: Response,
+  ) {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.UPDATE_ADMIN, { ...dto, userAgent }),
+      );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
