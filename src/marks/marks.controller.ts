@@ -22,7 +22,9 @@ import { Public, Roles } from '../decorators';
 import { RolesGuard } from '../guards';
 import { MicroserviceSender } from '../libs/helpers/microservice-sender';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('marks')
 @Controller('marks')
 export class MarkController {
   constructor(

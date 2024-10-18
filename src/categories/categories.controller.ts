@@ -21,7 +21,9 @@ import {
 } from '@nestjs/cache-manager';
 import { MicroserviceSender } from '../libs/helpers/microservice-sender';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(

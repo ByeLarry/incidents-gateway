@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -14,11 +13,9 @@ export class GeometryDto {
   @ArrayMaxSize(2)
   @IsNumber({}, { each: true })
   @IsNotEmpty()
-  @ApiProperty({ description: 'Mark coordinates' })
   coordinates: [number, number];
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Mark type' })
   type: string;
 }

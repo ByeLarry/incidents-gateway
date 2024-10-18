@@ -19,7 +19,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/signin": {
@@ -40,7 +43,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/me": {
@@ -51,7 +57,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/refresh": {
@@ -62,7 +71,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/logout": {
@@ -73,7 +85,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth": {
@@ -93,7 +108,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/google": {
@@ -104,7 +122,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/google/callback": {
@@ -115,7 +136,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/google/success": {
@@ -151,7 +175,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/yandex": {
@@ -162,7 +189,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/yandex/callback": {
@@ -173,7 +203,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/yandex/success": {
@@ -209,7 +242,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/auth/admin-login": {
@@ -230,85 +266,38 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "query",
-            "description": "User ID",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "markId",
-            "required": true,
-            "in": "query",
-            "description": "Mark ID",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "lat",
-            "required": true,
-            "in": "query",
-            "description": "Mark latitude",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "lng",
-            "required": true,
-            "in": "query",
-            "description": "Mark longitude",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "marks"
+        ]
       }
     },
     "/api/marks": {
       "get": {
         "operationId": "MarkController_getMarks",
-        "parameters": [
-          {
-            "name": "lat",
-            "required": true,
-            "in": "query",
-            "description": "Latitude",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "lng",
-            "required": true,
-            "in": "query",
-            "description": "Longitude",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "marks"
+        ]
       }
     },
     "/api/marks/verify/true": {
@@ -329,7 +318,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "marks"
+        ]
       }
     },
     "/api/marks/verify/false": {
@@ -350,7 +342,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "marks"
+        ]
       }
     },
     "/api/marks/create": {
@@ -371,7 +366,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "marks"
+        ]
       }
     },
     "/api/categories/categories": {
@@ -382,7 +380,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/api/categories/create": {
@@ -403,7 +404,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/api/categories": {
@@ -423,7 +427,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Categories"
+        ]
       },
       "patch": {
         "operationId": "CategoriesController_updateCategory",
@@ -442,7 +449,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/api/categories/stats": {
@@ -453,7 +463,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Categories"
+        ]
       }
     }
   },
@@ -476,47 +489,11 @@
     "schemas": {
       "SignUpDto": {
         "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "User's first name"
-          },
-          "password": {
-            "type": "string",
-            "description": "User's password"
-          },
-          "email": {
-            "type": "string",
-            "description": "User's email address"
-          },
-          "surname": {
-            "type": "string",
-            "description": "User's last name"
-          }
-        },
-        "required": [
-          "name",
-          "password",
-          "email",
-          "surname"
-        ]
+        "properties": {}
       },
       "SignInDto": {
         "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email address"
-          },
-          "password": {
-            "type": "string",
-            "description": "User's password"
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
+        "properties": {}
       },
       "AdminLoginDto": {
         "type": "object",
@@ -524,57 +501,11 @@
       },
       "VerifyMarkDto": {
         "type": "object",
-        "properties": {
-          "markId": {
-            "type": "number",
-            "description": "Mark ID"
-          },
-          "userId": {
-            "type": "string",
-            "description": "User ID"
-          }
-        },
-        "required": [
-          "markId",
-          "userId"
-        ]
+        "properties": {}
       },
       "CreateMarkDto": {
         "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "description": "User ID"
-          },
-          "lat": {
-            "type": "number",
-            "description": "Latitude"
-          },
-          "lng": {
-            "type": "number",
-            "description": "Longitude"
-          },
-          "title": {
-            "type": "string",
-            "description": "Title"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description"
-          },
-          "categoryId": {
-            "type": "number",
-            "description": "Category ID"
-          }
-        },
-        "required": [
-          "userId",
-          "lat",
-          "lng",
-          "title",
-          "description",
-          "categoryId"
-        ]
+        "properties": {}
       },
       "CreateCategoryDto": {
         "type": "object",

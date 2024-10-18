@@ -43,9 +43,11 @@ import { handleTimeoutAndErrors } from '../libs/helpers';
 import { ConfigService } from '@nestjs/config';
 import { YandexGuard } from '../guards/yandex.guard';
 import { QueryDecodePipe } from '../pipes';
+import { ApiTags } from '@nestjs/swagger';
 
 type AsyncFunction<T> = () => Promise<T>;
 
+@ApiTags('Auth')
 @Controller('auth')
 export class UserController {
   constructor(
