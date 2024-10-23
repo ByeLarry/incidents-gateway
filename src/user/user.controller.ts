@@ -13,6 +13,7 @@ import {
   UseGuards,
   Req,
   Patch,
+  Param,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { SignUpDto } from './dto/signup.dto';
@@ -24,13 +25,15 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   throwErrorIfExists,
 } from '../libs/utils';
-import { MicroserviceResponseStatus } from '../libs/dto';
+import { MicroserviceResponseStatus, PaginationDto } from '../libs/dto';
 import { DateEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
 import { Cookie, Public, Roles, UserAgent } from '../decorators';
 import {
   AccessTokenDto,
+  AddAdminDto,
   AdminLoginDto,
   AuthProvidersDto,
+  CreateUserDto,
   DeleteUserDto,
   RefreshTokenValueAndUserAgentDto,
   UpdateAdminDto,
@@ -382,10 +385,10 @@ export class UserController {
 
   @Roles(RolesEnum.ADMIN)
   @Get('users')
-  async getUsers() {
+  async getUsers(@Query() dto: PaginationDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.GET_ALL_USERS, {}),
+        this.client.send(MsgAuthEnum.GET_ALL_USERS, dto),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -421,7 +424,7 @@ export class UserController {
   async updateAdmin(
     @Body() dto: UpdateAdminDto,
     @UserAgent() userAgent: string,
-    @Res({passthrough: true}) res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
@@ -437,5 +440,64 @@ export class UserController {
       expires: new Date(Date.now() + DateEnum.THIRTY_DAYS),
     });
     return { user, accessToken: tokens.accessToken };
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Post('admin/create-user')
+  async createUserByAdmin(@Body() dto: CreateUserDto) {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.CREATE_USER_BY_ADMIN, dto),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Delete('admin/:id')
+  async deleteUserByAdmin(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+    @Headers('authorization') accessToken: string,
+  ) {
+    if (!accessToken) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    const result = await this.handleAsyncOperation(async () => {
+      const data: UserIdAndAccessTokenValueDto = {
+        accessTokenValue: accessToken.replace('Bearer ', ''),
+        userId: id,
+      };
+      return await firstValueFrom<MicroserviceResponseStatus>(
+        this.client.send(MsgAuthEnum.DELETE, data),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    res.status(HttpStatus.NO_CONTENT);
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Patch('admin/add')
+  async addAdminRoleToUser(@Body() dto: AddAdminDto) {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.ADD_ADMIN_ROLE_TO_USER, dto),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @Get('stats')
+  async getStats() {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.USERS_STATS, {}),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
   }
 }
