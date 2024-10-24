@@ -551,6 +551,20 @@
         ]
       }
     },
+    "/api/marks/all": {
+      "get": {
+        "operationId": "MarkController_getAllMarks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "marks"
+        ]
+      }
+    },
     "/api/categories/categories": {
       "get": {
         "operationId": "CategoriesController_getCategories",

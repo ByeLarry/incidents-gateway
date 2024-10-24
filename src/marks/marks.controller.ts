@@ -81,4 +81,15 @@ export class MarkController {
     );
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
+
+  @Get('all')
+  @Public()
+  async getAllMarks() {
+    const result = await MicroserviceSender.send(
+      this.client,
+      MsgMarksEnum.GET_ALL_MARKS,
+      {},
+    );
+    return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
+  }
 }
