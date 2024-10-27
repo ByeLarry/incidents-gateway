@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { MsgMarksEnum, RolesEnum } from '../libs/enums';
@@ -22,6 +23,7 @@ import {
 import { MicroserviceSender } from '../libs/helpers/microservice-sender';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { RolesGuard } from '../guards';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -44,6 +46,7 @@ export class CategoriesController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Post('create')
   async createCategory(@Body() dto: CreateCategoryDto) {
     const result = await MicroserviceSender.send(
@@ -56,9 +59,9 @@ export class CategoriesController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Delete()
   async deleteCategory(@Query('id') id: string) {
-    console.log(id);
     const result = await MicroserviceSender.send(
       this.client,
       MsgMarksEnum.DELETE_CATEGORY,
@@ -69,6 +72,7 @@ export class CategoriesController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Patch()
   async updateCategory(@Body() dto: UpdateCategoryDto) {
     const result = await MicroserviceSender.send(
@@ -81,6 +85,7 @@ export class CategoriesController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Get('stats')
   async getStats() {
     return await MicroserviceSender.send(

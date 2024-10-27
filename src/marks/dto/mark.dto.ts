@@ -1,11 +1,10 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class MarkDto {
   @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }) => String(value), { toClassOnly: true })
-  userId: string;
+  @IsOptional()
+  userId?: string;
 
   @IsNumber()
   @IsNotEmpty()

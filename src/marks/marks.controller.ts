@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -91,5 +93,21 @@ export class MarkController {
       {},
     );
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.ADMIN)
+  async deleteMark(@Param('id') id: string) {
+    const result = await MicroserviceSender.send(
+      this.client,
+      MsgMarksEnum.DELETE_MARK,
+      Number(id),
+    );
+    this.marksGateway.emitMessageToAll(
+      WebSocketMessageEnum.DELETE_MARK,
+      FeatureTransformer.transformToFeatureDto(result as MarkRecvDto),
+    );
+    return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
 }

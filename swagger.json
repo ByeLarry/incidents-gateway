@@ -565,6 +565,29 @@
         ]
       }
     },
+    "/api/marks/{id}": {
+      "delete": {
+        "operationId": "MarkController_deleteMark",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "marks"
+        ]
+      }
+    },
     "/api/categories/categories": {
       "get": {
         "operationId": "CategoriesController_getCategories",

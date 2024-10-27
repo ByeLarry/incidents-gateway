@@ -7,7 +7,7 @@ import * as DailyRotateFile from 'winston-daily-rotate-file';
 export class AppLoggerService {
   private readonly logger: Logger;
   private readonly fileConfig: DailyRotateFile = new DailyRotateFile({
-    filename: 'logs/application-%DATE%.log',
+    filename: 'logs/gateway-%DATE%.log',
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxSize: '20m',

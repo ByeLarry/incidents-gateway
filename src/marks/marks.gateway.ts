@@ -4,7 +4,9 @@ import { Server } from 'socket.io';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 
 @Injectable()
-@WebSocketGateway({ cors: { origin: 'http://localhost' } })
+@WebSocketGateway({
+  cors: { origin: ['http://localhost', 'http://localhost:4200'] },
+})
 export class MarksGateway {
   @WebSocketServer() server: Server;
 

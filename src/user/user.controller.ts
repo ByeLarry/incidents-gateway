@@ -50,6 +50,7 @@ import { ConfigService } from '@nestjs/config';
 import { YandexGuard } from '../guards/yandex.guard';
 import { QueryDecodePipe } from '../pipes';
 import { ApiTags } from '@nestjs/swagger';
+import { RolesGuard } from '../guards';
 
 type AsyncFunction<T> = () => Promise<T>;
 
@@ -384,6 +385,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Get('users')
   async getUsers(@Query() dto: PaginationDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -396,6 +398,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Patch('block')
   async blockUser(@Body() dto: UserIdDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -408,6 +411,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Patch('unblock')
   async unblockUser(@Body() dto: UserIdDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -420,6 +424,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Patch('admin')
   async updateAdmin(
     @Body() dto: UpdateAdminDto,
@@ -443,6 +448,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Post('admin/create-user')
   async createUserByAdmin(@Body() dto: CreateUserDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -455,6 +461,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Delete('admin/:id')
   async deleteUserByAdmin(
     @Param('id') id: string,
@@ -478,6 +485,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Patch('admin/add')
   async addAdminRoleToUser(@Body() dto: AddAdminDto) {
     const result = await this.handleAsyncOperation(async () => {
@@ -490,6 +498,7 @@ export class UserController {
   }
 
   @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
   @Get('stats')
   async getStats() {
     const result = await this.handleAsyncOperation(async () => {
