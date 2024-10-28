@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
+import { createWebSocketConfig } from '../libs/utils';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-@WebSocketGateway({
-  cors: { origin: ['http://localhost', 'http://localhost:4200'] },
-})
+@WebSocketGateway(createWebSocketConfig(new ConfigService()))
 export class MarksGateway {
   @WebSocketServer() server: Server;
 
