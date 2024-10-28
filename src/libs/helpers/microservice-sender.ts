@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { MicroserviceResponseStatus } from '../dto';
 import { firstValueFrom } from 'rxjs';
-import { MsgMarksEnum } from '../enums';
+import { MsgCategoriesEnum, MsgMarksEnum } from '../enums';
 import { ClientProxy } from '@nestjs/microservices';
 import { throwErrorIfExists } from '../utils';
 
@@ -24,7 +24,7 @@ export class MicroserviceSender {
 
   public static async send<T, U>(
     client: ClientProxy,
-    pattern: MsgMarksEnum,
+    pattern: MsgMarksEnum | MsgCategoriesEnum,
     data: T,
   ) {
     const result = await this.handleAsyncOperation(async () => {

@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { MsgMarksEnum, RolesEnum } from '../libs/enums';
+import { MsgCategoriesEnum, RolesEnum } from '../libs/enums';
 import { CACHE_CATEGORIES_KEY, MARKS_SERVICE_TAG } from '../libs/utils';
 import { ClientProxy } from '@nestjs/microservices';
 import { Public, Roles } from '../decorators';
@@ -40,7 +40,7 @@ export class CategoriesController {
   async getCategories() {
     return await MicroserviceSender.send(
       this.client,
-      MsgMarksEnum.CATEGORIES,
+      MsgCategoriesEnum.CATEGORIES,
       {},
     );
   }
@@ -51,7 +51,7 @@ export class CategoriesController {
   async createCategory(@Body() dto: CreateCategoryDto) {
     const result = await MicroserviceSender.send(
       this.client,
-      MsgMarksEnum.CREATE_CATEGORY,
+      MsgCategoriesEnum.CREATE_CATEGORY,
       dto,
     );
     this.cacheManager.del(CACHE_CATEGORIES_KEY);
@@ -64,7 +64,7 @@ export class CategoriesController {
   async deleteCategory(@Query('id') id: string) {
     const result = await MicroserviceSender.send(
       this.client,
-      MsgMarksEnum.DELETE_CATEGORY,
+      MsgCategoriesEnum.DELETE_CATEGORY,
       { id: Number(id) },
     );
     this.cacheManager.del(CACHE_CATEGORIES_KEY);
@@ -77,7 +77,7 @@ export class CategoriesController {
   async updateCategory(@Body() dto: UpdateCategoryDto) {
     const result = await MicroserviceSender.send(
       this.client,
-      MsgMarksEnum.UPDATE_CATEGORY,
+      MsgCategoriesEnum.UPDATE_CATEGORY,
       dto,
     );
     this.cacheManager.del(CACHE_CATEGORIES_KEY);
@@ -90,7 +90,7 @@ export class CategoriesController {
   async getStats() {
     return await MicroserviceSender.send(
       this.client,
-      MsgMarksEnum.CATEGORIES_STATS,
+      MsgCategoriesEnum.CATEGORIES_STATS,
       {},
     );
   }
