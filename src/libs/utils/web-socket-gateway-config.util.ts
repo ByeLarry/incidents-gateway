@@ -1,12 +1,14 @@
-import { ConfigService } from '@nestjs/config';
+import * as dotenv from 'dotenv';
 
-export const createWebSocketConfig = (configService: ConfigService) => {
+dotenv.config();
+
+export const createWebSocketConfig = () => {
+  const clientHost = process.env.CLIENT_HOST;
+  const adminHost = process.env.ADMIN_HOST;
+
   return {
     cors: {
-      origin: [
-        configService.get<string>('CLIENT_HOST'),
-        configService.get<string>('ADMIN_HOST'),
-      ],
+      origin: [clientHost, adminHost],
     },
   };
 };

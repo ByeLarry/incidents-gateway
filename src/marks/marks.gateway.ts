@@ -3,10 +3,9 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 import { createWebSocketConfig } from '../libs/utils';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-@WebSocketGateway(createWebSocketConfig(new ConfigService()))
+@WebSocketGateway(createWebSocketConfig())
 export class MarksGateway {
   @WebSocketServer() server: Server;
 
