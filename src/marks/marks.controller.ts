@@ -16,7 +16,7 @@ import { MarkDto } from './dto/mark.dto';
 import { MarkRecvDto } from './dto/mark-recv.dto';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { MarksGateway } from './marks.gateway';
-import { MARKS_SERVICE_TAG } from '../libs/utils';
+import { MARKS_SERVICE_TAG, SEARCH_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
 import { MsgMarksEnum, RolesEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
@@ -32,6 +32,7 @@ export class MarkController {
   constructor(
     @Inject(MARKS_SERVICE_TAG) private client: ClientProxy,
     private readonly marksGateway: MarksGateway,
+    @Inject(SEARCH_SERVICE_TAG) private searchClient: ClientProxy,
   ) {}
   @Public()
   @Get('one')
