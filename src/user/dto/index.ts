@@ -16,3 +16,4 @@ export * from './create-user.dto';
 export * from './add-admin.dto';
 export * from './users-stats.dto';
 export * from './users-via-pagination.dto';
+export * from './search.dto';

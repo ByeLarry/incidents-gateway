@@ -7,6 +7,8 @@ import {
 } from '../libs/utils';
 import { MarksGateway } from './marks.gateway';
 import { GUARDS } from '../guards';
+import { MicroserviceSenderService } from '../libs/services';
+import { AppLoggerService } from '../libs/helpers';
 
 @Module({
   controllers: [MarkController],
@@ -16,6 +18,8 @@ import { GUARDS } from '../guards';
     MarksGateway,
     AuthServiceProvide,
     ...GUARDS,
+    MicroserviceSenderService,
+    AppLoggerService,
   ],
 })
 export class MarksModule {}

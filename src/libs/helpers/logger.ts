@@ -1,29 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { Logger, format, createLogger } from 'winston';
-
+import * as winston from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 @Injectable()
 export class AppLoggerService {
-  private readonly logger: Logger;
-  private readonly fileConfig: DailyRotateFile = new DailyRotateFile({
-    filename: 'logs/gateway-%DATE%.log',
-    datePattern: 'YYYY-MM-DD',
-    zippedArchive: true,
-    maxSize: '20m',
-    maxFiles: '14d',
-    level: 'info',
-    format: format.combine(
-      format.timestamp(),
-      format.printf(({ timestamp, level, message }) => {
-        return `[${timestamp}] ${level}: ${message}`;
-      }),
-    ),
-  });
+  private readonly logger: winston.Logger;
 
   constructor() {
-    this.logger = createLogger({
-      transports: [this.fileConfig],
+    this.logger = winston.createLogger({
+      transports: [
+        new DailyRotateFile({
+          filename: 'logs/gateway-%DATE%.log',
+          datePattern: 'YYYY-MM-DD',
+          zippedArchive: true,
+          maxSize: '20m',
+          maxFiles: '7d',
+          level: 'info',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(({ timestamp, level, message }) => {
+              return `[${timestamp}] ${level}: ${message}`;
+            }),
+          ),
+        }),
+        new winston.transports.Console({
+          level: 'info',
+          format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.timestamp(),
+            winston.format.printf(({ timestamp, level, message }) => {
+              return `[${timestamp}] ${level}: ${message}`;
+            }),
+          ),
+        }),
+      ],
     });
   }
 
@@ -31,8 +41,9 @@ export class AppLoggerService {
     this.logger.log('info', message);
   }
 
-  error(message: string, trace: string) {
-    this.logger.error(message, { trace });
+  error(message: string, trace?: string) {
+    if (trace) this.logger.error(message, { trace });
+    else this.logger.error(message);
   }
 
   warn(message: string) {

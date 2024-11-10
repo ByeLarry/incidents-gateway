@@ -1,20 +1,25 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MicroserviceResponseStatus } from '../dto';
 import { firstValueFrom } from 'rxjs';
 import { MsgCategoriesEnum, MsgMarksEnum } from '../enums';
 import { ClientProxy } from '@nestjs/microservices';
 import { throwErrorIfExists } from '../utils';
+import { AppLoggerService } from '../helpers';
 
 type AsyncFunction<T> = () => Promise<T>;
 
-export class MicroserviceSender {
-  private static async handleAsyncOperation<T>(
+@Injectable()
+export class MicroserviceSenderService {
+
+  constructor(private readonly logger: AppLoggerService) {}
+
+  private async handleAsyncOperation<T>(
     operation: AsyncFunction<T>,
   ): Promise<T | MicroserviceResponseStatus> {
     try {
       return await operation();
     } catch (error) {
-      console.error(error);
+      this.logger.error(`Message - ${error.message}`);
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -22,7 +27,7 @@ export class MicroserviceSender {
     }
   }
 
-  public static async send<T, U>(
+  public async send<T, U>(
     client: ClientProxy,
     pattern: MsgMarksEnum | MsgCategoriesEnum,
     data: T,

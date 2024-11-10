@@ -22,9 +22,9 @@ import { MsgMarksEnum, RolesEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
 import { Public, Roles } from '../decorators';
 import { RolesGuard } from '../guards';
-import { MicroserviceSender } from '../libs/helpers/microservice-sender';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 import { ApiTags } from '@nestjs/swagger';
+import { MicroserviceSenderService } from '../libs/services';
 
 @ApiTags('marks')
 @Controller('marks')
@@ -33,17 +33,18 @@ export class MarkController {
     @Inject(MARKS_SERVICE_TAG) private client: ClientProxy,
     private readonly marksGateway: MarksGateway,
     @Inject(SEARCH_SERVICE_TAG) private searchClient: ClientProxy,
+    private readonly senderService: MicroserviceSenderService,
   ) {}
   @Public()
   @Get('one')
   async getMark(@Query() data: MarkDto) {
-    return MicroserviceSender.send(this.client, MsgMarksEnum.MARK_GET, data);
+    return this.senderService.send(this.client, MsgMarksEnum.MARK_GET, data);
   }
 
   @Get()
   @Public()
   async getMarks(@Query() data: CoordsDto) {
-    const result = await MicroserviceSender.send<
+    const result = await this.senderService.send<
       CoordsDto,
       MicroserviceResponseStatus | MarkRecvDto[]
     >(this.client, MsgMarksEnum.MAP_INIT, data);
@@ -54,7 +55,7 @@ export class MarkController {
   @Roles(RolesEnum.USER)
   @Post('verify/true')
   async verifyTrue(@Body() data: VerifyMarkDto) {
-    return MicroserviceSender.send(
+    return this.senderService.send(
       this.client,
       MsgMarksEnum.MARK_VERIFY_TRUE,
       data,
@@ -65,7 +66,7 @@ export class MarkController {
   @Roles(RolesEnum.USER)
   @Post('verify/false')
   async verifyFalse(@Body() data: VerifyMarkDto) {
-    return MicroserviceSender.send(
+    return this.senderService.send(
       this.client,
       MsgMarksEnum.MARK_VERIFY_FALSE,
       data,
@@ -74,7 +75,7 @@ export class MarkController {
 
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
-    const result = await MicroserviceSender.send<
+    const result = await this.senderService.send<
       CreateMarkDto,
       MicroserviceResponseStatus | MarkRecvDto
     >(this.client, MsgMarksEnum.CREATE_MARK, data);
@@ -88,7 +89,7 @@ export class MarkController {
   @Get('all')
   @Public()
   async getAllMarks() {
-    const result = await MicroserviceSender.send(
+    const result = await this.senderService.send(
       this.client,
       MsgMarksEnum.GET_ALL_MARKS,
       {},
@@ -100,7 +101,7 @@ export class MarkController {
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.ADMIN)
   async deleteMark(@Param('id') id: string) {
-    const result = await MicroserviceSender.send(
+    const result = await this.senderService.send(
       this.client,
       MsgMarksEnum.DELETE_MARK,
       Number(id),

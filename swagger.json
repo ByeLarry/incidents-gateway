@@ -248,7 +248,7 @@
         ]
       }
     },
-    "/api/auth/admin-login": {
+    "/api/auth/admin/login": {
       "post": {
         "operationId": "UserController_adminLogin",
         "parameters": [],
@@ -272,7 +272,7 @@
         ]
       }
     },
-    "/api/auth/users": {
+    "/api/auth/admin/users": {
       "get": {
         "operationId": "UserController_getUsers",
         "parameters": [],
@@ -286,7 +286,7 @@
         ]
       }
     },
-    "/api/auth/block": {
+    "/api/auth/admin/block": {
       "patch": {
         "operationId": "UserController_blockUser",
         "parameters": [],
@@ -310,7 +310,7 @@
         ]
       }
     },
-    "/api/auth/unblock": {
+    "/api/auth/admin/unblock": {
       "patch": {
         "operationId": "UserController_unblockUser",
         "parameters": [],
@@ -437,9 +437,23 @@
         ]
       }
     },
-    "/api/auth/stats": {
+    "/api/auth/admin/stats": {
       "get": {
         "operationId": "UserController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/admin/search": {
+      "get": {
+        "operationId": "UserController_search",
         "parameters": [],
         "responses": {
           "200": {
@@ -674,6 +688,20 @@
     "/api/categories/stats": {
       "get": {
         "operationId": "CategoriesController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/categories/search": {
+      "get": {
+        "operationId": "CategoriesController_search",
         "parameters": [],
         "responses": {
           "200": {

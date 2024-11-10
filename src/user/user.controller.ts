@@ -26,7 +26,7 @@ import {
   throwErrorIfExists,
 } from '../libs/utils';
 import { MicroserviceResponseStatus, PaginationDto } from '../libs/dto';
-import { DateEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
+import { DateEnum, IndexesEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
 import { Cookie, Public, Roles, UserAgent } from '../decorators';
 import {
   AccessTokenDto,
@@ -36,6 +36,7 @@ import {
   CreateUserDto,
   DeleteUserDto,
   RefreshTokenValueAndUserAgentDto,
+  SearchDto,
   UpdateAdminDto,
   UserAndTokensDto,
   UserDto,
@@ -45,7 +46,7 @@ import {
 import { ITokens } from '../interfaces';
 import { GoogleGuard } from '../guards/google.guard';
 import { HttpService } from '@nestjs/axios';
-import { handleTimeoutAndErrors } from '../libs/helpers';
+import { AppLoggerService, handleTimeoutAndErrors } from '../libs/helpers';
 import { ConfigService } from '@nestjs/config';
 import { YandexGuard } from '../guards/yandex.guard';
 import { QueryDecodePipe } from '../pipes';
@@ -61,6 +62,7 @@ export class UserController {
     @Inject(AUTH_SERVICE_TAG) private client: ClientProxy,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly logger: AppLoggerService
   ) {}
 
   private async handleAsyncOperation<T>(
@@ -69,7 +71,7 @@ export class UserController {
     try {
       return await operation();
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -358,7 +360,7 @@ export class UserController {
   }
 
   @Public()
-  @Post('admin-login')
+  @Post('admin/login')
   async adminLogin(
     @Body() data: AdminLoginDto,
     @UserAgent() userAgent: string,
@@ -386,7 +388,7 @@ export class UserController {
 
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
-  @Get('users')
+  @Get('admin/users')
   async getUsers(@Query() dto: PaginationDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
@@ -399,7 +401,7 @@ export class UserController {
 
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
-  @Patch('block')
+  @Patch('admin/block')
   async blockUser(@Body() dto: UserIdDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
@@ -412,7 +414,7 @@ export class UserController {
 
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
-  @Patch('unblock')
+  @Patch('admin/unblock')
   async unblockUser(@Body() dto: UserIdDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
@@ -499,11 +501,28 @@ export class UserController {
 
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
-  @Get('stats')
+  @Get('admin/stats')
   async getStats() {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
         this.client.send(MsgAuthEnum.USERS_STATS, {}),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
+  @Get('admin/search')
+  async search(@Query() queries: { query: string }) {
+    const result = await this.handleAsyncOperation(async () => {
+      const searchDto: SearchDto = {
+        query: queries.query,
+        index: IndexesEnum.USERS,
+      };
+      return await firstValueFrom(
+        this.client.send(MsgAuthEnum.SEARCH_USERS, searchDto),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
