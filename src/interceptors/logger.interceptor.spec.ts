@@ -1,78 +1,39 @@
-import { AppLoggerService } from '../libs/helpers/logger';
 import { ExecutionContext, CallHandler } from '@nestjs/common';
-import { of } from 'rxjs';
-import { LoggingInterceptor } from './logger.interceptor';
+import { throwError } from 'rxjs';
+import { AppLoggerService } from '../libs/helpers/logger';
+import { LoggingInterceptor } from '../interceptors/logger.interceptor';
 
 describe('LoggingInterceptor', () => {
-  let loggingInterceptor: LoggingInterceptor;
-  let mockLogger: AppLoggerService;
+  let interceptor: LoggingInterceptor;
+  let logger: AppLoggerService;
 
   beforeEach(() => {
-    mockLogger = { log: jest.fn() } as unknown as AppLoggerService;
-    loggingInterceptor = new LoggingInterceptor(mockLogger);
+    logger = {
+      log: jest.fn(),
+      error: jest.fn(),
+    } as unknown as AppLoggerService;
+    interceptor = new LoggingInterceptor();
+    (interceptor as any).logger = logger;
   });
 
-  const createMockExecutionContext = (
-    method: string,
-    url: string,
-    userAgent?: string,
-    statusCode?: number,
-    contentLength?: string,
-  ): ExecutionContext => {
-    const req = {
-      method,
-      originalUrl: url,
-      get: jest.fn().mockReturnValue(userAgent || ''),
-    } as unknown as Request;
-
-    const res = {
-      statusCode: statusCode || 200,
-      get: jest.fn().mockReturnValue(contentLength || null),
-    } as unknown as Response;
-
-    return {
-      switchToHttp: jest.fn().mockReturnValue({
-        getRequest: jest.fn().mockReturnValue(req),
-        getResponse: jest.fn().mockReturnValue(res),
-      }),
+  it('should handle errors and still log', (done) => {
+    const context = {
+      getHandler: () => ({ name: 'testHandler' }),
     } as unknown as ExecutionContext;
-  };
 
-  const createMockCallHandler = (): CallHandler => {
-    return {
-      handle: jest.fn().mockReturnValue(of(null)),
+    const callHandler = {
+      handle: () => throwError(() => new Error('test error')),
     } as unknown as CallHandler;
-  };
 
-  it('should be defined', () => {
-    expect(loggingInterceptor).toBeDefined();
-  });
-
-  it('should call logger.log on response finish', () => {
-    const context = createMockExecutionContext(
-      'GET',
-      '/test-url',
-      'Mozilla/5.0',
-      200,
-      '123',
-    );
-    const next = createMockCallHandler();
-
-    loggingInterceptor.intercept(context, next).subscribe();
-
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      'GET /test-url 200',
-    );
-  });
-
-  it('should handle missing user-agent and content-length', () => {
-    const context = createMockExecutionContext('POST', '/another-url');
-    const next = createMockCallHandler();
-
-    loggingInterceptor.intercept(context, next).subscribe();
-
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      'POST /another-url 200',
-    );
+    interceptor.intercept(context, callHandler).subscribe({
+      error: (err) => {
+        expect(err.message).toBe('test error');
+        expect(logger.error).toHaveBeenCalledWith(
+          "[testHandler] - error 'test error'",
+          err,
+        );
+        done();
+      },
+    });
   });
 });

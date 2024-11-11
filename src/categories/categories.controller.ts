@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Inject,
   Patch,
   Post,
@@ -110,5 +111,13 @@ export class CategoriesController {
       MsgCategoriesEnum.SEARCH_CATEGORIES,
       searchDto,
     );
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
+  @Get('clear-cache')
+  async clearCache() {
+    this.cacheManager.del(CACHE_CATEGORIES_KEY);
+    return HttpStatus.NO_CONTENT;
   }
 }

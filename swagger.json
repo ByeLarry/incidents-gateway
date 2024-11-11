@@ -712,6 +712,20 @@
           "Categories"
         ]
       }
+    },
+    "/api/categories/clear-cache": {
+      "get": {
+        "operationId": "CategoriesController_clearCache",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      }
     }
   },
   "info": {
