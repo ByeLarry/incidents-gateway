@@ -22,6 +22,7 @@ import { firstValueFrom, mergeMap } from 'rxjs';
 import { Request, Response } from 'express';
 import {
   AUTH_SERVICE_TAG,
+  MicroserviceResponseStatusFabric,
   REFRESH_TOKEN_COOKIE_NAME,
   throwErrorIfExists,
 } from '../libs/utils';
@@ -62,7 +63,7 @@ export class UserController {
     @Inject(AUTH_SERVICE_TAG) private client: ClientProxy,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    private readonly logger: AppLoggerService
+    private readonly logger: AppLoggerService,
   ) {}
 
   private async handleAsyncOperation<T>(
@@ -88,6 +89,8 @@ export class UserController {
   ) {
     const result: UserAndTokensDto | MicroserviceResponseStatus =
       await this.handleAsyncOperation(async () => {
+        this.checkRecaptcha(data);
+        delete data.recaptchaToken;
         return await firstValueFrom<
           UserAndTokensDto | MicroserviceResponseStatus
         >(this.client.send(MsgAuthEnum.SIGNUP, { ...data, userAgent }));
@@ -111,6 +114,8 @@ export class UserController {
     @UserAgent() userAgent: string,
   ) {
     const result = await this.handleAsyncOperation(async () => {
+      this.checkRecaptcha(data);
+      delete data.recaptchaToken;
       return await firstValueFrom<
         UserAndTokensDto | MicroserviceResponseStatus
       >(this.client.send(MsgAuthEnum.SIGNIN, { ...data, userAgent }));
@@ -527,5 +532,16 @@ export class UserController {
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     return result;
+  }
+
+  private async checkRecaptcha(data: SignInDto | SignUpDto) {
+    const recaptchaResponse = await this.httpService.axiosRef.post(
+      `${this.configService.get('RECAPTCHA_VERIFY_API')}?secret=${this.configService.get(
+        'RECAPTCHA_SECRET_KEY',
+      )}&response=${data.recaptchaToken}`,
+    );
+    if (recaptchaResponse.data.success === false)
+      return MicroserviceResponseStatusFabric.create(HttpStatus.FORBIDDEN);
+    else return MicroserviceResponseStatusFabric.create(HttpStatus.OK);
   }
 }

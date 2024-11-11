@@ -11,4 +11,8 @@ export class SignInDto {
   @IsNotEmpty()
   @Length(8, 100)
   readonly password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  recaptchaToken: string;
 }

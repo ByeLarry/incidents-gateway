@@ -21,4 +21,8 @@ export class SignUpDto {
   @IsNotEmpty()
   @Length(3, 100)
   readonly surname: string;
+
+  @IsString()
+  @IsNotEmpty()
+  recaptchaToken: string;
 }
