@@ -602,6 +602,20 @@
         ]
       }
     },
+    "/api/marks/search": {
+      "get": {
+        "operationId": "MarkController_search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "marks"
+        ]
+      }
+    },
     "/api/categories/categories": {
       "get": {
         "operationId": "CategoriesController_getCategories",

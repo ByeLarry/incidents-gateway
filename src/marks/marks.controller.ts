@@ -16,15 +16,20 @@ import { MarkDto } from './dto/mark.dto';
 import { MarkRecvDto } from './dto/mark-recv.dto';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { MarksGateway } from './marks.gateway';
-import { MARKS_SERVICE_TAG, SEARCH_SERVICE_TAG } from '../libs/utils';
+import { MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
-import { MsgMarksEnum, RolesEnum } from '../libs/enums';
+import {
+  IndexesEnum,
+  MsgMarksEnum,
+  RolesEnum,
+} from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
 import { Public, Roles } from '../decorators';
 import { RolesGuard } from '../guards';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 import { ApiTags } from '@nestjs/swagger';
 import { MicroserviceSenderService } from '../libs/services';
+import { SearchDto } from '../user/dto';
 
 @ApiTags('marks')
 @Controller('marks')
@@ -32,7 +37,6 @@ export class MarkController {
   constructor(
     @Inject(MARKS_SERVICE_TAG) private client: ClientProxy,
     private readonly marksGateway: MarksGateway,
-    @Inject(SEARCH_SERVICE_TAG) private searchClient: ClientProxy,
     private readonly senderService: MicroserviceSenderService,
   ) {}
   @Public()
@@ -111,5 +115,18 @@ export class MarkController {
       FeatureTransformer.transformToFeatureDto(result as MarkRecvDto),
     );
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
+  }
+
+  @Get('search')
+  async search(@Query() queries: { query: string }) {
+    const searchDto: SearchDto = {
+      query: queries.query,
+      index: IndexesEnum.MARKS,
+    };
+    return await this.senderService.send(
+      this.client,
+      MsgMarksEnum.SEARCH_MARKS,
+      searchDto,
+    );
   }
 }
