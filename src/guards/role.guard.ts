@@ -12,6 +12,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { AccessTokenDto, UserDto } from '../user/dto';
 import { firstValueFrom } from 'rxjs';
 import { MicroserviceResponseStatus } from '../libs/dto';
+import { handleTimeoutAndErrors } from '../libs/helpers';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -44,7 +45,7 @@ export class RolesGuard implements CanActivate {
       this.client.send<UserDto | MicroserviceResponseStatus>(
         MsgAuthEnum.USER_ROLES,
         requestDto,
-      ),
+      ).pipe(handleTimeoutAndErrors()),
     );
     throwErrorIfExists(user as MicroserviceResponseStatus);
     if (!user) {

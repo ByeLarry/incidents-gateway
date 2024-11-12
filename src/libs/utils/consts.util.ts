@@ -9,4 +9,4 @@ export const PRODACTION_ENV = 'production';
 export const TEST_ENV = 'test';
 export const DEVELOPMENT_ENV = 'development';
 export const CACHE_CATEGORIES_KEY = 'categories';
-export const TIMEOUT_ERROR_DELAY = 30000
+export const TIMEOUT_ERROR_DELAY = 10000

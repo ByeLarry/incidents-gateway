@@ -9,6 +9,7 @@ import { MsgAuthEnum } from '../../libs/enums';
 import { JwtAuthDto, UserDto } from '../dto';
 import { firstValueFrom } from 'rxjs';
 import { MicroserviceResponseStatus } from '../../libs/dto';
+import { handleTimeoutAndErrors } from '../../libs/helpers';
 
 export const JWT_STRATEGY_NAME = 'jwt';
 
@@ -34,10 +35,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       roles: payload.roles,
     };
     const user = await firstValueFrom(
-      this.client.send<UserDto | MicroserviceResponseStatus>(
-        MsgAuthEnum.JWT_AUTH,
-        dto,
-      ),
+      this.client
+        .send<UserDto | MicroserviceResponseStatus>(MsgAuthEnum.JWT_AUTH, dto)
+        .pipe(handleTimeoutAndErrors()),
     );
     if (!user) throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     throwErrorIfExists(user as MicroserviceResponseStatus);

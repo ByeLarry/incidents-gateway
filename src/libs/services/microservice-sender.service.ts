@@ -4,13 +4,12 @@ import { firstValueFrom } from 'rxjs';
 import { MsgCategoriesEnum, MsgMarksEnum } from '../enums';
 import { ClientProxy } from '@nestjs/microservices';
 import { throwErrorIfExists } from '../utils';
-import { AppLoggerService } from '../helpers';
+import { AppLoggerService, handleTimeoutAndErrors } from '../helpers';
 
 type AsyncFunction<T> = () => Promise<T>;
 
 @Injectable()
 export class MicroserviceSenderService {
-
   constructor(private readonly logger: AppLoggerService) {}
 
   private async handleAsyncOperation<T>(
@@ -33,7 +32,9 @@ export class MicroserviceSenderService {
     data: T,
   ) {
     const result = await this.handleAsyncOperation(async () => {
-      return await firstValueFrom<U>(client.send(pattern, data));
+      return await firstValueFrom<U>(
+        client.send(pattern, data).pipe(handleTimeoutAndErrors()),
+      );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     return result;
