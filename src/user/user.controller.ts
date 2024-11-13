@@ -25,6 +25,7 @@ import {
   MicroserviceResponseStatusFabric,
   REFRESH_TOKEN_COOKIE_NAME,
   throwErrorIfExists,
+  TIMEOUT_ERROR_MESSAGE,
 } from '../libs/utils';
 import { MicroserviceResponseStatus, PaginationDto } from '../libs/dto';
 import { DateEnum, IndexesEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
@@ -72,7 +73,9 @@ export class UserController {
     try {
       return await operation();
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`Message - ${error.message}`);
+      if (error.message === TIMEOUT_ERROR_MESSAGE)
+        throw new HttpException(error.message, HttpStatus.REQUEST_TIMEOUT);
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,

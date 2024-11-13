@@ -3,7 +3,7 @@ import { MicroserviceResponseStatus } from '../dto';
 import { firstValueFrom } from 'rxjs';
 import { MsgCategoriesEnum, MsgMarksEnum } from '../enums';
 import { ClientProxy } from '@nestjs/microservices';
-import { throwErrorIfExists } from '../utils';
+import { throwErrorIfExists, TIMEOUT_ERROR_MESSAGE } from '../utils';
 import { AppLoggerService, handleTimeoutAndErrors } from '../helpers';
 
 type AsyncFunction<T> = () => Promise<T>;
@@ -19,6 +19,8 @@ export class MicroserviceSenderService {
       return await operation();
     } catch (error) {
       this.logger.error(`Message - ${error.message}`);
+      if (error.message === TIMEOUT_ERROR_MESSAGE)
+        throw new HttpException(error.message, HttpStatus.REQUEST_TIMEOUT);
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,

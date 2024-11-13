@@ -118,6 +118,7 @@ export class MarkController {
   }
 
   @Get('search')
+  @Public()
   async search(@Query() queries: { query: string }) {
     const searchDto: SearchDto = {
       query: queries.query,
