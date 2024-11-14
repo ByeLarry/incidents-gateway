@@ -14,6 +14,7 @@ import {
   Req,
   Patch,
   Param,
+  Put,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { SignUpDto } from './dto/signup.dto';
@@ -96,7 +97,11 @@ export class UserController {
         delete data.recaptchaToken;
         return await firstValueFrom<
           UserAndTokensDto | MicroserviceResponseStatus
-        >(this.client.send(MsgAuthEnum.SIGNUP, { ...data, userAgent }).pipe(handleTimeoutAndErrors()));
+        >(
+          this.client
+            .send(MsgAuthEnum.SIGNUP, { ...data, userAgent })
+            .pipe(handleTimeoutAndErrors()),
+        );
       });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
@@ -121,7 +126,11 @@ export class UserController {
       delete data.recaptchaToken;
       return await firstValueFrom<
         UserAndTokensDto | MicroserviceResponseStatus
-      >(this.client.send(MsgAuthEnum.SIGNIN, { ...data, userAgent }).pipe(handleTimeoutAndErrors()));
+      >(
+        this.client
+          .send(MsgAuthEnum.SIGNIN, { ...data, userAgent })
+          .pipe(handleTimeoutAndErrors()),
+      );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
@@ -154,7 +163,7 @@ export class UserController {
         userAgent,
       };
       return await firstValueFrom<UserDto | MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.ME, data).pipe(handleTimeoutAndErrors())
+        this.client.send(MsgAuthEnum.ME, data).pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -177,7 +186,9 @@ export class UserController {
         userAgent,
       };
       return await firstValueFrom<ITokens | MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.REFRESH, data).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.REFRESH, data)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -208,7 +219,9 @@ export class UserController {
         userAgent,
       };
       return await firstValueFrom<MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.LOGOUT, data).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.LOGOUT, data)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -236,7 +249,9 @@ export class UserController {
         userId: dto.userId,
       };
       return await firstValueFrom<MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.DELETE, data).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.DELETE, data)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -291,7 +306,11 @@ export class UserController {
               };
               return await firstValueFrom<
                 UserAndTokensDto | MicroserviceResponseStatus
-              >(this.client.send(MsgAuthEnum.GOOGLE_AUTH, dto).pipe(handleTimeoutAndErrors()));
+              >(
+                this.client
+                  .send(MsgAuthEnum.GOOGLE_AUTH, dto)
+                  .pipe(handleTimeoutAndErrors()),
+              );
             }),
             handleTimeoutAndErrors(),
           ),
@@ -350,7 +369,11 @@ export class UserController {
               };
               return await firstValueFrom<
                 UserAndTokensDto | MicroserviceResponseStatus
-              >(this.client.send(MsgAuthEnum.YANDEX_AUTH, dto).pipe(handleTimeoutAndErrors()));
+              >(
+                this.client
+                  .send(MsgAuthEnum.YANDEX_AUTH, dto)
+                  .pipe(handleTimeoutAndErrors()),
+              );
             }),
             handleTimeoutAndErrors(),
           ),
@@ -381,7 +404,11 @@ export class UserController {
       };
       return await firstValueFrom<
         UserAndTokensDto | MicroserviceResponseStatus
-      >(this.client.send(MsgAuthEnum.ADMIN_LOGIN, adminData).pipe(handleTimeoutAndErrors()));
+      >(
+        this.client
+          .send(MsgAuthEnum.ADMIN_LOGIN, adminData)
+          .pipe(handleTimeoutAndErrors()),
+      );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
     const { user, tokens } = result as UserAndTokensDto;
@@ -400,7 +427,9 @@ export class UserController {
   async getUsers(@Query() dto: PaginationDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.GET_ALL_USERS, dto).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.GET_ALL_USERS, dto)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -413,7 +442,9 @@ export class UserController {
   async blockUser(@Body() dto: UserIdDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.BLOCK_USER, dto).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.BLOCK_USER, dto)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -426,7 +457,9 @@ export class UserController {
   async unblockUser(@Body() dto: UserIdDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.UNBLOCK_USER, dto).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.UNBLOCK_USER, dto)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -443,7 +476,9 @@ export class UserController {
   ) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.UPDATE_ADMIN, { ...dto, userAgent }).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.UPDATE_ADMIN, { ...dto, userAgent })
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -463,7 +498,9 @@ export class UserController {
   async createUserByAdmin(@Body() dto: CreateUserDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.CREATE_USER_BY_ADMIN, dto).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.CREATE_USER_BY_ADMIN, dto)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -487,7 +524,9 @@ export class UserController {
         userId: id,
       };
       return await firstValueFrom<MicroserviceResponseStatus>(
-        this.client.send(MsgAuthEnum.DELETE, data).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.DELETE, data)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -500,7 +539,9 @@ export class UserController {
   async addAdminRoleToUser(@Body() dto: AddAdminDto) {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.ADD_ADMIN_ROLE_TO_USER, dto).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.ADD_ADMIN_ROLE_TO_USER, dto)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -513,7 +554,9 @@ export class UserController {
   async getStats() {
     const result = await this.handleAsyncOperation(async () => {
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.USERS_STATS, {}).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.USERS_STATS, {})
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -530,7 +573,9 @@ export class UserController {
         index: IndexesEnum.USERS,
       };
       return await firstValueFrom(
-        this.client.send(MsgAuthEnum.SEARCH_USERS, searchDto).pipe(handleTimeoutAndErrors()),
+        this.client
+          .send(MsgAuthEnum.SEARCH_USERS, searchDto)
+          .pipe(handleTimeoutAndErrors()),
       );
     });
     throwErrorIfExists(result as MicroserviceResponseStatus);
@@ -546,5 +591,20 @@ export class UserController {
     if (recaptchaResponse.data.success === false)
       return MicroserviceResponseStatusFabric.create(HttpStatus.FORBIDDEN);
     else return MicroserviceResponseStatusFabric.create(HttpStatus.OK);
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
+  @Put('admin/reindex')
+  async reindexSearhchEngine() {
+    const result = await this.handleAsyncOperation(async () => {
+      return await firstValueFrom(
+        this.client
+          .send(MsgAuthEnum.REINDEX, {})
+          .pipe(handleTimeoutAndErrors()),
+      );
+    });
+    throwErrorIfExists(result as MicroserviceResponseStatus);
+    return result;
   }
 }

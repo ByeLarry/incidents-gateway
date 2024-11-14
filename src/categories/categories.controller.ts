@@ -7,6 +7,7 @@ import {
   Inject,
   Patch,
   Post,
+  Put,
   Query,
   UseGuards,
   UseInterceptors,
@@ -119,5 +120,16 @@ export class CategoriesController {
   async clearCache() {
     this.cacheManager.del(CACHE_CATEGORIES_KEY);
     return HttpStatus.NO_CONTENT;
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
+  @Put('admin/reindex')
+  async reindexSearhchEngine() {
+    return await this.senderService.send(
+      this.client,
+      MsgCategoriesEnum.REINDEX,
+      {},
+    );
   }
 }

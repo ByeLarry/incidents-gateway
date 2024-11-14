@@ -465,6 +465,20 @@
         ]
       }
     },
+    "/api/auth/admin/reindex": {
+      "put": {
+        "operationId": "UserController_reindexSearhchEngine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
@@ -616,6 +630,20 @@
         ]
       }
     },
+    "/api/marks/admin/reindex": {
+      "put": {
+        "operationId": "MarkController_reindexSearhchEngine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "marks"
+        ]
+      }
+    },
     "/api/categories/categories": {
       "get": {
         "operationId": "CategoriesController_getCategories",
@@ -730,6 +758,20 @@
     "/api/categories/clear-cache": {
       "get": {
         "operationId": "CategoriesController_clearCache",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/categories/admin/reindex": {
+      "put": {
+        "operationId": "CategoriesController_reindexSearhchEngine",
         "parameters": [],
         "responses": {
           "200": {

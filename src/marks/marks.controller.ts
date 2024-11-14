@@ -6,6 +6,7 @@ import {
   Inject,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -18,11 +19,7 @@ import { CreateMarkDto } from './dto/create-mark.dto';
 import { MarksGateway } from './marks.gateway';
 import { MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
-import {
-  IndexesEnum,
-  MsgMarksEnum,
-  RolesEnum,
-} from '../libs/enums';
+import { IndexesEnum, MsgMarksEnum, RolesEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
 import { Public, Roles } from '../decorators';
 import { RolesGuard } from '../guards';
@@ -129,5 +126,12 @@ export class MarkController {
       MsgMarksEnum.SEARCH_MARKS,
       searchDto,
     );
+  }
+
+  @Roles(RolesEnum.ADMIN)
+  @UseGuards(RolesGuard)
+  @Put('admin/reindex')
+  async reindexSearhchEngine() {
+    return await this.senderService.send(this.client, MsgMarksEnum.REINDEX, {});
   }
 }
