@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MicroserviceResponseStatus } from '../dto';
 import { firstValueFrom } from 'rxjs';
-import { MsgCategoriesEnum, MsgMarksEnum } from '../enums';
+import { MsgAuthEnum, MsgCategoriesEnum, MsgMarksEnum } from '../enums';
 import { ClientProxy } from '@nestjs/microservices';
 import { throwErrorIfExists, TIMEOUT_ERROR_MESSAGE } from '../utils';
 import { AppLoggerService, handleTimeoutAndErrors } from '../helpers';
@@ -30,7 +30,7 @@ export class MicroserviceSenderService {
 
   public async send<T, U>(
     client: ClientProxy,
-    pattern: MsgMarksEnum | MsgCategoriesEnum,
+    pattern: MsgMarksEnum | MsgCategoriesEnum | MsgAuthEnum,
     data: T,
   ) {
     const result = await this.handleAsyncOperation(async () => {

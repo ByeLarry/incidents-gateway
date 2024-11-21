@@ -93,7 +93,7 @@
     },
     "/api/auth": {
       "delete": {
-        "operationId": "UserController_deleteUser",
+        "operationId": "UserController_delete",
         "parameters": [
           {
             "name": "authorization",
@@ -114,181 +114,20 @@
         ]
       }
     },
-    "/api/auth/google": {
-      "get": {
-        "operationId": "UserController_googleAuth",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/auth/google/callback": {
-      "get": {
-        "operationId": "UserController_googleAuthCallback",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/auth/google/success": {
-      "get": {
-        "operationId": "UserController_googleSuccess",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "name",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "surname",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/auth/yandex": {
-      "get": {
-        "operationId": "UserController_yandexAuth",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/auth/yandex/callback": {
-      "get": {
-        "operationId": "UserController_yandexAuthCallback",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/auth/yandex/success": {
-      "get": {
-        "operationId": "UserController_yandexSuccess",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "name",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "surname",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/auth/admin/login": {
-      "post": {
-        "operationId": "UserController_adminLogin",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AdminLoginDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
     "/api/auth/admin/users": {
       "get": {
-        "operationId": "UserController_getUsers",
+        "operationId": "AdminController_getUsers",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/block": {
       "patch": {
-        "operationId": "UserController_blockUser",
+        "operationId": "AdminController_blockUser",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -304,15 +143,12 @@
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/unblock": {
       "patch": {
-        "operationId": "UserController_unblockUser",
+        "operationId": "AdminController_unblockUser",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -328,15 +164,12 @@
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin": {
       "patch": {
-        "operationId": "UserController_updateAdmin",
+        "operationId": "AdminController_updateAdmin",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -352,15 +185,12 @@
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/create-user": {
       "post": {
-        "operationId": "UserController_createUserByAdmin",
+        "operationId": "AdminController_createUserByAdmin",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -376,15 +206,12 @@
           "201": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/{id}": {
       "delete": {
-        "operationId": "UserController_deleteUserByAdmin",
+        "operationId": "AdminController_deleteUserByAdmin",
         "parameters": [
           {
             "name": "id",
@@ -407,15 +234,12 @@
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/add": {
       "patch": {
-        "operationId": "UserController_addAdminRoleToUser",
+        "operationId": "AdminController_addAdminRoleToUser",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -431,43 +255,75 @@
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/stats": {
       "get": {
-        "operationId": "UserController_getStats",
+        "operationId": "AdminController_getStats",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
-        },
-        "tags": [
-          "Auth"
-        ]
+        }
       }
     },
     "/api/auth/admin/search": {
       "get": {
-        "operationId": "UserController_search",
-        "parameters": [],
+        "operationId": "AdminController_search",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
           }
+        }
+      }
+    },
+    "/api/auth/admin/login": {
+      "post": {
+        "operationId": "AdminController_adminLogin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLoginDto"
+              }
+            }
+          }
         },
-        "tags": [
-          "Auth"
-        ]
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
       }
     },
     "/api/auth/admin/reindex": {
       "put": {
-        "operationId": "UserController_reindexSearhchEngine",
+        "operationId": "AdminController_reindexSearchEngine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/google": {
+      "get": {
+        "operationId": "ProvidersController_googleAuth",
         "parameters": [],
         "responses": {
           "200": {
@@ -475,7 +331,127 @@
           }
         },
         "tags": [
-          "Auth"
+          "providers"
+        ]
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "operationId": "ProvidersController_googleAuthCallback",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/auth/google/success": {
+      "get": {
+        "operationId": "ProvidersController_googleSuccess",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "surname",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/auth/yandex": {
+      "get": {
+        "operationId": "ProvidersController_yandexAuth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/auth/yandex/callback": {
+      "get": {
+        "operationId": "ProvidersController_yandexAuthCallback",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/auth/yandex/success": {
+      "get": {
+        "operationId": "ProvidersController_yandexSuccess",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "surname",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "providers"
         ]
       }
     },
@@ -809,10 +785,6 @@
         "type": "object",
         "properties": {}
       },
-      "AdminLoginDto": {
-        "type": "object",
-        "properties": {}
-      },
       "UserIdDto": {
         "type": "object",
         "properties": {}
@@ -826,6 +798,10 @@
         "properties": {}
       },
       "AddAdminDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminLoginDto": {
         "type": "object",
         "properties": {}
       },
