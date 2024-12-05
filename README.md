@@ -35,6 +35,9 @@ _Диаграммы можно сохранять и редактировать 
 - ### Схема алгоритма OAuth авторизации
   ![Authorization Code Grant](https://github.com/user-attachments/assets/ba56743c-4d7d-4a5d-9776-d20ff7e19235)
 
+- ### Компоненты API-шлюза
+  ![Компоненты API шлюза](https://github.com/user-attachments/assets/450b472a-5367-4755-ad6c-8ee0470345a4)
+
 ## Ссылки
 
 - #### Клиентская часть:  *https://github.com/ByeLarry/incidents-frontend*
