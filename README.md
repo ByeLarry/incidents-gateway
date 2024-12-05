@@ -35,6 +35,12 @@ _Диаграммы можно сохранять и редактировать 
 - ### Схема алгоритма OAuth авторизации
   ![Authorization Code Grant](https://github.com/user-attachments/assets/ba56743c-4d7d-4a5d-9776-d20ff7e19235)
 
+- ### Коммуникация клиента и сервера с использованием **HTTP** и **брокера сообщений**
+  ![HTTP response  Коммуникация клиента и сервера](https://github.com/user-attachments/assets/8c1fbd9a-3698-4e6a-97a8-a4107672b326)
+
+- ### Коммуникация клиента и сервера с использованием **HTTP**, **брокера сообщений** и **WebSocket**
+  ![HTTP   WebSocket responses  Коммуникация клиента и сервера](https://github.com/user-attachments/assets/853b4672-fe61-445d-8fb1-e9bee8e726e0)
+
 - ### Компоненты API-шлюза
   ![Компоненты API шлюза](https://github.com/user-attachments/assets/450b472a-5367-4755-ad6c-8ee0470345a4)
 
