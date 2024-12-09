@@ -1132,7 +1132,22 @@
       },
       "AddressDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Описание адреса",
+            "example": "Страна, Город"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя адреса",
+            "example": "Улица, дом 12"
+          }
+        },
+        "required": [
+          "description",
+          "name"
+        ]
       },
       "CreateMarkDto": {
         "type": "object",
