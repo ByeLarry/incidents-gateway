@@ -32,7 +32,7 @@ import { MicroserviceSenderService } from '../libs/services';
 import { HttpService } from '@nestjs/axios';
 import { ResponseService } from './response.service';
 
-@ApiTags('Auth')
+@ApiTags('User')
 @Controller('auth')
 export class UserController {
   constructor(
@@ -84,6 +84,7 @@ export class UserController {
     return { user, accessToken: tokens.accessToken };
   }
 
+  @Public()
   @Get('me')
   async me(
     @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
@@ -129,6 +130,7 @@ export class UserController {
     return response;
   }
 
+  @Public()
   @Post('logout')
   async logout(
     @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
@@ -150,6 +152,7 @@ export class UserController {
     res.status(HttpStatus.NO_CONTENT);
   }
 
+  @Public()
   @Delete()
   async delete(
     @Headers('authorization') accessToken: string,

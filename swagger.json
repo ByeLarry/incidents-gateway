@@ -21,7 +21,7 @@
           }
         },
         "tags": [
-          "Auth"
+          "User"
         ]
       }
     },
@@ -45,7 +45,7 @@
           }
         },
         "tags": [
-          "Auth"
+          "User"
         ]
       }
     },
@@ -59,7 +59,7 @@
           }
         },
         "tags": [
-          "Auth"
+          "User"
         ]
       }
     },
@@ -73,7 +73,7 @@
           }
         },
         "tags": [
-          "Auth"
+          "User"
         ]
       }
     },
@@ -87,7 +87,7 @@
           }
         },
         "tags": [
-          "Auth"
+          "User"
         ]
       }
     },
@@ -110,7 +110,7 @@
           }
         },
         "tags": [
-          "Auth"
+          "User"
         ]
       }
     },
@@ -122,7 +122,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/block": {
@@ -143,7 +151,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/unblock": {
@@ -164,7 +180,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin": {
@@ -185,7 +209,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/create-user": {
@@ -206,7 +238,15 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/{id}": {
@@ -234,7 +274,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/add": {
@@ -255,7 +303,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/stats": {
@@ -266,7 +322,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/search": {
@@ -286,7 +350,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/admin/login": {
@@ -307,7 +379,10 @@
           "201": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ]
       }
     },
     "/api/auth/admin/reindex": {
@@ -318,7 +393,15 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/auth/google": {
@@ -331,7 +414,7 @@
           }
         },
         "tags": [
-          "providers"
+          "Providers"
         ]
       }
     },
@@ -345,7 +428,7 @@
           }
         },
         "tags": [
-          "providers"
+          "Providers"
         ]
       }
     },
@@ -384,7 +467,7 @@
           }
         },
         "tags": [
-          "providers"
+          "Providers"
         ]
       }
     },
@@ -398,7 +481,7 @@
           }
         },
         "tags": [
-          "providers"
+          "Providers"
         ]
       }
     },
@@ -412,7 +495,7 @@
           }
         },
         "tags": [
-          "providers"
+          "Providers"
         ]
       }
     },
@@ -451,7 +534,7 @@
           }
         },
         "tags": [
-          "providers"
+          "Providers"
         ]
       }
     },
@@ -465,7 +548,7 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
         ]
       }
     },
@@ -479,11 +562,11 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
         ]
       }
     },
-    "/api/marks/verify/true": {
+    "/api/marks/verify": {
       "post": {
         "operationId": "MarkController_verifyTrue",
         "parameters": [],
@@ -503,11 +586,16 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
-    "/api/marks/verify/false": {
+    "/api/marks/unverify": {
       "post": {
         "operationId": "MarkController_verifyFalse",
         "parameters": [],
@@ -527,7 +615,12 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -551,11 +644,11 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
         ]
       }
     },
-    "/api/marks/all": {
+    "/api/marks/admin/all": {
       "get": {
         "operationId": "MarkController_getAllMarks",
         "parameters": [],
@@ -565,11 +658,16 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
-    "/api/marks/{id}": {
+    "/api/marks/admin/{id}": {
       "delete": {
         "operationId": "MarkController_deleteMark",
         "parameters": [
@@ -588,7 +686,12 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -602,7 +705,7 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
         ]
       }
     },
@@ -616,11 +719,16 @@
           }
         },
         "tags": [
-          "marks"
+          "Marks"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
-    "/api/categories/categories": {
+    "/api/categories": {
       "get": {
         "operationId": "CategoriesController_getCategories",
         "parameters": [],
@@ -631,6 +739,59 @@
         },
         "tags": [
           "Categories"
+        ]
+      },
+      "delete": {
+        "operationId": "CategoriesController_deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "CategoriesController_updateCategory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -655,51 +816,11 @@
         },
         "tags": [
           "Categories"
-        ]
-      }
-    },
-    "/api/categories": {
-      "delete": {
-        "operationId": "CategoriesController_deleteCategory",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
         ],
-        "responses": {
-          "200": {
-            "description": ""
+        "security": [
+          {
+            "bearer": []
           }
-        },
-        "tags": [
-          "Categories"
-        ]
-      },
-      "patch": {
-        "operationId": "CategoriesController_updateCategory",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCategoryDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Categories"
         ]
       }
     },
@@ -714,6 +835,11 @@
         },
         "tags": [
           "Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -728,6 +854,11 @@
         },
         "tags": [
           "Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -742,6 +873,11 @@
         },
         "tags": [
           "Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -756,70 +892,339 @@
         },
         "tags": [
           "Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     }
   },
   "info": {
-    "title": "Incidents",
-    "description": "The incidents API Gateway documentation",
-    "version": "1.0",
+    "title": "Incidents API",
+    "description": "",
+    "version": "0.1.1",
     "contact": {}
   },
   "tags": [],
   "servers": [],
   "components": {
     "securitySchemes": {
-      "cookie": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "incidents_session_id"
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "in": "header",
+        "type": "http"
       }
     },
     "schemas": {
       "SignUpDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Имя пользователя",
+            "example": "Иван",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль пользователя",
+            "example": "password123",
+            "minLength": 8,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "description": "Электронная почта пользователя",
+            "example": "user@example.com",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия пользователя",
+            "example": "Иванов",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "recaptchaToken": {
+            "type": "string",
+            "description": "Токен reCAPTCHA для проверки",
+            "example": "03AGdBq24..."
+          }
+        },
+        "required": [
+          "name",
+          "password",
+          "email",
+          "surname",
+          "recaptchaToken"
+        ]
       },
       "SignInDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Электронная почта пользователя для входа в систему",
+            "example": "user@example.com",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль пользователя для входа в систему",
+            "example": "password123",
+            "minLength": 8,
+            "maxLength": 100
+          },
+          "recaptchaToken": {
+            "type": "string",
+            "description": "Токен reCAPTCHA для подтверждения, что запрос сделан реальным пользователем",
+            "example": "03AGdBq24..."
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "recaptchaToken"
+        ]
       },
       "UserIdDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Уникальный идентификатор пользователя",
+            "example": "12345"
+          }
+        },
+        "required": [
+          "id"
+        ]
       },
       "UpdateAdminDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Уникальный идентификатор администратора",
+            "example": "12345"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя администратора",
+            "example": "Иван"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия администратора",
+            "example": "Иванов"
+          },
+          "email": {
+            "type": "string",
+            "description": "Электронная почта администратора",
+            "example": "ivan.ivanov@example.com"
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Номер телефона администратора в формате России",
+            "example": "+7 900 000-00-00"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "surname",
+          "email",
+          "phone_number"
+        ]
       },
       "CreateUserDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Электронная почта пользователя",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль пользователя (минимум 8 символов)",
+            "example": "password123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя пользователя",
+            "example": "Иван"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия пользователя",
+            "example": "Иванов"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "name",
+          "surname"
+        ]
       },
       "AddAdminDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор пользователя, которого нужно назначить администратором",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        },
+        "required": [
+          "id"
+        ]
       },
       "AdminLoginDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Имя администратора для входа в систему",
+            "example": "adminUser"
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль администратора",
+            "example": "securePassword123"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "Информация о пользовательском агенте, которая может быть предоставлена (не обязательная)",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+          }
+        },
+        "required": [
+          "name",
+          "password"
+        ]
       },
       "VerifyMarkDto": {
+        "type": "object",
+        "properties": {
+          "markId": {
+            "type": "number",
+            "description": "Уникальный идентификатор метки, которую необходимо проверить",
+            "example": 123
+          },
+          "userId": {
+            "type": "string",
+            "description": "Уникальный идентификатор пользователя, который выполняет проверку",
+            "example": "f7f4b6c9-95be-45b9-bc24-1324f9dbecfd"
+          }
+        },
+        "required": [
+          "markId",
+          "userId"
+        ]
+      },
+      "AddressDto": {
         "type": "object",
         "properties": {}
       },
       "CreateMarkDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Уникальный идентификатор пользователя, создающего метку",
+            "example": "f7f4b6c9-95be-45b9-bc24-1324f9dbecfd"
+          },
+          "lat": {
+            "type": "number",
+            "description": "Широта места метки",
+            "example": 52.52
+          },
+          "lng": {
+            "type": "number",
+            "description": "Долгота места метки",
+            "example": 13.405
+          },
+          "title": {
+            "type": "string",
+            "description": "Название метки",
+            "example": "Моя первая метка"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание метки",
+            "example": "Это описание моей метки, которое может быть очень длинным, но не обязательным."
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "Идентификатор категории метки",
+            "example": 1
+          },
+          "address": {
+            "description": "Адрес, связанный с меткой",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "lat",
+          "lng",
+          "title",
+          "categoryId"
+        ]
       },
       "CreateCategoryDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Название категории. Это обязательное поле.",
+            "example": "Еда"
+          },
+          "color": {
+            "type": "string",
+            "description": "Цвет категории (необязательное поле). Может быть использовано для визуального выделения категории.",
+            "example": "blue"
+          }
+        },
+        "required": [
+          "name"
+        ]
       },
       "UpdateCategoryDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Уникальный идентификатор категории. Это обязательное поле.",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Новое название категории. Это обязательное поле.",
+            "example": "Напитки"
+          },
+          "color": {
+            "type": "string",
+            "description": "Новый цвет категории (необязательное поле). Может быть использовано для визуального выделения.",
+            "example": "green"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
       }
     }
   }

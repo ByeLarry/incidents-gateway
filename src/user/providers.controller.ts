@@ -26,7 +26,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { ResponseService } from './response.service';
 
-@ApiTags('providers')
+@ApiTags('Providers')
 @Controller('auth')
 export class ProvidersController {
   constructor(

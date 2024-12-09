@@ -23,7 +23,7 @@ import {
   Cache,
 } from '@nestjs/cache-manager';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../guards';
 import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
@@ -37,7 +37,7 @@ export class CategoriesController {
     private readonly senderService: MicroserviceSenderService,
   ) {}
 
-  @Get('categories')
+  @Get()
   @Public()
   @CacheKey(CACHE_CATEGORIES_KEY)
   @UseInterceptors(CacheInterceptor)
@@ -49,6 +49,7 @@ export class CategoriesController {
     );
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Post('create')
@@ -62,6 +63,7 @@ export class CategoriesController {
     return result;
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Delete()
@@ -75,6 +77,7 @@ export class CategoriesController {
     return result;
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch()
@@ -88,6 +91,7 @@ export class CategoriesController {
     return result;
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('stats')
@@ -99,6 +103,7 @@ export class CategoriesController {
     );
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('search')
@@ -114,6 +119,7 @@ export class CategoriesController {
     );
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('clear-cache')
@@ -122,6 +128,7 @@ export class CategoriesController {
     return HttpStatus.NO_CONTENT;
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Put('admin/reindex')

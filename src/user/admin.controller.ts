@@ -34,7 +34,9 @@ import {
 } from '../user/dto';
 import { MicroserviceSenderService } from '../libs/services';
 import { ResponseService } from './response.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Admin')
 @Controller('auth/admin')
 export class AdminController {
   constructor(
@@ -43,6 +45,7 @@ export class AdminController {
     private readonly responseService: ResponseService,
   ) {}
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('users')
@@ -50,6 +53,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.GET_ALL_USERS, dto);
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch('block')
@@ -57,6 +61,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.BLOCK_USER, dto);
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch('unblock')
@@ -64,6 +69,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.UNBLOCK_USER, dto);
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch()
@@ -81,6 +87,7 @@ export class AdminController {
     return { user, accessToken: tokens.accessToken };
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Post('create-user')
@@ -92,6 +99,7 @@ export class AdminController {
     );
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Delete(':id')
@@ -113,6 +121,7 @@ export class AdminController {
     res.status(HttpStatus.NO_CONTENT);
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch('add')
@@ -124,6 +133,7 @@ export class AdminController {
     );
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('stats')
@@ -131,6 +141,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.USERS_STATS, {});
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('search')
@@ -160,6 +171,7 @@ export class AdminController {
     return { user, accessToken: tokens.accessToken };
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Put('reindex')

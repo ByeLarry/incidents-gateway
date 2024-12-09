@@ -6,3 +6,4 @@ export * from './marks-service-provide.util';
 export * from './microservice-response-status-fabric.util';
 export * from './web-socket-gateway-config.util';
 export * from './search-service-provide.util';
+export * from './swagger-document-builder.util';

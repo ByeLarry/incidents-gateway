@@ -24,11 +24,11 @@ import { FeatureTransformer } from '../libs/helpers';
 import { Public, Roles } from '../decorators';
 import { RolesGuard } from '../guards';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
 
-@ApiTags('marks')
+@ApiTags('Marks')
 @Controller('marks')
 export class MarkController {
   constructor(
@@ -52,9 +52,10 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.USER)
-  @Post('verify/true')
+  @Post('verify')
   async verifyTrue(@Body() data: VerifyMarkDto) {
     return this.senderService.send(
       this.client,
@@ -63,9 +64,10 @@ export class MarkController {
     );
   }
 
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.USER)
-  @Post('verify/false')
+  @Post('unverify')
   async verifyFalse(@Body() data: VerifyMarkDto) {
     return this.senderService.send(
       this.client,
@@ -87,8 +89,10 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
 
-  @Get('all')
-  @Public()
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.ADMIN)
+  @Get('admin/all')
   async getAllMarks() {
     const result = await this.senderService.send(
       this.client,
@@ -98,7 +102,8 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
-  @Delete(':id')
+  @ApiBearerAuth()
+  @Delete('admin/:id')
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.ADMIN)
   async deleteMark(@Param('id') id: string) {
@@ -128,6 +133,7 @@ export class MarkController {
     );
   }
 
+  @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Put('admin/reindex')
