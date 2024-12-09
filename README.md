@@ -44,6 +44,14 @@ _Диаграммы можно сохранять и редактировать 
 - ### Компоненты API-шлюза
   ![Компоненты API шлюза](https://github.com/user-attachments/assets/450b472a-5367-4755-ad6c-8ee0470345a4)
 
+
+## Документация API
+
+Ниже представлена документация API-шлюза, с использованием **Swagger**.
+
+- ### Все эндпоинты системы
+  ![API-шлюз документация Swagger](https://github.com/user-attachments/assets/532dab0c-fe30-4c1e-9bdf-3c1eb3fb9a77)
+
 ## Ссылки
 
 - #### Клиентская часть:  *https://github.com/ByeLarry/incidents-frontend*
