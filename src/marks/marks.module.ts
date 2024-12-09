@@ -6,7 +6,7 @@ import {
   SearchServiceProvide,
 } from '../libs/utils';
 import { MarksGateway } from './marks.gateway';
-import { GUARDS } from '../guards';
+import { GUARDS } from '../libs/guards';
 import { MicroserviceSenderService } from '../libs/services';
 import { AppLoggerService } from '../libs/helpers';
 

@@ -15,7 +15,7 @@ import {
 import { IndexesEnum, MsgCategoriesEnum, RolesEnum } from '../libs/enums';
 import { CACHE_CATEGORIES_KEY, MARKS_SERVICE_TAG } from '../libs/utils';
 import { ClientProxy } from '@nestjs/microservices';
-import { Public, Roles } from '../decorators';
+import { Public, Roles } from '../libs/decorators';
 import {
   CACHE_MANAGER,
   CacheInterceptor,
@@ -24,7 +24,7 @@ import {
 } from '@nestjs/cache-manager';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { RolesGuard } from '../guards';
+import { RolesGuard } from '../libs/guards';
 import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
 

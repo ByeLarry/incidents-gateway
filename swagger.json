@@ -1135,12 +1135,12 @@
         "properties": {
           "description": {
             "type": "string",
-            "description": "Описание адреса",
+            "description": "Более широкий адрес",
             "example": "Страна, Город"
           },
           "name": {
             "type": "string",
-            "description": "Имя адреса",
+            "description": "Адрес",
             "example": "Улица, дом 12"
           }
         },

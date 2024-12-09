@@ -17,7 +17,7 @@ import { SignInDto } from './dto/signin.dto';
 import { Response } from 'express';
 import { AUTH_SERVICE_TAG, REFRESH_TOKEN_COOKIE_NAME } from '../libs/utils';
 import { MsgAuthEnum } from '../libs/enums';
-import { Cookie, Public, UserAgent } from '../decorators';
+import { Cookie, Public, UserAgent } from '../libs/decorators';
 import {
   AccessTokenDto,
   DeleteUserDto,

@@ -1,6 +1,6 @@
 import { ExecutionContext } from '@nestjs/common';
 import { createParamDecorator } from '@nestjs/common';
-import { UserDto } from '../user/dto';
+import { UserDto } from '../../user/dto';
 
 export const CurrentUser = createParamDecorator(
   (key: keyof UserDto, ctx: ExecutionContext): UserDto | Partial<UserDto> => {

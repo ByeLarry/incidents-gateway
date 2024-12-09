@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 import { AppLoggerService } from '../libs/helpers';
 import { AuthServiceProvide } from '../libs/utils';
 import { STRATEGIES } from './strategies';
-import { GUARDS } from '../guards';
+import { GUARDS } from '../libs/guards';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { MicroserviceSenderService } from '../libs/services';

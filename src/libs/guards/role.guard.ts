@@ -1,4 +1,3 @@
-import { ROLES_KEY } from '../decorators';
 import {
   CanActivate,
   ExecutionContext,
@@ -6,13 +5,14 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { MsgAuthEnum, RolesEnum } from '../libs/enums';
-import { AUTH_SERVICE_TAG, throwErrorIfExists } from '../libs/utils';
+import { MsgAuthEnum, RolesEnum } from '../enums';
+import { AUTH_SERVICE_TAG, throwErrorIfExists } from '../utils';
 import { ClientProxy } from '@nestjs/microservices';
-import { AccessTokenDto, UserDto } from '../user/dto';
+import { AccessTokenDto, UserDto } from '../../user/dto';
 import { firstValueFrom } from 'rxjs';
-import { MicroserviceResponseStatus } from '../libs/dto';
-import { handleTimeoutAndErrors } from '../libs/helpers';
+import { MicroserviceResponseStatus } from '../dto';
+import { handleTimeoutAndErrors } from '../helpers';
+import { ROLES_KEY } from '../decorators';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

@@ -5,9 +5,9 @@ import { MarksModule } from './marks/marks.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggingInterceptor } from './interceptors/logger.interceptor';
+import { LoggingInterceptor } from './libs/interceptors/logger.interceptor';
 import { UserModule } from './user/user.module';
-import { JwtAuthGuard } from './guards';
+import { JwtAuthGuard } from './libs/guards';
 import { AuthServiceProvide } from './libs/utils';
 import { CategoriesModule } from './categories/categories.module';
 

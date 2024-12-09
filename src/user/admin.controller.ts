@@ -15,9 +15,9 @@ import {
   UseGuards,
   Put,
 } from '@nestjs/common';
-import { Public, Roles, UserAgent } from '../decorators';
+import { Public, Roles, UserAgent } from '../libs/decorators';
 import {  IndexesEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
-import { RolesGuard } from '../guards';
+import { RolesGuard } from '../libs/guards';
 import { PaginationDto } from '../libs/dto';
 import { Response } from 'express';
 import { AUTH_SERVICE_TAG } from '../libs/utils';
