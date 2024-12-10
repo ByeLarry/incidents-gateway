@@ -53,7 +53,7 @@ _Диаграммы можно сохранять и редактировать 
   ![API-шлюз документация Swagger](https://github.com/user-attachments/assets/532dab0c-fe30-4c1e-9bdf-3c1eb3fb9a77)
 
 - ### Схемы DTO
-  ![API-шлюз документация Swagger схемы DTO](https://github.com/user-attachments/assets/38f7786a-5e3b-4491-bffe-c2d8d039f910)
+ ![API-шлюз документация Swagger схемы DTO](https://github.com/user-attachments/assets/3cb0b401-02fe-4aca-af57-ffba770ae130)
 
 ## Ссылки
 
