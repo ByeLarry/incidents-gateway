@@ -1092,8 +1092,13 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Имя администратора для входа в систему",
-            "example": "adminUser"
+            "description": "Имя администратора",
+            "example": "Иван"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия администратора",
+            "example": "Иванов"
           },
           "password": {
             "type": "string",
@@ -1108,6 +1113,7 @@
         },
         "required": [
           "name",
+          "surname",
           "password"
         ]
       },

@@ -4,13 +4,22 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AdminLoginDto {
   @ApiProperty({
-    description: 'Имя администратора для входа в систему',
-    example: 'adminUser',
+    description: 'Имя администратора',
+    example: 'Иван',
   })
   @IsString()
   @IsNotEmpty()
   @Length(3)
   name: string;
+
+  @ApiProperty({
+    description: 'Фамилия администратора',
+    example: 'Иванов',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Length(3)
+  surname: string;
 
   @ApiProperty({
     description: 'Пароль администратора',
