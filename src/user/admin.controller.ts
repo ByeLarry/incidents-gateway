@@ -48,9 +48,9 @@ export class AdminController {
   @ApiBearerAuth()
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
-  @Get('users')
+  @Get('users/pagination')
   async getUsers(@Query() dto: PaginationDto) {
-    return this.senderService.send(this.client, MsgAuthEnum.GET_ALL_USERS, dto);
+    return this.senderService.send(this.client, MsgAuthEnum.GET_ALL_USERS_PAGINATION, dto);
   }
 
   @ApiBearerAuth()

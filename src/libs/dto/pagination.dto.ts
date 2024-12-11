@@ -1,14 +1,18 @@
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsPositive, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class PaginationDto {
-  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => Number(value), { toClassOnly: true })
   @IsPositive()
-  readonly page?: number;
+  readonly page: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => Number(value), { toClassOnly: true })
   @IsPositive()
-  readonly limit?: number;
+  readonly limit: number;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly sort: string;
 }

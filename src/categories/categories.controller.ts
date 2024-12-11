@@ -27,6 +27,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../libs/guards';
 import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
+import { PaginationDto } from '../libs/dto';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -46,6 +47,16 @@ export class CategoriesController {
       this.client,
       MsgCategoriesEnum.CATEGORIES,
       {},
+    );
+  }
+
+  @Get('pagination')
+  @Public()
+  async getCategoriesWithPagination(@Query() dto: PaginationDto) {
+    return await this.senderService.send(
+      this.client,
+      MsgCategoriesEnum.CATEGORIES_PAGINATION,
+      dto,
     );
   }
 

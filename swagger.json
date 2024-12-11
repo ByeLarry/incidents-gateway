@@ -114,7 +114,7 @@
         ]
       }
     },
-    "/api/auth/admin/users": {
+    "/api/auth/admin/users/pagination": {
       "get": {
         "operationId": "AdminController_getUsers",
         "parameters": [],
@@ -792,6 +792,20 @@
           {
             "bearer": []
           }
+        ]
+      }
+    },
+    "/api/categories/pagination": {
+      "get": {
+        "operationId": "CategoriesController_getCategoriesWithPagination",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Categories"
         ]
       }
     },
