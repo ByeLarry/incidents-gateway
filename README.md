@@ -47,13 +47,10 @@ _Диаграммы можно сохранять и редактировать 
 
 ## Документация API
 
-Ниже представлена документация API-шлюза, с использованием **Swagger**.
+Ниже представлена документация **Swagger**.
 
 - ### Эндпоинты API
-  ![API-шлюз документация Swagger](https://github.com/user-attachments/assets/532dab0c-fe30-4c1e-9bdf-3c1eb3fb9a77)
-
-- ### Схемы DTO
- ![API-шлюз документация Swagger схемы DTO](https://github.com/user-attachments/assets/3cb0b401-02fe-4aca-af57-ffba770ae130)
+  ![Документация Swagger](https://github.com/user-attachments/assets/9a9dd5a2-22f0-48b7-a5f3-5fca6394af1e)
 
 ## Ссылки
 
