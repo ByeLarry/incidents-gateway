@@ -25,6 +25,14 @@ import { AuthProvidersDto, UserAndTokensDto } from './dto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { ResponseService } from './response.service';
+import {
+  ApiDocGoogleAuth,
+  ApiDocGoogleAuthCallback,
+  ApiDocGoogleAuthSuccess,
+  ApiDocYandexAuth,
+  ApiDocYandexAuthCallback,
+  ApiDocYandexAuthSuccess,
+} from './docs';
 
 @ApiTags('Providers')
 @Controller('auth')
@@ -36,11 +44,13 @@ export class ProvidersController {
     private readonly responseService: ResponseService,
   ) {}
 
+  @ApiDocGoogleAuth()
   @Public()
   @UseGuards(GoogleGuard)
   @Get('google')
   async googleAuth() {}
 
+  @ApiDocGoogleAuthCallback()
   @Public()
   @UseGuards(GoogleGuard)
   @Get('google/callback')
@@ -55,6 +65,7 @@ export class ProvidersController {
     );
   }
 
+  @ApiDocGoogleAuthSuccess()
   @Public()
   @Get('google/success')
   async googleSuccess(
@@ -93,11 +104,13 @@ export class ProvidersController {
     return { user, accessToken: tokens.accessToken };
   }
 
+  @ApiDocYandexAuth()
   @Public()
   @UseGuards(YandexGuard)
   @Get('yandex')
   async yandexAuth() {}
 
+  @ApiDocYandexAuthCallback()
   @Public()
   @UseGuards(YandexGuard)
   @Get('yandex/callback')
@@ -112,6 +125,7 @@ export class ProvidersController {
     );
   }
 
+  @ApiDocYandexAuthSuccess()
   @Public()
   @Get('yandex/success')
   async yandexSuccess(

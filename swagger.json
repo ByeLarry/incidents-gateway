@@ -4,6 +4,8 @@
     "/api/auth/signup": {
       "post": {
         "operationId": "UserController_signup",
+        "summary": "Регистрация пользователя",
+        "description": "Обрабатывает запрос на регистрацию нового пользователя. Включает проверку reCAPTCHA, создание учетной записи и возвращение токенов аутентификации.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -17,7 +19,26 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Успешная регистрация пользователя, возвращает данные пользователя и токены.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации данных, переданных пользователем."
+          },
+          "401": {
+            "description": "Невалидный токен reCAPTCHA."
+          },
+          "409": {
+            "description": "Пользователь с таким email уже существует."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -28,6 +49,8 @@
     "/api/auth/signin": {
       "post": {
         "operationId": "UserController_signin",
+        "summary": "Авторизация пользователя",
+        "description": "Обрабатывает запрос на авторизацию пользователя. Включает проверку reCAPTCHA, вход в систему с использованием email и пароля, и возвращение токенов аутентификации.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -40,8 +63,27 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Успешный вход пользователя в систему, возвращает данные пользователя и токены.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации данных, переданных пользователем."
+          },
+          "401": {
+            "description": "Невалидные учетные данные пользователя или ошибка при проверке reCAPTCHA."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -52,24 +94,62 @@
     "/api/auth/me": {
       "get": {
         "operationId": "UserController_me",
+        "summary": "Получить информацию о текущем пользователе",
+        "description": "Этот эндпоинт используется для получения информации о текущем пользователе, проверяя refresh токен и user agent. В случае успешной проверки возвращает данные о пользователе. Доступ ограничен пользователями с ролью user.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Информация о текущем пользователе.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Не удалось получить информацию о пользователе из-за отсутствия refresh токена или некорректного user agent."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
           "User"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
     "/api/auth/refresh": {
       "post": {
         "operationId": "UserController_refreshTokens",
+        "summary": "Обновление токенов доступа",
+        "description": "Этот эндпоинт используется для обновления токенов доступа. Для этого необходимо передать refresh токен в cookie и user agent для аутентификации. В случае успешного обновления возвращает новый access токен.",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Токен доступа был успешно обновлен.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Не удалось обновить токены из-за отсутствия refresh токена или некорректного user agent."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -80,20 +160,38 @@
     "/api/auth/logout": {
       "post": {
         "operationId": "UserController_logout",
+        "summary": "Выход пользователя из системы",
+        "description": "Этот метод выполняет выход пользователя из системы, удаляя его refresh token и очищая соответствующие данные сессии. Доступ ограничен пользователями с ролью user.",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": ""
+          "204": {
+            "description": "Успешный выход, если refresh токен не был найден или удален."
+          },
+          "400": {
+            "description": "Ошибка, если токен не был найден, но произошла внутренняя ошибка."
+          },
+          "401": {
+            "description": "Не удалось обновить токены из-за отсутствия refresh токена или некорректного user agent."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
           "User"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
     "/api/auth": {
       "delete": {
         "operationId": "UserController_delete",
+        "summary": "Удаление пользователя",
+        "description": "Этот метод удаляет пользователя из системы. Требуется предоставление access токена в заголовке и ID пользователя в запросе. Доступ ограничен пользователями с ролью user.",
         "parameters": [
           {
             "name": "authorization",
@@ -102,25 +200,121 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID пользователя, которого нужно удалить.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Пользователь успешно удален.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка запроса. Отсутствуют необходимые параметры для удаления."
+          },
+          "401": {
+            "description": "Ошибка авторизации. Токен доступа не предоставлен или некорректен."
+          },
+          "403": {
+            "description": "Доступ запрещен."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "409": {
+            "description": "Пользователь не может быть удален, так как он является администратором."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
           "User"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
     "/api/auth/admin/users/pagination": {
       "get": {
         "operationId": "AdminController_getUsers",
-        "parameters": [],
+        "summary": "Получить пользователей с пагинацией",
+        "description": "Этот эндпоинт используется для получения списка пользователей с пагинацией. Доступ ограничен пользователями с ролью admin.",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "description": "Номер страницы для пагинации.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "description": "Количество пользователей на странице.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Поле для сортировки.",
+            "example": "name",
+            "schema": {
+              "enum": [
+                "created_at_asc",
+                "created_at_desc"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Список пользователей с пагинацией.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsersPaginationDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные входные данные."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Требуется роль admin."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -136,9 +330,12 @@
     "/api/auth/admin/block": {
       "patch": {
         "operationId": "AdminController_blockUser",
+        "summary": "Блокировка пользователя",
+        "description": "Этот эндпоинт используется для блокировки пользователя по его ID. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные пользователя для блокировки",
           "content": {
             "application/json": {
               "schema": {
@@ -149,7 +346,32 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Пользователь успешно заблокирован.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные входные данные."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "409": {
+            "description": "Пользователь является администратором."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -165,9 +387,12 @@
     "/api/auth/admin/unblock": {
       "patch": {
         "operationId": "AdminController_unblockUser",
+        "summary": "Разблокировка пользователя",
+        "description": "Этот эндпоинт используется для разблокировки пользователя по его ID. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные пользователя для разблокировки",
           "content": {
             "application/json": {
               "schema": {
@@ -178,7 +403,29 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Пользователь успешно разблокирован.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные входные данные."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -194,9 +441,12 @@
     "/api/auth/admin": {
       "patch": {
         "operationId": "AdminController_updateAdmin",
+        "summary": "Обновление данных администратора",
+        "description": "Этот эндпоинт используется для обновления данных администратора. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные для обновления администратора",
           "content": {
             "application/json": {
               "schema": {
@@ -207,7 +457,29 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Данные администратора успешно обновлены.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неверные данные для обновления."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "404": {
+            "description": "Администратор не найден."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -223,9 +495,12 @@
     "/api/auth/admin/create-user": {
       "post": {
         "operationId": "AdminController_createUserByAdmin",
+        "summary": "Создание пользователя администратором",
+        "description": "Этот эндпоинт используется для создания нового пользователя. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные для создания нового пользователя",
           "content": {
             "application/json": {
               "schema": {
@@ -236,7 +511,29 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Пользователь успешно создан.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для создания пользователя."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "409": {
+            "description": "Пользователь с таким email уже существует."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -252,11 +549,14 @@
     "/api/auth/admin/{id}": {
       "delete": {
         "operationId": "AdminController_deleteUserByAdmin",
+        "summary": "Удаление пользователя администратором",
+        "description": "Этот эндпоинт используется для удаления пользователя по его ID. Доступ ограничен пользователями с ролью admin.",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "ID пользователя, которого необходимо удалить.",
             "schema": {
               "type": "string"
             }
@@ -272,7 +572,32 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Пользователь успешно удален.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка запроса. Отсутствуют необходимые параметры для удаления."
+          },
+          "401": {
+            "description": "Ошибка авторизации. Токен доступа не предоставлен или некорректен."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "409": {
+            "description": "Пользователь не может быть удален, так как он является администратором."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -288,20 +613,48 @@
     "/api/auth/admin/add": {
       "patch": {
         "operationId": "AdminController_addAdminRoleToUser",
+        "summary": "Назначение роли администратора пользователю",
+        "description": "Этот эндпоинт используется для назначения роли администратора пользователю. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные для назначения роли администратора",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddAdminDto"
+                "$ref": "#/components/schemas/UserIdDto"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": ""
+          "201": {
+            "description": "Роль администратора успешно назначена пользователю.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для назначения роли."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "409": {
+            "description": "Пользователь уже имеет роль администратора."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -317,10 +670,28 @@
     "/api/auth/admin/stats": {
       "get": {
         "operationId": "AdminController_getStats",
+        "summary": "Получить статистику пользователей",
+        "description": "Этот эндпоинт используется для получения статистики пользователей. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Статистика пользователей успешно получена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersStatsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -336,11 +707,14 @@
     "/api/auth/admin/search": {
       "get": {
         "operationId": "AdminController_search",
+        "summary": "Поиск пользователей",
+        "description": "Этот эндпоинт используется для поиска пользователей по запросу. Доступ ограничен пользователями с ролью admin.",
         "parameters": [
           {
             "name": "query",
             "required": true,
             "in": "query",
+            "description": "Строка запроса для поиска пользователей.",
             "schema": {
               "type": "string"
             }
@@ -348,7 +722,29 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Результаты поиска пользователей.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные запроса."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -364,9 +760,12 @@
     "/api/auth/admin/login": {
       "post": {
         "operationId": "AdminController_adminLogin",
+        "summary": "Авторизация администратора",
+        "description": "Этот эндпоинт используется для авторизации администратора с передачей данных для входа и получения токенов. Доступ открыт для всех пользователей.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные для авторизации администратора",
           "content": {
             "application/json": {
               "schema": {
@@ -376,8 +775,27 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Успешный вход администратора с получением токенов.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для авторизации."
+          },
+          "401": {
+            "description": "Неверные учетные данные или токен."
+          },
+          "404": {
+            "description": "Пользователь не найден."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -388,10 +806,24 @@
     "/api/auth/admin/reindex": {
       "put": {
         "operationId": "AdminController_reindexSearchEngine",
+        "summary": "Перестроение индекса поиска",
+        "description": "Этот эндпоинт используется для перестроения индекса поиска пользователей. Доступ ограничен пользователями с ролью admin.",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": ""
+          "204": {
+            "description": "Индекс поиска успешно перестроен."
+          },
+          "401": {
+            "description": "Необходимо пройти аутентификацию с валидным токеном."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "404": {
+            "description": "Пользователей нет в базе."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -407,10 +839,18 @@
     "/api/auth/google": {
       "get": {
         "operationId": "ProvidersController_googleAuth",
+        "summary": "Авторизация через Google",
+        "description": "Инициирует процесс авторизации через Google. Пользователь перенаправляется на страницу входа Google.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Перенаправление на страницу авторизации Google."
+          },
+          "401": {
+            "description": "Не удалось пройти авторизацию через Google."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -421,10 +861,18 @@
     "/api/auth/google/callback": {
       "get": {
         "operationId": "ProvidersController_googleAuthCallback",
+        "summary": "Обработка колбэка авторизации через Google",
+        "description": "Обрабатывает ответ от Google после успешной авторизации. Если авторизация успешна, перенаправляет пользователя на указанный URL с параметрами токена, имени и фамилии.",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": ""
+          "302": {
+            "description": "Пользователь перенаправлен на указанный URL с параметрами токена, имени и фамилии."
+          },
+          "401": {
+            "description": "Авторизация не удалась, пользователь не найден в запросе."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -435,11 +883,14 @@
     "/api/auth/google/success": {
       "get": {
         "operationId": "ProvidersController_googleSuccess",
+        "summary": "Успешная обработка авторизации через Google",
+        "description": "Принимает параметры авторизации, проверяет токен через Google API, создает или обновляет учетную запись пользователя, устанавливает токены в ответ и возвращает данные пользователя.",
         "parameters": [
           {
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Токен авторизации, полученный от Google, закодированный.",
             "schema": {
               "type": "string"
             }
@@ -448,6 +899,7 @@
             "name": "name",
             "required": true,
             "in": "query",
+            "description": "Имя пользователя, закодированное.",
             "schema": {
               "type": "string"
             }
@@ -456,6 +908,7 @@
             "name": "surname",
             "required": true,
             "in": "query",
+            "description": "Фамилия пользователя, закодированная.",
             "schema": {
               "type": "string"
             }
@@ -463,7 +916,20 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Возвращает информацию о пользователе и токен доступа.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации из-за недействительного токена."
+          },
+          "500": {
+            "description": "Ошибка взаимодействия с микросервисами или Google API."
           }
         },
         "tags": [
@@ -474,10 +940,18 @@
     "/api/auth/yandex": {
       "get": {
         "operationId": "ProvidersController_yandexAuth",
+        "summary": "Авторизация через Yandex",
+        "description": "Инициирует процесс авторизации через Yandex. Пользователь перенаправляется на страницу входа Yandex.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Перенаправление на страницу авторизации Yandex."
+          },
+          "401": {
+            "description": "Не удалось пройти авторизацию через Yandex."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -488,10 +962,18 @@
     "/api/auth/yandex/callback": {
       "get": {
         "operationId": "ProvidersController_yandexAuthCallback",
+        "summary": "Обработка колбэка авторизации через Yandex",
+        "description": "Обрабатывает ответ от Yandex после успешной авторизации. Если авторизация успешна, перенаправляет пользователя на указанный URL с параметрами токена, имени и фамилии.",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": ""
+          "302": {
+            "description": "Пользователь перенаправлен на указанный URL с параметрами токена, имени и фамилии."
+          },
+          "401": {
+            "description": "Авторизация не удалась, пользователь не найден в запросе."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -502,11 +984,14 @@
     "/api/auth/yandex/success": {
       "get": {
         "operationId": "ProvidersController_yandexSuccess",
+        "summary": "Успешная обработка авторизации через Yandex",
+        "description": "Принимает параметры авторизации, проверяет токен через Yandex API, создает или обновляет учетную запись пользователя, устанавливает токены в ответ и возвращает данные пользователя.",
         "parameters": [
           {
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Токен авторизации, полученный от Yandex, закодированный.",
             "schema": {
               "type": "string"
             }
@@ -515,6 +1000,7 @@
             "name": "name",
             "required": true,
             "in": "query",
+            "description": "Имя пользователя, закодированное.",
             "schema": {
               "type": "string"
             }
@@ -523,6 +1009,7 @@
             "name": "surname",
             "required": true,
             "in": "query",
+            "description": "Фамилия пользователя, закодированная.",
             "schema": {
               "type": "string"
             }
@@ -530,7 +1017,20 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Возвращает информацию о пользователе и токен доступа.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAndTokensDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации из-за недействительного токена."
+          },
+          "500": {
+            "description": "Ошибка взаимодействия с микросервисами или Yandex API."
           }
         },
         "tags": [
@@ -541,10 +1041,62 @@
     "/api/marks/one": {
       "get": {
         "operationId": "MarkController_getMark",
-        "parameters": [],
+        "summary": "Получение метки",
+        "description": "Этот эндпоинт позволяет получить метку по запросу. Доступно для всех пользователей.",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "Идентификатор пользователя.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "markId",
+            "required": true,
+            "in": "query",
+            "description": "Идентификатор точки.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "description": "Широта.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "description": "Долгота.",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Метка успешно найдена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkRecvDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос. Параметры запроса обязателны."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -555,10 +1107,47 @@
     "/api/marks": {
       "get": {
         "operationId": "MarkController_getMarks",
-        "parameters": [],
+        "summary": "Получение меток на карте",
+        "description": "Этот эндпоинт позволяет получить список меток на карте по данным координатам. Доступен для всех пользователей.",
+        "parameters": [
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "description": "Широта.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "description": "Долгота.",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Успешно получены метки.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeatureDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные координат."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -569,6 +1158,8 @@
     "/api/marks/verify": {
       "post": {
         "operationId": "MarkController_verifyTrue",
+        "summary": "Подтверждение метки как верной",
+        "description": "Этот эндпоинт позволяет пользователю подтвердить метку как верную. Доступ ограничен пользователями с ролью user.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -582,7 +1173,26 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Метка успешно подтверждена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifiedRecvDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для подтверждения метки."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль user."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -598,6 +1208,8 @@
     "/api/marks/unverify": {
       "post": {
         "operationId": "MarkController_verifyFalse",
+        "summary": "Отмена подтверждения метки как верной",
+        "description": "Этот эндпоинт позволяет пользователю отменить подтверждение метки как верной. Доступ ограничен пользователями с ролью user.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -611,13 +1223,35 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Метка успешно отклонена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifiedRecvDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для отмены подтверждения метки."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль user."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
           "Marks"
         ],
         "security": [
+          {
+            "bearer": []
+          },
           {
             "bearer": []
           }
@@ -627,6 +1261,8 @@
     "/api/marks/create": {
       "post": {
         "operationId": "MarkController_createMark",
+        "summary": "Создание новой метки",
+        "description": "Этот эндпоинт позволяет создать новую метку на карте. Доступен только пользователям с ролью user.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -640,21 +1276,66 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Метка успешно создана.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkRecvDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для создания метки."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль user."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
           "Marks"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
     "/api/marks/admin/all": {
       "get": {
         "operationId": "MarkController_getAllMarks",
+        "summary": "Получить все метки",
+        "description": "Эндпоинт позволяет администраторам получить полный список всех меток. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Список всех меток успешно получен.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarkRecvDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль admin."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -670,11 +1351,15 @@
     "/api/marks/admin/{id}": {
       "delete": {
         "operationId": "MarkController_deleteMark",
+        "summary": "Удалить метку",
+        "description": "Эндпоинт позволяет администраторам удалить метку по её идентификатору. Доступен только пользователям с ролью admin.",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "Идентификатор метки, которую необходимо удалить.",
+            "example": "42",
             "schema": {
               "type": "string"
             }
@@ -682,26 +1367,72 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Метка успешно удалена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkRecvDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный идентификатор метки."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "404": {
+            "description": "Метка с указанным идентификатором не найдена."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
           "Marks"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ]
       }
     },
     "/api/marks/search": {
       "get": {
         "operationId": "MarkController_search",
-        "parameters": [],
+        "summary": "Поиск меток",
+        "description": "Эндпоинт выполняет поиск меток по указанному запросу в индексе меток.",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "description": "Поисковый запрос для поиска меток.",
+            "example": "example search query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Успешный поиск. Возвращает массив результатов.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarkRecvDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный формат поискового запроса."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -712,10 +1443,24 @@
     "/api/marks/admin/reindex": {
       "put": {
         "operationId": "MarkController_reindexSearhchEngine",
+        "summary": "Реиндексация поисковой системы",
+        "description": "Эндпоинт инициирует процесс реиндексации данных в поисковой системе. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": ""
+          "204": {
+            "description": "Реиндексация выполнена успешно."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только администраторы могут выполнять реиндексацию."
+          },
+          "404": {
+            "description": "Происшествий нет в базе. "
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -731,10 +1476,25 @@
     "/api/categories": {
       "get": {
         "operationId": "CategoriesController_getCategories",
+        "summary": "Получение списка категорий",
+        "description": "Возвращает список категорий, кэшируемых для оптимизации.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Список категорий успешно получен.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -743,11 +1503,15 @@
       },
       "delete": {
         "operationId": "CategoriesController_deleteCategory",
+        "summary": "Удаление категории",
+        "description": "Удаляет категорию по идентификатору. Доступно только администраторам. Доступен только пользователям с ролью admin.",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "query",
+            "description": "Идентификатор категории, которую нужно удалить",
+            "example": "1",
             "schema": {
               "type": "string"
             }
@@ -755,7 +1519,29 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Категория успешно удалена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный идентификатор категории."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "404": {
+            "description": "Категория с указанным идентификатором не найдена."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -769,9 +1555,12 @@
       },
       "patch": {
         "operationId": "CategoriesController_updateCategory",
+        "summary": "Обновление категории",
+        "description": "Обновляет данные существующей категории. Доступно только администраторам. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные для обновления категории",
           "content": {
             "application/json": {
               "schema": {
@@ -782,7 +1571,29 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Категория успешно обновлена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для обновления категории."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "404": {
+            "description": "Категория с указанным идентификатором не найдена."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -798,10 +1609,63 @@
     "/api/categories/pagination": {
       "get": {
         "operationId": "CategoriesController_getCategoriesWithPagination",
-        "parameters": [],
+        "summary": "Получение списка категорий с пагинацией",
+        "description": "Возвращает список категорий с поддержкой пагинации. Вы можете указать параметры страницы и размера страницы через query-параметры.",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "description": "Номер страницы для пагинации. Начинается с 1.",
+            "example": 1,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "description": "Количество элементов на странице.",
+            "example": 10,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Поле для сортировки.",
+            "example": "name",
+            "schema": {
+              "enum": [
+                "created_at_asc",
+                "created_at_desc"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Успешный ответ с данными о категориях.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoriesPaginationDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные параметры пагинации."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -812,9 +1676,12 @@
     "/api/categories/create": {
       "post": {
         "operationId": "CategoriesController_createCategory",
+        "summary": "Создание категории",
+        "description": "Создает новую категорию. Доступно только для администраторов. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Данные для создания категории",
           "content": {
             "application/json": {
               "schema": {
@@ -825,7 +1692,26 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Категория успешно создана.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные для создания категории."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -841,10 +1727,28 @@
     "/api/categories/stats": {
       "get": {
         "operationId": "CategoriesController_getStats",
+        "summary": "Получение статистики категорий",
+        "description": "Возвращает статистику по категориям. Доступно только администраторам. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Статистика успешно получена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesStatsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -860,10 +1764,45 @@
     "/api/categories/search": {
       "get": {
         "operationId": "CategoriesController_search",
-        "parameters": [],
+        "summary": "Поиск категорий",
+        "description": "Этот эндпоинт позволяет искать категории по строке запроса. Доступно только администраторам. Доступен только пользователям с ролью admin.",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "description": "Строка запроса для поиска категорий.",
+            "example": "Авария",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Результаты поиска категорий.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос. Параметр \"query\" обязателен."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -879,10 +1818,21 @@
     "/api/categories/clear-cache": {
       "get": {
         "operationId": "CategoriesController_clearCache",
+        "summary": "Очистить кэш категорий",
+        "description": "Этот эндпоинт позволяет очистить кэш для категорий. Доступно только администраторам. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": ""
+          "204": {
+            "description": "Кэш успешно очищен."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -898,10 +1848,24 @@
     "/api/categories/admin/reindex": {
       "put": {
         "operationId": "CategoriesController_reindexSearhchEngine",
+        "summary": "Перестроение индекса поиска",
+        "description": "Этот эндпоинт позволяет инициировать процесс перестроения индекса поиска для категорий. Доступен только пользователям с ролью admin.",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": ""
+          "204": {
+            "description": "Индекс успешно перестроен."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Только для администраторов."
+          },
+          "404": {
+            "description": "Категорий нет в базе."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
           }
         },
         "tags": [
@@ -917,7 +1881,7 @@
   },
   "info": {
     "title": "Incidents API",
-    "description": "",
+    "description": "Ниже представлено краткое описание API, являющееся точкой входа в систему Incidents. \n    \n\n\n    Этот API предназначен для того, чтобы помочь как администраторам, так и обычным пользователям взаимодействовать с данными в системе Incidents. \n    API поддерживает операции CRUD для инцидентов, категорий, пользователей и других аспектов, а также предоставляет возможности для работы со статистикой.\n    \n\n\n    Основные возможности:\n    - Создание, чтение, обновление и удаление инцидентов, категорий и пользователей.\n    - Функции администратора для управления пользователями, ролями и правами доступа.\n    - Эндпоинты для получения статистической сводки по инцидентам, категориям и ползователям.\n    - Эндпоинты для реиндексации поискового сервиса.\n    - Взаимодействие пользователей с системой через создание инцидентов, просмотр данных и получения актуальной информации.\n    - Аутентификация с использованием JWT или OAuth.\n    \n\n\n    Аутентификация:\n    - Некоторые эндпоинты защищены и требуют аутентификацию. Используйте Bearer токен в заголовке Authorization.",
     "version": "0.1.1",
     "contact": {}
   },
@@ -978,6 +1942,122 @@
           "recaptchaToken"
         ]
       },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Имя пользователя",
+            "example": "Иван",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия пользователя",
+            "example": "Иванов",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "description": "Электронная почта пользователя",
+            "example": "user@example.com",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "id": {
+            "type": "string",
+            "description": "Уникальный идентификатор пользователя",
+            "example": "12345",
+            "minLength": 0,
+            "maxLength": 100
+          },
+          "activated": {
+            "type": "boolean",
+            "description": "Статус активации пользователя",
+            "example": true
+          },
+          "roles": {
+            "type": "string",
+            "description": "Роли пользователя в системе",
+            "example": [
+              "admin",
+              "user"
+            ],
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "description": "Поставщик аутентификации пользователя",
+            "example": "google",
+            "enum": [
+              "google",
+              "yandex",
+              "local"
+            ]
+          },
+          "tokensCount": {
+            "type": "number",
+            "description": "Количество токенов пользователя (необязательное поле)",
+            "example": 5
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Номер телефона пользователя (необязательное поле)",
+            "example": "+7 900 123-45-67"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Дата создания пользователя (необязательное поле)",
+            "example": "2023-12-01T12:00:00Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Дата последнего обновления пользователя (необязательное поле)",
+            "example": "2023-12-01T12:00:00Z"
+          }
+        },
+        "required": [
+          "name",
+          "surname",
+          "email",
+          "id",
+          "activated",
+          "roles",
+          "provider"
+        ]
+      },
+      "UserAndTokensDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "description": "Объект, содержащий информацию о пользователе.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          },
+          "tokens": {
+            "type": "object",
+            "description": "Объект, содержащий токены доступа и обновления.",
+            "example": {
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "refreshToken": "dGhpcyBpcyBhIHNhbXBsZSB0b2tlbi4uLg=="
+            }
+          }
+        },
+        "required": [
+          "user",
+          "tokens"
+        ]
+      },
       "SignInDto": {
         "type": "object",
         "properties": {
@@ -1005,6 +2085,60 @@
           "email",
           "password",
           "recaptchaToken"
+        ]
+      },
+      "AccessTokenDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Токен доступа, который используется для авторизации в системе.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNjM4MjU5MzAwfQ.JC-5gg8_iyYofqDt10VQqkNE1IgJ5vQI6kI8HZ6B9F0"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "UsersPaginationDto": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "description": "Список пользователей, полученных на текущей странице.",
+            "example": [
+              {
+                "id": "1234",
+                "email": "user@example.com",
+                "name": "John",
+                "surname": "Doe"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Общее количество пользователей.",
+            "example": 100
+          },
+          "page": {
+            "type": "number",
+            "description": "Номер текущей страницы.",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Количество пользователей на странице.",
+            "example": 10
+          }
+        },
+        "required": [
+          "users",
+          "total",
+          "page",
+          "limit"
         ]
       },
       "UserIdDto": {
@@ -1088,17 +2222,41 @@
           "surname"
         ]
       },
-      "AddAdminDto": {
+      "UsersStatsDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "Идентификатор пользователя, которого нужно назначить администратором",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
+          "total": {
+            "type": "number",
+            "description": "Общее количество пользователей.",
+            "example": 1500
+          },
+          "admins": {
+            "type": "number",
+            "description": "Количество пользователей-администраторов.",
+            "example": 100
+          },
+          "activeSessions": {
+            "type": "number",
+            "description": "Количество активных сессий пользователей.",
+            "example": 500
+          },
+          "blocked": {
+            "type": "number",
+            "description": "Количество заблокированных пользователей.",
+            "example": 30
+          },
+          "activated": {
+            "type": "number",
+            "description": "Количество активированных пользователей.",
+            "example": 1200
           }
         },
         "required": [
-          "id"
+          "total",
+          "admins",
+          "activeSessions",
+          "blocked",
+          "activated"
         ]
       },
       "AdminLoginDto": {
@@ -1131,6 +2289,200 @@
           "password"
         ]
       },
+      "MarkRecvDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Идентификатор метки",
+            "example": 123
+          },
+          "lat": {
+            "type": "number",
+            "description": "Широта местоположения метки",
+            "example": 55.7558
+          },
+          "lng": {
+            "type": "number",
+            "description": "Долгота местоположения метки",
+            "example": 37.6173
+          },
+          "title": {
+            "type": "string",
+            "description": "Заголовок метки",
+            "example": "Авария на дороге"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание метки",
+            "example": "На дороге произошла авария с несколькими пострадавшими."
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Дата создания метки",
+            "example": "2024-12-12T10:00:00Z"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Идентификатор пользователя, создавшего метку",
+            "example": "user123"
+          },
+          "distance": {
+            "type": "number",
+            "description": "Расстояние от текущей позиции",
+            "example": 200
+          },
+          "verified": {
+            "type": "number",
+            "description": "Статус верификации метки",
+            "example": 1
+          },
+          "isMyVerify": {
+            "type": "boolean",
+            "description": "Статус личной верификации метки",
+            "example": true
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "Идентификатор категории метки",
+            "example": 5
+          },
+          "color": {
+            "type": "string",
+            "description": "Цвет метки",
+            "example": "green"
+          },
+          "addressDescription": {
+            "type": "string",
+            "description": "Описание адреса метки",
+            "example": "Улица Ленина, дом 10"
+          },
+          "addressName": {
+            "type": "string",
+            "description": "Название адреса метки",
+            "example": "Местоположение аварии"
+          }
+        },
+        "required": [
+          "id",
+          "lat",
+          "lng"
+        ]
+      },
+      "GeometryDto": {
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "description": "Массив с двумя числами, представляющими координаты (широта, долгота).",
+            "example": [
+              40.7128,
+              -74.006
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "Тип геометрии (например, \"Point\").",
+            "example": "Point"
+          }
+        },
+        "required": [
+          "coordinates",
+          "type"
+        ]
+      },
+      "PropertiesDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Заголовок свойства. Должен быть строкой от 3 до 100 символов.",
+            "example": "Авария на мосту",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание свойства. Необязательное поле с максимальной длиной 200 символов.",
+            "example": "Местоположение аварии на центральном мосту города.",
+            "maxLength": 200
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "ID категории свойства. Должен быть числом.",
+            "example": 1
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Дата и время создания свойства.",
+            "example": "2024-12-12T12:00:00.000Z"
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID пользователя, создавшего свойство.",
+            "example": "user-123"
+          },
+          "distance": {
+            "type": "number",
+            "description": "Расстояние до точки, связанной с этим свойством. Необязательное поле.",
+            "example": 15.5
+          },
+          "color": {
+            "type": "string",
+            "description": "Цвет, связанный с этим свойством. Необязательное поле, длина не должна превышать 20 символов.",
+            "example": "red",
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "title",
+          "categoryId",
+          "createdAt",
+          "userId"
+        ]
+      },
+      "FeatureDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор объекта.",
+            "example": "abc123"
+          },
+          "type": {
+            "type": "string",
+            "description": "Тип объекта.",
+            "example": "Feature"
+          },
+          "geometry": {
+            "description": "Геометрия объекта, описывающая его расположение.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GeometryDto"
+              }
+            ]
+          },
+          "properties": {
+            "description": "Свойства объекта, описывающие его характеристики.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PropertiesDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "geometry",
+          "properties"
+        ]
+      },
       "VerifyMarkDto": {
         "type": "object",
         "properties": {
@@ -1148,6 +2500,19 @@
         "required": [
           "markId",
           "userId"
+        ]
+      },
+      "VerifiedRecvDto": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "number",
+            "description": "Количество подтверждений метки",
+            "example": 42
+          }
+        },
+        "required": [
+          "verified"
         ]
       },
       "AddressDto": {
@@ -1219,13 +2584,85 @@
           "categoryId"
         ]
       },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Уникальный идентификатор категории",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Название категории",
+            "example": "Technology"
+          },
+          "color": {
+            "type": "string",
+            "description": "Цвет категории в формате HEX",
+            "example": "blue"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Дата создания категории",
+            "example": "2023-12-01T10:00:00Z",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Дата последнего обновления категории",
+            "example": "2023-12-10T15:30:00Z",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CategoriesPaginationDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Общее количество категорий",
+            "example": 100
+          },
+          "page": {
+            "type": "number",
+            "description": "Текущая страница пагинации",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Количество категорий на странице",
+            "example": 10
+          },
+          "categories": {
+            "description": "Список категорий на текущей странице",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "limit",
+          "categories"
+        ]
+      },
       "CreateCategoryDto": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
             "description": "Название категории. Это обязательное поле.",
-            "example": "Еда"
+            "example": "Авария"
           },
           "color": {
             "type": "string",
@@ -1259,6 +2696,37 @@
         "required": [
           "id",
           "name"
+        ]
+      },
+      "CategoriesStatsDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Общее количество категорий.",
+            "example": 10
+          },
+          "incidents": {
+            "description": "Список категорий с количеством инцидентов.",
+            "example": [
+              {
+                "category": "Авария",
+                "incidentsCount": 25
+              },
+              {
+                "category": "Другое",
+                "incidentsCount": 15
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "array"
+            }
+          }
+        },
+        "required": [
+          "total",
+          "incidents"
         ]
       }
     }

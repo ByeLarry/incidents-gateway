@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateCategoryDto {
   @ApiProperty({
     description: 'Название категории. Это обязательное поле.',
-    example: 'Еда',
+    example: 'Авария',
   })
   @IsString()
   @IsNotEmpty()

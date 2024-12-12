@@ -10,14 +10,15 @@ import {
   Delete,
   Query,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { Response } from 'express';
 import { AUTH_SERVICE_TAG, REFRESH_TOKEN_COOKIE_NAME } from '../libs/utils';
-import { MsgAuthEnum } from '../libs/enums';
-import { Cookie, Public, UserAgent } from '../libs/decorators';
+import { MsgAuthEnum, RolesEnum } from '../libs/enums';
+import { Cookie, Public, Roles, UserAgent } from '../libs/decorators';
 import {
   AccessTokenDto,
   DeleteUserDto,
@@ -31,6 +32,15 @@ import { ApiTags } from '@nestjs/swagger';
 import { MicroserviceSenderService } from '../libs/services';
 import { HttpService } from '@nestjs/axios';
 import { ResponseService } from './response.service';
+import {
+  ApiDocDeleteUser,
+  ApiDocGetUser,
+  ApiDocLogout,
+  ApiDocRefreshTokens,
+  ApiDocUserSignIn,
+  ApiDocUserSignUp,
+} from './docs';
+import { RolesGuard } from '../libs/guards';
 
 @ApiTags('User')
 @Controller('auth')
@@ -43,6 +53,7 @@ export class UserController {
     private readonly responseService: ResponseService,
   ) {}
 
+  @ApiDocUserSignUp()
   @Public()
   @Post('signup')
   async signup(
@@ -65,6 +76,7 @@ export class UserController {
     return { user, accessToken: tokens.accessToken };
   }
 
+  @ApiDocUserSignIn()
   @Public()
   @Post('signin')
   async signin(
@@ -84,7 +96,9 @@ export class UserController {
     return { user, accessToken: tokens.accessToken };
   }
 
-  @Public()
+  @ApiDocGetUser(RolesEnum.USER)
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
   @Get('me')
   async me(
     @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
@@ -103,6 +117,7 @@ export class UserController {
     return this.senderService.send(this.client, MsgAuthEnum.ME, data);
   }
 
+  @ApiDocRefreshTokens()
   @Public()
   @Post('refresh')
   async refreshTokens(
@@ -130,7 +145,9 @@ export class UserController {
     return response;
   }
 
-  @Public()
+  @ApiDocLogout(RolesEnum.USER)
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
   @Post('logout')
   async logout(
     @Cookie(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
@@ -152,7 +169,9 @@ export class UserController {
     res.status(HttpStatus.NO_CONTENT);
   }
 
-  @Public()
+  @ApiDocDeleteUser(RolesEnum.USER)
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
   @Delete()
   async delete(
     @Headers('authorization') accessToken: string,

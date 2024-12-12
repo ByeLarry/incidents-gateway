@@ -23,11 +23,22 @@ import {
   Cache,
 } from '@nestjs/cache-manager';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../libs/guards';
 import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
 import { PaginationDto } from '../libs/dto';
+import {
+  ApiDocCategoriesPagination,
+  ApiDocCategoriesSearch,
+  ApiDocClearCategoriesCache,
+  ApiDocCreateCategory,
+  ApiDocDeleteCategory,
+  ApiDocGetCategories,
+  ApiDocGetCategoriesStats,
+  ApiDocReindexCategoriesSearch,
+  ApiDocUpdateCategory,
+} from './docs';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -38,6 +49,7 @@ export class CategoriesController {
     private readonly senderService: MicroserviceSenderService,
   ) {}
 
+  @ApiDocGetCategories()
   @Get()
   @Public()
   @CacheKey(CACHE_CATEGORIES_KEY)
@@ -50,6 +62,7 @@ export class CategoriesController {
     );
   }
 
+  @ApiDocCategoriesPagination()
   @Get('pagination')
   @Public()
   async getCategoriesWithPagination(@Query() dto: PaginationDto) {
@@ -60,7 +73,7 @@ export class CategoriesController {
     );
   }
 
-  @ApiBearerAuth()
+  @ApiDocCreateCategory(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Post('create')
@@ -74,7 +87,7 @@ export class CategoriesController {
     return result;
   }
 
-  @ApiBearerAuth()
+  @ApiDocDeleteCategory(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Delete()
@@ -88,7 +101,7 @@ export class CategoriesController {
     return result;
   }
 
-  @ApiBearerAuth()
+  @ApiDocUpdateCategory(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch()
@@ -102,7 +115,7 @@ export class CategoriesController {
     return result;
   }
 
-  @ApiBearerAuth()
+  @ApiDocGetCategoriesStats(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('stats')
@@ -114,7 +127,7 @@ export class CategoriesController {
     );
   }
 
-  @ApiBearerAuth()
+  @ApiDocCategoriesSearch(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('search')
@@ -130,7 +143,7 @@ export class CategoriesController {
     );
   }
 
-  @ApiBearerAuth()
+  @ApiDocClearCategoriesCache(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('clear-cache')
@@ -139,7 +152,7 @@ export class CategoriesController {
     return HttpStatus.NO_CONTENT;
   }
 
-  @ApiBearerAuth()
+  @ApiDocReindexCategoriesSearch(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Put('admin/reindex')

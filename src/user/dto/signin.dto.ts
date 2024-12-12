@@ -26,7 +26,8 @@ export class SignInDto {
   readonly password: string;
 
   @ApiProperty({
-    description: 'Токен reCAPTCHA для подтверждения, что запрос сделан реальным пользователем',
+    description:
+      'Токен reCAPTCHA для подтверждения, что запрос сделан реальным пользователем',
     example: '03AGdBq24...',
   })
   @IsString()

@@ -1,4 +1,4 @@
 export enum CategoriesSortEnum {
-    CREATED_AT = 'created_at',
-    UPDATED_AT = 'updated_at',
+  CREATED_AT_ASC = 'created_at_asc',
+  CREATED_AT_DESC = 'created_at_desc',
 }

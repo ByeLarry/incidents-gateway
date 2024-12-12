@@ -16,14 +16,13 @@ import {
   Put,
 } from '@nestjs/common';
 import { Public, Roles, UserAgent } from '../libs/decorators';
-import {  IndexesEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
+import { IndexesEnum, MsgAuthEnum, RolesEnum } from '../libs/enums';
 import { RolesGuard } from '../libs/guards';
 import { PaginationDto } from '../libs/dto';
 import { Response } from 'express';
 import { AUTH_SERVICE_TAG } from '../libs/utils';
 import { ClientProxy } from '@nestjs/microservices';
 import {
-  AddAdminDto,
   AdminLoginDto,
   CreateUserDto,
   SearchDto,
@@ -34,7 +33,20 @@ import {
 } from '../user/dto';
 import { MicroserviceSenderService } from '../libs/services';
 import { ResponseService } from './response.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiDocAddAdminRoleToUser,
+  ApiDocAdminLogin,
+  ApiDocBlockUser,
+  ApiDocCreateUserByAdmin,
+  ApiDocDeleteUserByAdmin,
+  ApiDocGetUsersPagination,
+  ApiDocGetUsersStats,
+  ApiDocReindexUsersSearch,
+  ApiDocSearchUsers,
+  ApiDocUnblockUser,
+  ApiDocUpdateAdmin,
+} from './docs';
 
 @ApiTags('Admin')
 @Controller('auth/admin')
@@ -45,15 +57,19 @@ export class AdminController {
     private readonly responseService: ResponseService,
   ) {}
 
-  @ApiBearerAuth()
+  @ApiDocGetUsersPagination(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('users/pagination')
   async getUsers(@Query() dto: PaginationDto) {
-    return this.senderService.send(this.client, MsgAuthEnum.GET_ALL_USERS_PAGINATION, dto);
+    return this.senderService.send(
+      this.client,
+      MsgAuthEnum.GET_ALL_USERS_PAGINATION,
+      dto,
+    );
   }
 
-  @ApiBearerAuth()
+  @ApiDocBlockUser(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch('block')
@@ -61,7 +77,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.BLOCK_USER, dto);
   }
 
-  @ApiBearerAuth()
+  @ApiDocUnblockUser(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch('unblock')
@@ -69,7 +85,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.UNBLOCK_USER, dto);
   }
 
-  @ApiBearerAuth()
+  @ApiDocUpdateAdmin(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch()
@@ -87,7 +103,7 @@ export class AdminController {
     return { user, accessToken: tokens.accessToken };
   }
 
-  @ApiBearerAuth()
+  @ApiDocCreateUserByAdmin(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Post('create-user')
@@ -99,7 +115,7 @@ export class AdminController {
     );
   }
 
-  @ApiBearerAuth()
+  @ApiDocDeleteUserByAdmin(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Delete(':id')
@@ -121,11 +137,11 @@ export class AdminController {
     res.status(HttpStatus.NO_CONTENT);
   }
 
-  @ApiBearerAuth()
+  @ApiDocAddAdminRoleToUser(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Patch('add')
-  async addAdminRoleToUser(@Body() dto: AddAdminDto) {
+  async addAdminRoleToUser(@Body() dto: UserIdDto) {
     return this.senderService.send(
       this.client,
       MsgAuthEnum.ADD_ADMIN_ROLE_TO_USER,
@@ -133,7 +149,7 @@ export class AdminController {
     );
   }
 
-  @ApiBearerAuth()
+  @ApiDocGetUsersStats(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('stats')
@@ -141,7 +157,7 @@ export class AdminController {
     return this.senderService.send(this.client, MsgAuthEnum.USERS_STATS, {});
   }
 
-  @ApiBearerAuth()
+  @ApiDocSearchUsers(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Get('search')
@@ -154,6 +170,7 @@ export class AdminController {
     );
   }
 
+  @ApiDocAdminLogin()
   @Public()
   @Post('login')
   async adminLogin(
@@ -171,7 +188,7 @@ export class AdminController {
     return { user, accessToken: tokens.accessToken };
   }
 
-  @ApiBearerAuth()
+  @ApiDocReindexUsersSearch(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Put('reindex')

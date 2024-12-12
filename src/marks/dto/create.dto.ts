@@ -1,7 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { AddressDto } from './';
+import { AddressDto } from '.';
 
 export class CreateMarkDto {
   @ApiProperty({

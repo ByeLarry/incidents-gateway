@@ -12,10 +12,10 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CoordsDto } from './dto/coords.dto';
-import { VerifyMarkDto } from './dto/verify-mark.dto';
+import { VerifyMarkDto } from './dto/verify.dto';
 import { MarkDto } from './dto/mark.dto';
-import { MarkRecvDto } from './dto/mark-recv.dto';
-import { CreateMarkDto } from './dto/create-mark.dto';
+import { MarkRecvDto } from './dto/recv.dto';
+import { CreateMarkDto } from './dto/create.dto';
 import { MarksGateway } from './marks.gateway';
 import { MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
@@ -27,6 +27,17 @@ import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
+import {
+  ApiDocCreateMark,
+  ApiDocDeleteMark,
+  ApiDocGetAllMarks,
+  ApiDocGetMark,
+  ApiDocGetMarks,
+  ApiDocReindexMarksSearch,
+  ApiDocSearchMarks,
+  ApiDocUnverifyMark,
+  ApiDocVerifyMark,
+} from './docs';
 
 @ApiTags('Marks')
 @Controller('marks')
@@ -36,12 +47,15 @@ export class MarkController {
     private readonly marksGateway: MarksGateway,
     private readonly senderService: MicroserviceSenderService,
   ) {}
+
+  @ApiDocGetMark()
   @Public()
   @Get('one')
   async getMark(@Query() data: MarkDto) {
     return this.senderService.send(this.client, MsgMarksEnum.MARK_GET, data);
   }
 
+  @ApiDocGetMarks()
   @Get()
   @Public()
   async getMarks(@Query() data: CoordsDto) {
@@ -52,7 +66,7 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
-  @ApiBearerAuth()
+  @ApiDocVerifyMark(RolesEnum.USER)
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.USER)
   @Post('verify')
@@ -64,6 +78,7 @@ export class MarkController {
     );
   }
 
+  @ApiDocUnverifyMark(RolesEnum.USER)
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.USER)
@@ -76,6 +91,9 @@ export class MarkController {
     );
   }
 
+  @ApiDocCreateMark(RolesEnum.USER)
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
   @Post('create')
   async createMark(@Body() data: CreateMarkDto) {
     const result = await this.senderService.send<
@@ -89,7 +107,7 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
 
-  @ApiBearerAuth()
+  @ApiDocGetAllMarks(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.ADMIN)
   @Get('admin/all')
@@ -102,7 +120,7 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
-  @ApiBearerAuth()
+  @ApiDocDeleteMark(RolesEnum.ADMIN)
   @Delete('admin/:id')
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.ADMIN)
@@ -119,6 +137,7 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
   }
 
+  @ApiDocSearchMarks()
   @Get('search')
   @Public()
   async search(@Query() queries: { query: string }) {
@@ -133,7 +152,7 @@ export class MarkController {
     );
   }
 
-  @ApiBearerAuth()
+  @ApiDocReindexMarksSearch(RolesEnum.ADMIN)
   @Roles(RolesEnum.ADMIN)
   @UseGuards(RolesGuard)
   @Put('admin/reindex')
