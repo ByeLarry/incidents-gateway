@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Inject,
   Param,
   Post,
@@ -21,7 +23,7 @@ import { MARKS_SERVICE_TAG } from '../libs/utils';
 import { MicroserviceResponseStatus } from '../libs/dto';
 import { IndexesEnum, MsgMarksEnum, RolesEnum } from '../libs/enums';
 import { FeatureTransformer } from '../libs/helpers';
-import { Public, Roles } from '../libs/decorators';
+import { CurrentUser, Public, Roles } from '../libs/decorators';
 import { RolesGuard } from '../libs/guards';
 import { WebSocketMessageEnum } from '../libs/enums/websocket-message.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -29,7 +31,8 @@ import { MicroserviceSenderService } from '../libs/services';
 import { SearchDto } from '../user/dto';
 import {
   ApiDocCreateMark,
-  ApiDocDeleteMark,
+  ApiDocDeleteMarkByAdmin,
+  ApiDocDeleteMarkByUser,
   ApiDocGetAllMarks,
   ApiDocGetMark,
   ApiDocGetMarks,
@@ -38,6 +41,7 @@ import {
   ApiDocUnverifyMark,
   ApiDocVerifyMark,
 } from './docs';
+import { DeleteMarkByUserDto } from './dto';
 
 @ApiTags('Marks')
 @Controller('marks')
@@ -120,15 +124,42 @@ export class MarkController {
     return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto[]);
   }
 
-  @ApiDocDeleteMark(RolesEnum.ADMIN)
-  @Delete('admin/:id')
+  @ApiDocDeleteMarkByAdmin(RolesEnum.ADMIN)
+  @Delete('admin/:markId')
   @UseGuards(RolesGuard)
   @Roles(RolesEnum.ADMIN)
-  async deleteMark(@Param('id') id: string) {
+  async deleteMarkByAdmin(@Param('markId') id: string) {
     const result = await this.senderService.send(
       this.client,
-      MsgMarksEnum.DELETE_MARK,
+      MsgMarksEnum.DELETE_MARK_BY_ADMIN,
       Number(id),
+    );
+    this.marksGateway.emitMessageToAll(
+      WebSocketMessageEnum.DELETE_MARK,
+      FeatureTransformer.transformToFeatureDto(result as MarkRecvDto),
+    );
+    return FeatureTransformer.transformToFeatureDto(result as MarkRecvDto);
+  }
+
+  @ApiDocDeleteMarkByUser(RolesEnum.USER)
+  @Delete('/:markId')
+  @UseGuards(RolesGuard)
+  @Roles(RolesEnum.USER)
+  async deleteMarkByUser(
+    @Param('markId') markId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    if (!userId || !markId)
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
+    const sentData: DeleteMarkByUserDto = {
+      markId: Number(markId),
+      userId,
+    };
+    const result = await this.senderService.send(
+      this.client,
+      MsgMarksEnum.DELETE_MARK_BY_USER,
+      sentData,
     );
     this.marksGateway.emitMessageToAll(
       WebSocketMessageEnum.DELETE_MARK,

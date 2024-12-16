@@ -1348,12 +1348,20 @@
         ]
       }
     },
-    "/api/marks/admin/{id}": {
+    "/api/marks/admin/{markId}": {
       "delete": {
-        "operationId": "MarkController_deleteMark",
+        "operationId": "MarkController_deleteMarkByAdmin",
         "summary": "Удалить метку",
         "description": "Эндпоинт позволяет администраторам удалить метку по её идентификатору. Доступен только пользователям с ролью admin.",
         "parameters": [
+          {
+            "name": "markId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "id",
             "required": true,
@@ -1384,6 +1392,63 @@
           },
           "403": {
             "description": "Доступ запрещен. Только для администраторов."
+          },
+          "404": {
+            "description": "Метка с указанным идентификатором не найдена."
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера."
+          }
+        },
+        "tags": [
+          "Marks"
+        ]
+      }
+    },
+    "/api/marks/{markId}": {
+      "delete": {
+        "operationId": "MarkController_deleteMarkByUser",
+        "summary": "Удалить метку",
+        "description": "Эндпоинт позволяет пользователю удалить метку по её идентификатору. Удалить метку может только пользователь, создавший ее. Доступен только пользователям с ролью user.",
+        "parameters": [
+          {
+            "name": "markId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Идентификатор метки, которую необходимо удалить.",
+            "example": "42",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Метка успешно удалена.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkRecvDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный идентификатор метки."
+          },
+          "401": {
+            "description": "Пользователь не авторизован."
+          },
+          "403": {
+            "description": "Доступ запрещен. Требуется роль user или id создателя метки не подходит."
           },
           "404": {
             "description": "Метка с указанным идентификатором не найдена."

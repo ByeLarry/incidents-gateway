@@ -26,31 +26,29 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
-    if (!requiredRoles) {
-      return true;
-    }
+
+    if (!requiredRoles) return true;
+
     const accessTokenValue = context.switchToHttp().getRequest().headers[
       'authorization'
     ];
 
-    if (!accessTokenValue) {
-      return false;
-    }
+    if (!accessTokenValue) return false;
 
     const requestDto: AccessTokenDto = {
       value: accessTokenValue.replace('Bearer ', ''),
     };
 
     const user = await firstValueFrom(
-      this.client.send<UserDto | MicroserviceResponseStatus>(
-        MsgAuthEnum.USER_ROLES,
-        requestDto,
-      ).pipe(handleTimeoutAndErrors()),
+      this.client
+        .send<
+          UserDto | MicroserviceResponseStatus
+        >(MsgAuthEnum.USER_ROLES, requestDto)
+        .pipe(handleTimeoutAndErrors()),
     );
     throwErrorIfExists(user as MicroserviceResponseStatus);
-    if (!user) {
-      return false;
-    }
+    if (!user) return false;
+
     return requiredRoles.some((role) => (user as UserDto).roles.includes(role));
   }
 }

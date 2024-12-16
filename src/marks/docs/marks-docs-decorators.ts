@@ -210,7 +210,7 @@ export function ApiDocGetAllMarks(role: string) {
   );
 }
 
-export function ApiDocDeleteMark(role: string) {
+export function ApiDocDeleteMarkByAdmin(role: string) {
   return applyDecorators(
     ApiOperation({
       summary: 'Удалить метку',
@@ -239,6 +239,47 @@ export function ApiDocDeleteMark(role: string) {
     ApiResponse({
       status: HttpStatus.FORBIDDEN,
       description: 'Доступ запрещен. Только для администраторов.',
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: 'Метка с указанным идентификатором не найдена.',
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: 'Внутренняя ошибка сервера.',
+    }),
+  );
+}
+
+export function ApiDocDeleteMarkByUser(role: string) {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Удалить метку',
+      description: `Эндпоинт позволяет пользователю удалить метку по её идентификатору. Удалить метку может только пользователь, создавший ее. Доступен только пользователям с ролью ${role}.`,
+    }),
+    ApiParam({
+      name: 'id',
+      type: String,
+      description: 'Идентификатор метки, которую необходимо удалить.',
+      required: true,
+      example: '42',
+    }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: 'Метка успешно удалена.',
+      type: MarkRecvDto,
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: 'Некорректный идентификатор метки.',
+    }),
+    ApiResponse({
+      status: HttpStatus.UNAUTHORIZED,
+      description: 'Пользователь не авторизован.',
+    }),
+    ApiResponse({
+      status: HttpStatus.FORBIDDEN,
+      description: `Доступ запрещен. Требуется роль ${role} или id создателя метки не подходит.`,
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
