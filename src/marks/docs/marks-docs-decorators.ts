@@ -213,7 +213,7 @@ export function ApiDocGetAllMarks(role: string) {
 export function ApiDocDeleteMarkByAdmin(role: string) {
   return applyDecorators(
     ApiOperation({
-      summary: 'Удалить метку',
+      summary: 'Удалить метку администратором',
       description: `Эндпоинт позволяет администраторам удалить метку по её идентификатору. Доступен только пользователям с ролью ${role}.`,
     }),
     ApiParam({
@@ -254,7 +254,7 @@ export function ApiDocDeleteMarkByAdmin(role: string) {
 export function ApiDocDeleteMarkByUser(role: string) {
   return applyDecorators(
     ApiOperation({
-      summary: 'Удалить метку',
+      summary: 'Удалить метку, созданную текущим пользователем',
       description: `Эндпоинт позволяет пользователю удалить метку по её идентификатору. Удалить метку может только пользователь, создавший ее. Доступен только пользователям с ролью ${role}.`,
     }),
     ApiParam({
