@@ -50,7 +50,7 @@ _Диаграммы можно сохранять и редактировать 
 Ниже представлена документация **Swagger**.
 
 - ### Эндпоинты API
-  ![Документация Swagger](https://github.com/user-attachments/assets/9a9dd5a2-22f0-48b7-a5f3-5fca6394af1e)
+  ![Документация Swagger](https://github.com/user-attachments/assets/56879047-ac05-43e1-acc6-956c98c3702b)
 
 ## Ссылки
 - #### Клиентская часть:  *https://github.com/ByeLarry/incidents-frontend*  [![incidents-frontend](https://github.com/ByeLarry/incidents-frontend/actions/workflows/incidents-frontend.yml/badge.svg)](https://github.com/ByeLarry/incidents-frontend/actions/workflows/incidents-frontend.yml)
