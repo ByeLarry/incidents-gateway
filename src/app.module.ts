@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { JwtAuthGuard } from './libs/guards';
 import { AuthServiceProvide } from './libs/utils';
 import { CategoriesModule } from './categories/categories.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CategoriesModule } from './categories/categories.module';
       port: Number(process.env.REDIS_PORT),
       ttl: 3600,
     }),
+    HealthModule,
   ],
   providers: [
     AuthServiceProvide,

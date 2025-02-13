@@ -1,6 +1,6 @@
 {
   "name": "api-gateway",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "API-gateway for the Incidents project",
   "author": "Solovey Roman",
   "private": true,
@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-socket.io": "^10.3.10",
     "@nestjs/swagger": "^7.4.0",
+    "@nestjs/terminus": "^11.0.0",
     "@nestjs/websockets": "^10.3.10",
     "@types/passport-jwt": "^4.0.1",
     "amqp-connection-manager": "^4.1.14",
