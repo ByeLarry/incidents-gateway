@@ -42,7 +42,7 @@ _Диаграммы можно сохранять и редактировать 
   ![HTTP   WebSocket responses  Коммуникация клиента и сервера](https://github.com/user-attachments/assets/853b4672-fe61-445d-8fb1-e9bee8e726e0)
 
 - ### Компоненты API-шлюза
-  ![Компоненты API шлюза](https://github.com/user-attachments/assets/450b472a-5367-4755-ad6c-8ee0470345a4)
+  ![Компоненты API шлюза](https://github.com/user-attachments/assets/64b1dddd-1e2b-45a7-ac78-0983bb72256f)
 
 
 ## Документация API
