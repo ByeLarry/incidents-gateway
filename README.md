@@ -42,7 +42,7 @@ _Диаграммы можно сохранять и редактировать 
   ![HTTP   WebSocket responses  Коммуникация клиента и сервера](https://github.com/user-attachments/assets/853b4672-fe61-445d-8fb1-e9bee8e726e0)
 
 - ### Компоненты API-шлюза
-  ![Компоненты API шлюза](https://github.com/user-attachments/assets/450b472a-5367-4755-ad6c-8ee0470345a4)
+  ![Компоненты API шлюза](https://github.com/user-attachments/assets/81645f40-de02-4e47-b058-0b7212b0818d)
 
 
 ## Документация API
@@ -53,15 +53,23 @@ _Диаграммы можно сохранять и редактировать 
   ![Документация Swagger](https://github.com/user-attachments/assets/56879047-ac05-43e1-acc6-956c98c3702b)
 
 ## Ссылки
+
+### Репозитории
 - #### Клиентская часть:  *https://github.com/ByeLarry/incidents-frontend*  [![incidents-frontend](https://github.com/ByeLarry/incidents-frontend/actions/workflows/incidents-frontend.yml/badge.svg)](https://github.com/ByeLarry/incidents-frontend/actions/workflows/incidents-frontend.yml)
+- #### API-шлюз:  *https://github.com/ByeLarry/incidents-gateway*  [![incidents-gateway](https://github.com/ByeLarry/incidents-gateway/actions/workflows/incidents-gateway.yml/badge.svg)](https://github.com/ByeLarry/incidents-gateway/actions/workflows/incidents-gateway.yml)
 - #### Сервис авторизации:  *https://github.com/ByeLarry/incidents-auth-service*  [![incidents-auth](https://github.com/ByeLarry/incidents-auth-service/actions/workflows/incidents-auth.yml/badge.svg)](https://github.com/ByeLarry/incidents-auth-service/actions/workflows/incidents-auth.yml)
 - #### Сервис марок (инцидентов): *https://github.com/ByeLarry/indcidents-marks-service*  [![incidents-marks](https://github.com/ByeLarry/incidents-marks-service/actions/workflows/incidents-marks.yml/badge.svg)](https://github.com/ByeLarry/incidents-marks-service/actions/workflows/incidents-marks.yml)
 - #### Сервис поиска *https://github.com/ByeLarry/incidents-search-service*  [![incidents-search](https://github.com/ByeLarry/incidents-search-service/actions/workflows/incidents-search.yml/badge.svg)](https://github.com/ByeLarry/incidents-search-service/actions/workflows/incidents-search.yml)
 - #### Панель администратора *https://github.com/ByeLarry/incidents-admin-frontend.git*  [![incidents-admin-frontend](https://github.com/ByeLarry/incidents-admin-frontend/actions/workflows/incidents-admin-frontend.yml/badge.svg)](https://github.com/ByeLarry/incidents-admin-frontend/actions/workflows/incidents-admin-frontend.yml)
 - #### Сервис мониторинга состояния системы: *https://github.com/ByeLarry/incidents-healthcheck*  [![incidents-healthcheck](https://github.com/ByeLarry/incidents-healthcheck/actions/workflows/incidents-healthcheck.yml/badge.svg)](https://github.com/ByeLarry/incidents-healthcheck/actions/workflows/incidents-healthcheck.yml)
-- #### Демонастрация функционала пользовательской части версии 0.1.0: *https://youtu.be/H0-Qg97rvBM*
-- #### Демонастрация функционала пользовательской части версии 0.2.0: *https://youtu.be/T33RFvfTxNU*
-- #### Демонастрация функционала панели администратора версии 0.1.0: *https://youtu.be/7LTnEMYuzUo*
+- #### Telegram бот для уведомления о состоянии системы *https://github.com/ByeLarry/incidents-healthcheck-bot*
+- #### Сквозные (end-to-end) тесты *https://github.com/ByeLarry/incidents-playwright*
+
+### Демонстрация функционала
+- #### Демонстрация функционала пользовательской части версии 0.1.0: *https://youtu.be/H0-Qg97rvBM*
+- #### Демонстрация функционала пользовательской части версии 0.2.0: *https://youtu.be/T33RFvfTxNU*
+- #### Демонстрация функционала панели администратора версии 0.1.0: *https://youtu.be/7LTnEMYuzUo*
+- #### Демонстрация функционала сервиса мониторинга состояния системы (панель администратора 0.1.1) *https://youtu.be/TeEc9W89igI*
 
 
 
